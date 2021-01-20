@@ -5,7 +5,7 @@ const db = require('./Components/MMF_api')
 const img = require('./Components/images_api')
 const fileUpload = require('express-fileupload');
 //start app 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 3000;
 const morgan = require('morgan');
 const _ = require('lodash');
 const cors = require('cors');
