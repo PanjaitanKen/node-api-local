@@ -1,12 +1,12 @@
 const pool = require('../../db')
 
-// Tabel : person_tbl
+// Tabel : person_tbl, employee_tbl
 var controller = {
-    datePost: function(request, response) {
+    getBirthDate: function(request, response) {
         const { employee_id } = request.body
         console.log (request.body)
     
-        pool.db.query("SELECT to_char(birth_date,'MM-DD-YYYY') as birth_Date FROM person_tbl WHERE person_id = $1", [employee_id], (error, results) => {
+        pool.db_MMFPROD.query("SELECT b.employee_id,to_char(birth_date,'MM-DD-YYYY') as birth_Date FROM person_tbl a left join employee_tbl b on a.person_id =b.person_id WHERE b.employee_id = $1 and to_char(birth_date,'DDMM')=to_char(current_date ,'DDMM')", [employee_id], (error, results) => {
         if (error) {
             throw error
         }
