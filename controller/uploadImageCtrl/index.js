@@ -2,7 +2,7 @@ const pool = require('../../db')
 
 //Tabel : employeeworkofftbl, leaverequest_tbl
 var controller = {
-    uploadImage = (req, res) => {
+    uploadImage :function (req, res) {
         try {
             if(!req.files) {
                 res.send({
