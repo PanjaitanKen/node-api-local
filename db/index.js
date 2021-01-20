@@ -17,5 +17,5 @@ const db_HCM = new Pool({
 
 module.exports = {
   db_MMFPROD,
-    db_HCM
+  db_HCM
 }
