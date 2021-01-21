@@ -4,6 +4,9 @@ const ListJobTaskCtrl = require('../controller/listJobTaskCtrl')
 const getLongitudeBranchCtrl = require('../controller/getLongitudeBranchCtrl')
 const getURLHCMCtrl = require('../controller/getURLHCMCtrl')
 const uploadImageCtrl = require('../controller/uploadImageCtrl')
+const AddClockInCtrl = require('../controller/AddClockInCtrl')
+const getHistAttendanceCtrl = require('../controller/getHistattendanceCtrl')
+const getDetailHistAttendanceCtrl = require('../controller/getDetailHistattendanceCtrl')
 
 
 module.exports = function(app) {
@@ -21,6 +24,18 @@ module.exports = function(app) {
         
     app.route('/hcm/api/getURLHCM')
         .post(getURLHCMCtrl.getURL_HCM);
+        
     app.route('/img/api/uploadImage')
         .post(uploadImageCtrl.uploadImage);
+
+    app.route('/mmf/api/AddClockIn')
+        .post(AddClockInCtrl.AddClock_In);
+        // async(app.route('/mmf/api/AddClockIn')
+        // .post(AddClockInCtrl.AddClock_In));
+
+    app.route('/mmf/api/getHistAttendance')
+        .post(getHistAttendanceCtrl.getHist_attendance);
+
+    app.route('/mmf/api/getDetailHistAttendance')
+        .post(getDetailHistAttendanceCtrl.getDetailHist_attendance);
 };

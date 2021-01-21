@@ -12,7 +12,9 @@ var controller = {
             } else {
                 let avatar = req.files.image;
                 
-                avatar.mv('./uploads/' + avatar.name);
+                // avatar.mv('./uploads/' + avatar.name);
+                //'~/root/mandala/hcm_backend/uploads/' 
+                avatar.mv('/app/uploads/' + avatar.name);
     
                 //send response
                 res.send({
