@@ -3,7 +3,7 @@ const pool = require('../../db')
 //Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
 var controller = {
     AddClock_In: function(request, response) {
-    const { employee_id, latitude, altitude, longitude, accuracy, location_no, url_photo }  = request.body
+    const { employee_id, latitude, altitude, longitude, accuracy, location_no}  = request.body
     const {randomNumber} = Math.floor(Math.random()*90000) + 10000;
     const {employee_id2} = employee_id;
     console.log (employee_id, latitude, altitude, longitude, accuracy, location_no)
