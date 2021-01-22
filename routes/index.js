@@ -7,6 +7,7 @@ const uploadImageCtrl = require('../controller/uploadImageCtrl')
 const AddClockInCtrl = require('../controller/AddClockInCtrl')
 const getHistAttendanceCtrl = require('../controller/getHistattendanceCtrl')
 const getDetailHistAttendanceCtrl = require('../controller/getDetailHistattendanceCtrl')
+const getURLPhotoAbsenCtrl = require('../controller/getURLPhotoAbsenCtrl')
 
 
 module.exports = function(app) {
@@ -38,4 +39,7 @@ module.exports = function(app) {
 
     app.route('/mmf/api/getDetailHistAttendance')
         .post(getDetailHistAttendanceCtrl.getDetailHist_attendance);
+
+    app.route('/hcm/api/getURLPhotoAbsen')
+        .post(getURLPhotoAbsenCtrl.getURL_Photo_Absen);
 };
