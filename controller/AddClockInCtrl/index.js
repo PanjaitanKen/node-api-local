@@ -56,16 +56,16 @@ var controller = {
               }
                 response.status(201).send({
                   status: 201,
-                  message: 'Berhasil Menginput Data',
-                  data: "sukses insert tabel emp_clocking_temp_tbl,emp_clocking_detail_tbl, emp_clocking_tbl"
+                  message: 'Absen Masuk Berhasil',
+                  data: ""
                 });
               })
             })
         }else{
           response.status(201).send({
             status: 201,
-            message: 'Berhasil Menginput Data',
-            data: "sukses insert tabel emp_clocking_temp_tbl"
+            message: 'Absen Masuk Berhasil',
+            data: ""
           });
         }
       })
