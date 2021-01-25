@@ -18,7 +18,7 @@ const getBirthDate = (request, response) => {
 
 const getBirthDatebyId = (request, response) => {
     const id = request.params.id
-    console.log(id);
+    // console.log(id);
     pool.query("SELECT to_char(birth_date,'MM-DD-YYYY') as birth_Date FROM person_tbl WHERE person_id = $1", [id], (error, results) => {
         if (error) {
           throw error
@@ -29,7 +29,7 @@ const getBirthDatebyId = (request, response) => {
 
 const datePost = (request, response) => {
     const { employee_id } = request.body
-    console.log (request.body)
+    // console.log (request.body)
   
     pool.query("SELECT to_char(birth_date,'MM-DD-YYYY') as birth_Date FROM person_tbl WHERE person_id = $1", [employee_id], (error, results) => {
       if (error) {
