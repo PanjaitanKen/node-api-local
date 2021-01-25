@@ -6,8 +6,10 @@ const getURLHCMCtrl = require('../controller/getURLHCMCtrl')
 const uploadImageCtrl = require('../controller/uploadImageCtrl')
 const AddClockInCtrl = require('../controller/AddClockInCtrl')
 const getHistAttendanceCtrl = require('../controller/getHistattendanceCtrl')
-const getDetailHistAttendanceCtrl = require('../controller/getDetailHistattendanceCtrl')
+const getDetailHistAttendanceCtrl = require('../controller/getDetailHistAttendanceCtrl')
 const getURLPhotoAbsenCtrl = require('../controller/getURLPhotoAbsenCtrl')
+const getDetailWorkOffAppCtrl = require('../controller/getDetailWorkOffAppCtrl')
+const getDetailAttAppCtrl = require('../controller/getDetailAttAppCtrl')
 
 
 module.exports = function(app) {
@@ -42,4 +44,10 @@ module.exports = function(app) {
 
     app.route('/hcm/api/getURLPhotoAbsen')
         .post(getURLPhotoAbsenCtrl.getURL_Photo_Absen);
+
+    app.route('/mmf/api/getDetailWorkOffApp')
+        .post(getDetailWorkOffAppCtrl.getDetail_WorkOff_App);
+
+    app.route('/mmf/api/getDetailAttApp')
+        .post(getDetailAttAppCtrl.getDetail_Att_App);
 };
