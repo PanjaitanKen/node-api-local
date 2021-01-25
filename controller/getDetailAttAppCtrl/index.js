@@ -7,7 +7,7 @@ var controller = {
             const { golid } = request.body
             // console.log (request.body)
 
-            pool.db_MMFPROD.query("select a.employee_id, b.wage_name  as jenis_ijin, d.display_name as nama,work_off_from as tgl_ijin_dari, work_off_to as tgl_ijin_sd, reason as alasan,a.clocking_date as tgl_pengajuan,a.golid from employee_work_off_tbl a left join wage_code_tbl b on a.absence_wage =b.wage_code left join employee_tbl c on a.employee_id =c.employee_id left join person_tbl d on c.person_id =d.person_id where state='Submitted' and a.golid =$1 ", [golid], (error, results) => {
+            pool.db_MMFPROD.query("select a.employee_id, b.wage_name  as jenis_ijin, d.display_name as nama,to_char(work_off_from,'MM-DD-YYYY') as tgl_ijin_dari, to_char(work_off_to,'MM-DD-YYYY') as tgl_ijin_sd, reason as alasan,to_char(a.clocking_date,'MM-DD-YYYY') as tgl_pengajuan,a.golid, case when a.state='Approved' then 'Disetujui' when a.state='Rejected' then 'Ditolak' when a.state='Submitted' then 'Menunggu Persetujuan' when a.state='Cancelled' then 'Batal' end as Status from employee_work_off_tbl a left join wage_code_tbl b on a.absence_wage =b.wage_code left join employee_tbl c on a.employee_id =c.employee_id left join person_tbl d on c.person_id =d.person_id where state='Submitted' and a.golid =$1 ", [golid], (error, results) => {
                 if (error) {
                     throw error
                 }
