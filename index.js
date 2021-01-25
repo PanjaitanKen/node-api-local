@@ -4,6 +4,7 @@ const app = express()
 const db = require('./Components/MMF_api')
 const img = require('./Components/images_api')
 const fileUpload = require('express-fileupload');
+const path = require('path');
 //start app 
 const port = process.env.PORT || 3000;
 const morgan = require('morgan');
@@ -12,7 +13,7 @@ const cors = require('cors');
 
 //add other middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
@@ -28,6 +29,7 @@ app.get('/', (request, response) => {
 })
 
 // enable files upload
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(fileUpload({
   createParentPath: true
 }));
