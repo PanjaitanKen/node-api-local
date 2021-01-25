@@ -10,7 +10,7 @@ var controller = {
       if(results.rows != ''){
         response.status(200).json(results.rows)
       }else{
-        response.status(400).json("data tidak ditemukan")
+        response.status(400).json("")
       }
     })
   }
