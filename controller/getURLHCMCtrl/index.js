@@ -11,7 +11,7 @@ var controller = {
                 if(results.rows != ''){
                     response.status(200).send({
                         status: 200,
-                        message: 'Mendapatkan Semua Data',
+                        message: 'Load Data berhasil',
                         data: results.rows[0]
                     });
                 }else{

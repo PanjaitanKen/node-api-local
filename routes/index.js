@@ -28,8 +28,8 @@ module.exports = function(app) {
     app.route('/hcm/api/getURLHCM')
         .post(getURLHCMCtrl.getURL_HCM);
         
-    app.route('/img/api/uploadImage')
-        .post(uploadImageCtrl.uploadImage);
+    // app.route('/img/api/uploadImage')
+    //     .post(uploadImageCtrl.uploadImage);
 
     app.route('/mmf/api/AddClockIn')
         .post(AddClockInCtrl.AddClock_In);

@@ -14,8 +14,8 @@ var controller = {
             if(results.rows != ''){
                 response.status(200).send({
                     status: 200,
-                    message: 'Mendapatkan Semua Data',
-                    data: results.rows
+                    message: 'Load Data Berhasil',
+                    data: results.rows[0]
                 });
             }else{
                 response.status(200).send({
