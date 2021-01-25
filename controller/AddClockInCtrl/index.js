@@ -29,7 +29,7 @@ var controller = {
     }
 
     let fileName = 'mfinhr19'+'-'+ day+ '-'+ 'mandala-'  + randomNumber + '-'+'in'+ '.jpg';
-    require("fs").writeFile(dir+ fileName +'.jpg', base64Data, 'base64', function(err) {
+    require("fs").writeFile(dir+ fileName, base64Data, 'base64', function(err) {
       // console.log(err);
     });
       
