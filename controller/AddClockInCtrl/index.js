@@ -20,7 +20,7 @@ var controller = {
     //local
     // var dir = './uploads/'+ employee_id +'/';
     //server
-    var dir = '/app/uploads/'+ employee_id +'/';
+    var dir = './uploads/'+ employee_id +'/';
 
     // console.log (dir)
 
