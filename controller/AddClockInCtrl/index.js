@@ -57,7 +57,7 @@ var controller = {
                 response.status(201).send({
                   status: 201,
                   message: 'Absen Masuk Berhasil',
-                  data: ""
+                  data: 1
                 });
               })
             })
@@ -65,7 +65,7 @@ var controller = {
           response.status(201).send({
             status: 201,
             message: 'Absen Masuk Berhasil',
-            data: ""
+            data: 1
           });
         }
       })

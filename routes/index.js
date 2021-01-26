@@ -10,6 +10,7 @@ const getDetailHistAttendanceCtrl = require('../controller/getDetailHistAttendan
 const getURLPhotoAbsenCtrl = require('../controller/getURLPhotoAbsenCtrl')
 const getDetailWorkOffAppCtrl = require('../controller/getDetailWorkOffAppCtrl')
 const getDetailAttAppCtrl = require('../controller/getDetailAttAppCtrl')
+const checkAttendanceCtrl = require('../controller/checkAttendanceCtrl')
 
 
 module.exports = function(app) {
@@ -50,4 +51,7 @@ module.exports = function(app) {
 
     app.route('/mmf/api/getDetailAttApp')
         .post(getDetailAttAppCtrl.getDetail_Att_App);
+
+    app.route('/mmf/api/checkAttendance')
+        .post(checkAttendanceCtrl.checkAttendance);
 };
