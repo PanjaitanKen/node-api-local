@@ -56,17 +56,37 @@ var controller = {
               }
                 response.status(201).send({
                   status: 201,
-                  message: 'Absen Masuk Berhasil',
-                  data: 2
+                  message: 'Absen Pulang Berhasil',
+                  data: 3
                 });
               })
             })
         }else{
-          response.status(201).send({
-            status: 201,
-            message: 'Absen Masuk Berhasil',
-            data: 1
-          });
+          pool.db_MMFPROD.query("SELECT time_out FROM emp_clocking_detail_tbl where clocking_date =current_date and employee_id = $1", [employee_id], (error, results) => {
+            if (error) {
+            throw error
+            }
+            console.log(results.rows[0].time_out)
+            if(results.rows[0].time_out == '' || results.rows[0].time_out == null ){
+              console.log(results.rows[0].time_out)
+              pool.db_MMFPROD.query("update emp_clocking_detail_tbl set time_out = CURRENT_TIMESTAMP, out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date", [employee_id, location_no], (error, results) => {
+                if (error) {
+                  throw error
+                }
+                response.status(201).send({
+                  status: 201,
+                  message: 'Absen Pulang Berhasil',
+                  data: 2
+                });
+            })
+          }else{
+            response.status(201).send({
+              status: 201,
+              message: 'Absen Pulang Berhasil',
+              data: 1
+            });
+          }
+        })
         }
       })
     })
