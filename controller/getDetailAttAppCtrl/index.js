@@ -2,7 +2,7 @@ const pool = require('../../db')
 
 //Tabel : employeeworkofftbl, wagecodetbl, employeetbl, person_tbl
 var controller = {
-    getDetail_Att_App: function(request, response) {
+    getDetail_Att_App: function (request, response) {
         try {
             const { golid } = request.body
             // console.log (request.body)
@@ -11,13 +11,13 @@ var controller = {
                 if (error) {
                     throw error
                 }
-                if(results.rows != ''){
+                if (results.rows != '') {
                     response.status(200).send({
                         status: 200,
                         message: 'Load Data berhasil',
                         data: results.rows[0]
                     });
-                }else{
+                } else {
                     response.status(200).send({
                         status: 200,
                         message: 'Data Tidak Ditemukan',
