@@ -1,6 +1,6 @@
 const pool = require('../../db')
 
-//Tabel : mark_location_tbl
+//Tabel : mark_location_tbl, emp_work_schedule_tbl, emp_work_location_tbl
 var controller = {
   getLongitude_Branch: function(request, response) {
     try {
@@ -39,7 +39,7 @@ var controller = {
             }
             if(results.rows != ''){
               let location_name  = results.rows[0].work_location ;
-              pool.db_MMFPROD.query("select location_name, latitude,altitude,longitude,accuracy, radius_tolerance from mark_location_tbl where location_name=$1 order by location_no asc", [location_name], (error, results) => {
+              pool.db_MMFPROD.query("select location_name,location_no, latitude,altitude, longitude, accuracy, radius_tolerance from mark_location_tbl where location_name=$1 order by location_no asc", [location_name], (error, results) => {
                 if (error) {
                   throw error
                 }

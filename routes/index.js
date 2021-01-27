@@ -5,6 +5,7 @@ const getLongitudeBranchCtrl = require('../controller/getLongitudeBranchCtrl')
 const getURLHCMCtrl = require('../controller/getURLHCMCtrl')
 const uploadImageCtrl = require('../controller/uploadImageCtrl')
 const AddClockInCtrl = require('../controller/AddClockInCtrl')
+const AddClockOutCtrl = require('../controller/AddClockOutCtrl')
 const getHistAttendanceCtrl = require('../controller/getHistattendanceCtrl')
 const getDetailHistAttendanceCtrl = require('../controller/getDetailHistAttendanceCtrl')
 const getURLPhotoAbsenCtrl = require('../controller/getURLPhotoAbsenCtrl')
@@ -34,6 +35,11 @@ module.exports = function(app) {
 
     app.route('/mmf/api/AddClockIn')
         .post(AddClockInCtrl.AddClock_In);
+        // async(app.route('/mmf/api/AddClockIn')
+        // .post(AddClockInCtrl.AddClock_In));
+
+    app.route('/mmf/api/AddClockOut')
+        .post(AddClockOutCtrl.AddClock_Out);
         // async(app.route('/mmf/api/AddClockIn')
         // .post(AddClockInCtrl.AddClock_In));
 
