@@ -1,3 +1,4 @@
+require("dotenv").config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
@@ -6,7 +7,7 @@ const img = require('./Components/images_api')
 const fileUpload = require('express-fileupload');
 const path = require('path');
 //start app 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT ;
 const morgan = require('morgan');
 const _ = require('lodash');
 const cors = require('cors');

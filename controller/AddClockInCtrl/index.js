@@ -1,5 +1,5 @@
 const pool = require('../../db')
-const serve = require('../../config')
+const serve = process.env.url ;
 var fs = require('fs');
 
 //Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
@@ -35,7 +35,7 @@ var controller = {
     });
 
     //server development
-    let url_path = serve.url + dir + fileName;
+    let url_path = serve + dir + fileName;
     // console.log(url_path);
 
     pool.db_MMFPROD.query("insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method , golid,golversion ) values ('MMF',$1,current_timestamp, 0, null, null, null, 'Transfer to Clocking Date:'|| to_char(current_date,'DD Mon YYYY'), 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1,nextval('emp_clocking_temp_tbl_golid_seq'),1)", [employee_id, latitude, altitude, longitude, accuracy, location_no, url_path, randomNumber, employee_id2], (error, results) => {
