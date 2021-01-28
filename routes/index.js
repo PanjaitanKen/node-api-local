@@ -12,6 +12,8 @@ const getURLPhotoAbsenCtrl = require('../controller/getURLPhotoAbsenCtrl')
 const getDetailWorkOffAppCtrl = require('../controller/getDetailWorkOffAppCtrl')
 const getDetailAttAppCtrl = require('../controller/getDetailAttAppCtrl')
 const checkAttendanceCtrl = require('../controller/checkAttendanceCtrl')
+const getHistDetailAbsenceCtrl = require('../controller/getHistDetailAbsenceCtrl')
+const getHistDetail2AbsenceCtrl = require('../controller/getHistDetail2AbsenceCtrl')
 
 
 module.exports = function(app) {
@@ -35,13 +37,9 @@ module.exports = function(app) {
 
     app.route('/mmf/api/AddClockIn')
         .post(AddClockInCtrl.AddClock_In);
-        // async(app.route('/mmf/api/AddClockIn')
-        // .post(AddClockInCtrl.AddClock_In));
 
     app.route('/mmf/api/AddClockOut')
         .post(AddClockOutCtrl.AddClock_Out);
-        // async(app.route('/mmf/api/AddClockIn')
-        // .post(AddClockInCtrl.AddClock_In));
 
     app.route('/mmf/api/getHistAttendance')
         .post(getHistAttendanceCtrl.getHist_attendance);
@@ -60,4 +58,10 @@ module.exports = function(app) {
 
     app.route('/mmf/api/checkAttendance')
         .post(checkAttendanceCtrl.checkAttendance);
+        
+    app.route('/mmf/api/getHistDetail2Absence')
+        .post(getHistDetail2AbsenceCtrl.getHist_Detail2_Absence);
+
+    app.route('/mmf/api/getHistDetailAbsence')
+        .post(getHistDetailAbsenceCtrl.getHist_Detail_Absence);
 };
