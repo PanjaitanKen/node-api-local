@@ -12,6 +12,7 @@ const getURLPhotoAbsenCtrl = require('../controller/getURLPhotoAbsenCtrl')
 const getDetailWorkOffAppCtrl = require('../controller/getDetailWorkOffAppCtrl')
 const getDetailAttAppCtrl = require('../controller/getDetailAttAppCtrl')
 const checkAttendanceCtrl = require('../controller/checkAttendanceCtrl')
+const getHistAbsenceCtrl = require('../controller/getHistAbsenceCtrl')
 const getHistDetailAbsenceCtrl = require('../controller/getHistDetailAbsenceCtrl')
 const getHistDetail2AbsenceCtrl = require('../controller/getHistDetail2AbsenceCtrl')
 
@@ -64,4 +65,7 @@ module.exports = function(app) {
 
     app.route('/mmf/api/getHistDetailAbsence')
         .post(getHistDetailAbsenceCtrl.getHist_Detail_Absence);
+
+    app.route('/mmf/api/getHistAbsence')
+        .post(getHistAbsenceCtrl.getHist_Absence);
 };
