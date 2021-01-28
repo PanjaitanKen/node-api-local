@@ -1,5 +1,5 @@
 const pool = require('../../db')
-const serve = process.env.url ;
+const serve = process.env.URL ;
 var fs = require('fs');
 
 //Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
