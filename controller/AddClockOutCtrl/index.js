@@ -34,7 +34,7 @@ var controller = {
     });
 
     //server development
-    let url_path = "http://dev-hcm.mandalafinance.co.id:3000" + dir + fileName;
+    let url_path = "https://hcm-dev.mandalafinance.co.id" + dir + fileName;
     // console.log(url_path);
 
     pool.db_MMFPROD.query("insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method , golid,golversion ) values ('MMF',$1,current_timestamp, 1, null, null, null, 'Transfer to Clocking Date:'|| to_char(current_date,'DD Mon YYYY'), 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1,nextval('emp_clocking_temp_tbl_golid_seq'),1)", [employee_id, latitude, altitude, longitude, accuracy, location_no, url_path, randomNumber, employee_id2], (error, results) => {
