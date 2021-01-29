@@ -14,10 +14,18 @@ var controller = {
                 "(case when yy.state='Transfered' then 'Tercatat' " +
                 "when yy.state = 'prepared' then 'Belum Tercatat' " +
                 "else 'Error' end) else 'Belum Tercatat' end ) as status_masuk, " +
+                "max(case when in_out='0' then " +
+                "(case when yy.state='Transfered' then '1' " +
+                "when yy.state = 'prepared' then '0' " +
+                "else '2' end) else '0' end ) as status_masuk_status, " +
                 "max(case when in_out='1' then  " +
                 "(case when yy.state='Transfered' then 'Tercatat' " +
                 "when yy.state = 'prepared' then 'Belum Tercatat' " +
                 "else 'Error' end) else 'Belum Tercatat' end ) as status_pulang, " +
+                "max(case when in_out='1' then  " +
+                "(case when yy.state='Transfered' then '1' " +
+                "when yy.state = 'prepared' then '0' " +
+                "else '2' end) else '0' end ) as status_pulang_status, " +
                 "max(case when in_out='0' then transfer_message else null end ) as transfer_message_masuk, " +
                 "max(case when in_out='1' then transfer_message else null end ) as transfer_message_pulang " +
                 "from  " +
