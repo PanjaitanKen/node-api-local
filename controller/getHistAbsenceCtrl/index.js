@@ -4,23 +4,24 @@ const pool = require('../../db')
 var controller = {
     getHist_Absence: function (request, response) {
         try {
-            const { employee_id,filter_date } = request.body;
+            const { employee_id, filter_date } = request.body;
 
             pool.db_MMFPROD.query(
-                "select $1::text as employee_id,ss.tgl_absen,ss.tgl_absen2, " +
-                "case when zz.employee_id is null then 'Belum Tercatat' else xx.kategori end as kategori ,xx.jam, " +
-                "case when yy.state='Transfered' then 'Tercatat' " +
+                "select $1::text employee_id , xx.tgl_absen,xx.tgl_absen2, " +
+                "max(case when in_out='0' then to_char(yy.clocking_date ,'hh24:mi') else ' ' end ) as absen_masuk, " +
+                "max(case when in_out='1' then to_char(yy.clocking_date ,'hh24:mi') else ' ' end ) as absen_pulang, " +
+                "max(case when in_out='0' then  " +
+                "(case when yy.state='Transfered' then 'Tercatat' " +
                 "when yy.state = 'prepared' then 'Belum Tercatat' " +
-                "else 'Error' end as status,yy.transfer_message, " +
-                "case when zz.employee_id is null " +
-                "then 'Data tidak tercatat di Absen Masuk dan Absen Pulang'  " +
-                "else (case when yy.state='Transfered' then 'Tercatat' " +
+                "else 'Error' end) else 'Belum Tercatat' end ) as status_masuk, " +
+                "max(case when in_out='1' then  " +
+                "(case when yy.state='Transfered' then 'Tercatat' " +
                 "when yy.state = 'prepared' then 'Belum Tercatat' " +
-                "else 'Error' end)  " +
-                "end as status2 " +
-                "from " +
-                "( " +
-                "select to_char(dates_this_month, 'YYYY-MM-DD')  as Tgl_absen,  " +
+                "else 'Error' end) else 'Belum Tercatat' end ) as status_pulang, " +
+                "max(case when in_out='0' then transfer_message else null end ) as transfer_message_masuk, " +
+                "max(case when in_out='1' then transfer_message else null end ) as transfer_message_pulang " +
+                "from  " +
+                "(select to_char(dates_this_month, 'YYYY-MM-DD')  as Tgl_absen,  " +
                 "case when trim(to_char(dates_this_month,'Day'))='Sunday' then 'Minggu' " +
                 "when trim(to_char(dates_this_month,'Day'))='Monday' then 'Senin' " +
                 "when trim(to_char(dates_this_month,'Day'))='Tuesday' then 'Selasa' " +
@@ -43,24 +44,12 @@ var controller = {
                 "from ( " +
                 "select * from generate_series(date_trunc('month',now()), " +
                 "date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month " +
-                ") a 	where dates_this_month between (current_date - interval '1 days' * $2) and now() " +
-                ") ss left join  " +
-                "( " +
-                "with x as(select a.employee_id,to_char(a.clocking_date,'YYYY-MM-DD') as tgl_absen , " +
-                "case when in_out='0' then 'Absen Masuk' else 'Absen Pulang' end as kategori,  " +
-                "to_char(a.clocking_date,'hh24:mi')  as jam, a.state " +
-                "from emp_clocking_temp_tbl a " +
-                "where employee_id ='0002738' and  a.clocking_date between (current_date - interval '1 days' * $2) and current_date  " +
-                "order by clocking_date desc) " +
-                "select x.employee_id ,x.tgl_absen, x.kategori, min(jam) jam " +
-                "from x  " +
-                "group  by x.employee_id ,x.tgl_absen, x.kategori " +
-                ") xx on xx.tgl_absen=ss.Tgl_absen " +
-                "left join emp_clocking_temp_tbl yy on xx.employee_id=yy.employee_id  " +
-                "and xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD')  " +
-                "and xx.jam = to_char(yy.clocking_date,'hh24:mi') " +
-                "left join emp_clocking_tbl zz on xx.employee_id=zz.employee_id and xx.tgl_absen  = to_char(zz.clocking_date,'YYYY-MM-DD') " +
-                "order by tgl_absen desc"
+                ") a 	where dates_this_month between (current_date -interval '1 days' * $2) and now() " +
+                ") xx " +
+                "left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id ='0002738' " +
+                "left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
+                "group by zz.employee_id, xx.tgl_absen, xx.tgl_absen2 " +
+                "order by xx.tgl_absen desc"
                 , [employee_id, filter_date], (error, results) => {
                     if (error) {
                         throw error
