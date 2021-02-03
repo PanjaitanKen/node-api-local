@@ -54,7 +54,7 @@ var controller = {
                 "date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month " +
                 ") a 	where dates_this_month between (current_date -interval '1 days' * $2) and now() " +
                 ") xx " +
-                "left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id ='0002738' " +
+                "left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1 " +
                 "left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
                 "group by zz.employee_id, xx.tgl_absen, xx.tgl_absen2 " +
                 "order by xx.tgl_absen desc"

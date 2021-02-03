@@ -15,6 +15,11 @@ const checkAttendanceCtrl = require('../controller/checkAttendanceCtrl')
 const getHistAbsenceCtrl = require('../controller/getHistAbsenceCtrl')
 const getHistDetailAbsenceCtrl = require('../controller/getHistDetailAbsenceCtrl')
 const getHistDetail2AbsenceCtrl = require('../controller/getHistDetail2AbsenceCtrl')
+const getMedicalInfoCtrl = require('../controller/getMedicalInfoCtrl')
+const getBPJSInfoCtrl = require('../controller/getBPJSInfoCtrl')
+const getHistLeaveCtrl = require('../controller/getHistLeaveCtrl')
+const getHistDetailLeaveCtrl = require('../controller/getHistDetailLeaveCtrl')
+const ParamVersionCtrl = require('../controller/ParamVersionCtrl')
 
 
 module.exports = function(app) {
@@ -68,4 +73,19 @@ module.exports = function(app) {
 
     app.route('/mmf/api/getHistAbsence')
         .post(getHistAbsenceCtrl.getHist_Absence);
+
+    app.route('/mmf/api/getMedicalInfo')
+        .post(getMedicalInfoCtrl.getMedical_Info);
+
+    app.route('/mmf/api/getBPJSInfo')
+        .post(getBPJSInfoCtrl.getBPJS_Info);
+
+    app.route('/mmf/api/getHistLeave')
+        .post(getHistLeaveCtrl.getHist_Leave);
+
+    app.route('/mmf/api/getHistDetailLeave')
+        .post(getHistDetailLeaveCtrl.getHist_Detail_Leave);
+              
+    app.route('/hcm/api/param-versions').get(ParamVersionCtrl.index);
+    app.route('/hcm/api/param-version').post(ParamVersionCtrl.store);
 };
