@@ -9,12 +9,22 @@ var controller = {
     const { employee_id2 } = employee_id;
     // console.log (employee_id, latitude, altitude, longitude, accuracy, location_no)
 
+
+    const nDate = new Date().toLocaleString('en-US', {
+      timeZone: 'Asia/Jakarta'
+    });
+
+    //console.log(nDate);
+
     //get image from base64
     var base64Data = request.body.photo.replace(/^data:image\/png;base64,/, "");
     let randomNumber = Math.floor(Math.random() * 90000) + 10000;
 
     var dateFormat = require('dateformat');
     var day = dateFormat(new Date(), "yyyy-mm-dd-hh-MM-ss");
+
+   
+
     // console.log(day);
 
 
@@ -38,7 +48,9 @@ var controller = {
     let url_path = serve + dir + fileName;
     // console.log(url_path);
 
-    pool.db_MMFPROD.query("insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method , golid,golversion ) values ('MMF',$1,current_timestamp, 0, null, null, null, 'Transfer to Clocking Date:'|| to_char(current_date,'DD Mon YYYY'), 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1,nextval('emp_clocking_temp_tbl_golid_seq'),1)", [employee_id, latitude, altitude, longitude, accuracy, location_no, url_path, randomNumber, employee_id2], (error, results) => {
+     
+
+    pool.db_MMFPROD.query("insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method , golid,golversion ) values ('MMF',$1, CURRENT_TIMESTAMP , 0, null, null, null, 'Transfer to Clocking Date:'|| to_char(current_date,'DD Mon YYYY'), 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1,nextval('emp_clocking_temp_tbl_golid_seq'),1)", [employee_id, latitude, altitude, longitude, accuracy, location_no, url_path, randomNumber, employee_id2], (error, results) => {
       if (error) {
         throw error
       }
@@ -47,7 +59,7 @@ var controller = {
           throw error
         }
         if (results.rows[0].count == 0) {
-          pool.db_MMFPROD.query("insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, CURRENT_TIMESTAMP, null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );", [employee_id, location_no], (error, results) => {
+          pool.db_MMFPROD.query("insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, CURRENT_TIMESTAMP , null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );", [employee_id, location_no], (error, results) => {
             if (error) {
               throw error
             }

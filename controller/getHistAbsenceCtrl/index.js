@@ -12,22 +12,23 @@ var controller = {
                 "max(case when in_out='1' then to_char(yy.clocking_date ,'hh24:mi') else ' ' end ) as absen_pulang, " +
                 "max(case when in_out='0' then  " +
                 "(case when yy.state='Transfered' then 'Tercatat' " +
-                "when yy.state = 'prepared' then 'Belum Tercatat' " +
+                "when yy.state = 'Prepared' then 'Belum Tercatat' " +
                 "else 'Error' end) else 'Belum Tercatat' end ) as status_masuk, " +
                 "max(case when in_out='0' then " +
                 "(case when yy.state='Transfered' then '1' " +
-                "when yy.state = 'prepared' then '0' " +
+                "when yy.state = 'Prepared' then '0' " +
                 "else '2' end) else '0' end ) as status_masuk_status, " +
                 "max(case when in_out='1' then  " +
                 "(case when yy.state='Transfered' then 'Tercatat' " +
-                "when yy.state = 'prepared' then 'Belum Tercatat' " +
+                "when yy.state = 'Prepared' then 'Belum Tercatat' " +
                 "else 'Error' end) else 'Belum Tercatat' end ) as status_pulang, " +
                 "max(case when in_out='1' then  " +
                 "(case when yy.state='Transfered' then '1' " +
-                "when yy.state = 'prepared' then '0' " +
+                "when yy.state = 'Prepared' then '0' " +
                 "else '2' end) else '0' end ) as status_pulang_status, " +
                 "max(case when in_out='0' then transfer_message else null end ) as transfer_message_masuk, " +
-                "max(case when in_out='1' then transfer_message else null end ) as transfer_message_pulang " +
+                "max(case when in_out='1' then transfer_message else null end ) as transfer_message_pulang, " +
+                "case when qq.employee_id is not null then '1' else '0' end as status_izin "+
                 "from  " +
                 "(select to_char(dates_this_month, 'YYYY-MM-DD')  as Tgl_absen,  " +
                 "case when trim(to_char(dates_this_month,'Day'))='Sunday' then 'Minggu' " +
@@ -56,7 +57,10 @@ var controller = {
                 ") xx " +
                 "left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1 " +
                 "left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
-                "group by zz.employee_id, xx.tgl_absen, xx.tgl_absen2 " +
+                "left join (select employee_id ,clocking_date ,to_char(work_off_from ,'HH24:MM') jam_ijin_dari, "+
+                          " to_char(work_off_to ,'HH24:MM') jam_ijin_sd "+
+                          " from employee_work_off_tbl)	qq on yy.employee_id = qq.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD')=to_char(qq.clocking_date,'YYYY-MM-DD') "+
+                "group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2 " +
                 "order by xx.tgl_absen desc"
                 , [employee_id, filter_date], (error, results) => {
                     if (error) {

@@ -29,10 +29,15 @@ var controller = {
                 "when to_char(a.clocking_date,'MM')='11' then 'Nov'" +
                 "when to_char(a.clocking_date,'MM')='11' then 'Des' end ||' '||to_char(a.clocking_date,'YYYY') as tgl_absen2," +
                 "case when in_out='0' then 'Absen Masuk' else 'Absen Pulang' end as kategori, " +
-                "to_char(a.clocking_date,'hh24:mi')  as jam, a.transfer_message ,a.state " +
-                "from emp_clocking_temp_tbl a " +
-                "where employee_id = $1 and to_char(a.clocking_date,'YYYY-MM-DD') = $2 " +
-                "order by clocking_date desc"
+                " to_char(a.clocking_date,'hh24:mi')  as jam, "+
+                " case when  a.state='Transferred' then '1' else '0' end as status, "+
+                " case when in_out='0' then '0' else '1' end as type_absen, "+
+                " case when b.clocking_date is null then '0' else '1' end as type_ijin, "+
+                " coalesce(to_char(b.work_off_from ,'HH24:MM')||' - '||to_char(b.work_off_to ,'HH24:MM'),' ') jam_ijin "+
+                " from emp_clocking_temp_tbl a "+
+                " left join employee_work_off_tbl b on a.employee_id =b.employee_id  and a.clocking_date =b.clocking_date " +
+                " where a.employee_id = $1 and to_char(a.clocking_date,'YYYY-MM-DD') = $2 " +
+                " order by a.clocking_date desc"
                 , [employee_id, clocking_date], (error, results) => {
                 if (error) {
                     throw error

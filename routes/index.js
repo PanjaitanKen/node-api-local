@@ -20,6 +20,10 @@ const getBPJSInfoCtrl = require('../controller/getBPJSInfoCtrl')
 const getHistLeaveCtrl = require('../controller/getHistLeaveCtrl')
 const getHistDetailLeaveCtrl = require('../controller/getHistDetailLeaveCtrl')
 const ParamVersionCtrl = require('../controller/ParamVersionCtrl')
+const getCurrDateCtrl = require('../controller/getCurrDateCtrl')
+const getLeaveCountCtrl = require('../controller/getLeaveCountCtrl')
+const checkTokenNotifCtrl = require('../controller/checkTokenNotifCtrl')
+const sendEmailCtrl = require('../controller/sendEmailCtrl')
 
 
 module.exports = function(app) {
@@ -85,6 +89,18 @@ module.exports = function(app) {
 
     app.route('/mmf/api/getHistDetailLeave')
         .post(getHistDetailLeaveCtrl.getHist_Detail_Leave);
+
+    app.route('/mmf/api/getCurrDate')
+        .post(getCurrDateCtrl.getCurrDate);
+
+    app.route('/mmf/api/getLeaveCount')
+        .post(getLeaveCountCtrl.getLeave_Count);
+
+    app.route('/hcm/api/checkTokenNotif')
+        .post(checkTokenNotifCtrl.checkToken_Notif);
+
+    app.route('/hcm/api/sendEmail')
+        .post(sendEmailCtrl.sendEmail);
               
     app.route('/hcm/api/param-versions').get(ParamVersionCtrl.index);
     app.route('/hcm/api/param-version').post(ParamVersionCtrl.store);
