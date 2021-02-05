@@ -21,7 +21,7 @@ var controller = {
                     response.status(200).send({
                         status: 200,
                         message: 'Load Data berhasil',
-                        data: results.rows
+                        data: results.rows[0]
                     });
                 } else {
                     response.status(200).send({

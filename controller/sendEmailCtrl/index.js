@@ -4,18 +4,24 @@ var nodemailer = require('nodemailer');
 var controller = {
   sendEmail: function (request, response) {
     let transporter = nodemailer.createTransport({
-      service: 'gmail',
+      // service: 'gmail',
+      host: 'mail.mandalafinance.com',
+      port: 587,
+      secure: false, // use SSL
       auth: {
-        user: 'develop.hcm@gmail.com',
-        pass: 'DEVHCM123'
+        user: 'mpower@mandalafinance.com',
+        pass: 'MandalaHCM123'
+      },
+      tls:{
+        rejectUnauthorized:false
       }
     });
 
     //untuk gmail, ada pengaturan tambahan, klik tautan berikut dan pilih yes : https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MN8XIpiWqNLd6TaMwwGDnf5RBzKE34gCIha2_-D_QIUFiQcdq1alBxqA9L2GgH0_vAoHZhPewuIOdovF8VKGApG1oHHw
 
     let mailOptions = {
-      from: '-',
-      to: '-',
+      from: 'mpower@mandalafinance.com',
+      to: 'kenbagas@gmail.com',
       subject: 'Sending Email using Node.js',
       text: 'Hello World'
     };
