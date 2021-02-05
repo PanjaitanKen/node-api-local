@@ -23,7 +23,6 @@ const ParamVersionCtrl = require('../controller/ParamVersionCtrl')
 const getCurrDateCtrl = require('../controller/getCurrDateCtrl')
 const getLeaveCountCtrl = require('../controller/getLeaveCountCtrl')
 const checkTokenNotifCtrl = require('../controller/checkTokenNotifCtrl')
-const sendEmailCtrl = require('../controller/sendEmailCtrl')
 
 
 module.exports = function(app) {
@@ -98,9 +97,6 @@ module.exports = function(app) {
 
     app.route('/hcm/api/checkTokenNotif')
         .post(checkTokenNotifCtrl.checkToken_Notif);
-
-    app.route('/hcm/api/sendEmail')
-        .post(sendEmailCtrl.sendEmail);
               
     app.route('/hcm/api/param-versions').get(ParamVersionCtrl.index);
     app.route('/hcm/api/param-version').post(ParamVersionCtrl.store);

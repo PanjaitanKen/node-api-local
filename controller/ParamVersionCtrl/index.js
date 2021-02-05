@@ -39,14 +39,14 @@ var controller = {
 
         if (results.rows[0].count == 0) {
           exec(
-            `exit
+            `
             echo "Pull Github" > /master/script.log
             echo "==========" >> /master/script.log
             echo "" >> /master/script.log
 
             cd /root/mandala/hcm_backend
             touch /master/script.log
-            /usr/bin/git pull --rebase origin >> /master/script.log
+            /usr/bin/git pull origin >> /master/script.log
 
             echo "---Finish Pull Github---" >> /master/script.log
             echo "" >> /master/script.log

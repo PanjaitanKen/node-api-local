@@ -8,7 +8,7 @@ var controller = {
             // console.log (request.body)
 
             pool.db_MMFPROD.query(
-                    "select c.employee_id, bpjsk_no ,bpjsk_join_date as tgl_bergabung_bpjsk,"+
+                    "select c.employee_id,  a.display_name as nama, bpjsk_no ,bpjsk_join_date as tgl_bergabung_bpjsk,"+
                     " a.faskes_code,b.faskes_name ,b.faskes_type, kelas_rawat "+
                     " from person_tbl a "+
                     " left join faskes_tbl b on a.faskes_code =b.faskes_code  "+

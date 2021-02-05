@@ -1,0 +1,11 @@
+{
+  "apps": [
+    {
+      "name": "hcm-backend",
+      "script": "./index.js",
+      "env": {
+        "PORT": 5000
+      }
+    }
+  ]
+}
