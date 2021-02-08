@@ -4,7 +4,7 @@ const pool = require('../../db')
 var controller = {
     checkTokenOrange: function (request, response) {
         try {
-            const { employee_id } = request.body
+            const { employee_id, session_id } = request.body
             // console.log (request.body)
 
             pool.db_MMFPROD.query(
@@ -15,10 +15,10 @@ var controller = {
               "else '1'  end as resp_session "+
               "from( "+
               "select * from session_tracking_tbl  "+
-              "where user_id=$1 "+
+              "where user_id=$1  and session_id =$2 "+
               "order by logon desc  "+
               "limit 1  "+
-              ") x", [employee_id], (error, results) => {
+              ") x", [employee_id, session_id], (error, results) => {
                 if (error) {
                     throw error
                 }
