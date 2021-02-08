@@ -50,49 +50,69 @@ var controller = {
                                             if (error) {
                                                 throw error
                                             }
-                                            let transporter = nodemailer.createTransport({
-                                                // service: 'gmail',
-                                                host: 'mail.mandalafinance.com',
-                                                port: 587,
-                                                secure: false, // use SSL
-                                                auth: {
-                                                    user: 'mpower@mandalafinance.com',
-                                                    pass: 'MandalaHCM123'
-                                                },
-                                                tls: {
-                                                    rejectUnauthorized: false
-                                                }
-                                            });
+                                            else {
+                                                pool.db_HCM.query(
+                                                    "select * from param_hcm ", (error, results) => {
+                                                        if (error) {
+                                                            throw error
+                                                        }
+                                                        if (results.rows != '') {
+                                                            const hostMail = results.rows[3].setting_value;
+                                                            const userMail = results.rows[4].setting_value;
+                                                            const passwordMail = results.rows[5].setting_value;
+                                                            let transporter = nodemailer.createTransport({
+                                                                // service: 'gmail',
+                                                                host: hostMail,
+                                                                port: 587,
+                                                                secure: false, // use SSL
+                                                                auth: {
+                                                                    user: userMail,
+                                                                    pass: passwordMail
+                                                                },
+                                                                tls: {
+                                                                    rejectUnauthorized: false
+                                                                }
+                                                            });
 
-                                            let mailOptions = {
-                                                from: 'mpower@mandalafinance.com',
-                                                to: email_to,
-                                                cc: cc_to,
-                                                subject: subject_email,
-                                                text: 'Hello World'
-                                            };
+                                                            let mailOptions = {
+                                                                from: userMail,
+                                                                to: 'kenbagas@gmail.com',
+                                                                cc: cc_to,
+                                                                subject: subject_email,
+                                                                text: 'Hello World'
+                                                            };
 
-                                            transporter.sendMail(mailOptions, function (error, info) {
-                                                if (error) {
-                                                    console.log(error);
-                                                } else {
-                                                    console.log('Email sent: ' + info.response);
-                                                    const resp_api_email = info.response;
-                                                    pool.db_HCM.query(
-                                                        "UPDATE trx_komplain " +
-                                                        "SET transfer_message = $1" +
-                                                        "WHERE tgl_komplain = $2", [resp_api_email, day], (error, results) => {
-                                                            if (error) {
-                                                                throw error
-                                                            }
+                                                            transporter.sendMail(mailOptions, function (error, info) {
+                                                                if (error) {
+                                                                    console.log(error);
+                                                                } else {
+                                                                    console.log('Email sent: ' + info.response);
+                                                                    const resp_api_email = info.response;
+                                                                    pool.db_HCM.query(
+                                                                        "UPDATE trx_komplain " +
+                                                                        "SET transfer_message = $1" +
+                                                                        "WHERE tgl_komplain = $2", [resp_api_email, day], (error, results) => {
+                                                                            if (error) {
+                                                                                throw error
+                                                                            }
+                                                                            response.status(200).send({
+                                                                                status: 200,
+                                                                                message: 'Berhasil mengirim email dan masuk kedalam tabel',
+                                                                                data: '',
+                                                                            });
+                                                                        })
+                                                                }
+                                                            });
+                                                        } else {
                                                             response.status(200).send({
                                                                 status: 200,
-                                                                message: 'Berhasil mengirim email dan masuk kedalam tabel',
-                                                                data: '',
+                                                                message: 'Data Tidak Ditemukan',
+                                                                data: results.rows
                                                             });
-                                                        })
-                                                }
-                                            });
+                                                        }
+                                                    }
+                                                )
+                                            }
                                         })
                                 } else {
                                     response.status(200).send({
