@@ -1,11 +1,11 @@
 const pool = require('../../db')
-const serve = process.env.URL ;
+const serve = process.env.URL;
 var fs = require('fs');
 
 //Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
 var controller = {
   AddClock_In: function (request, response) {
-    const { employee_id, latitude, altitude, longitude, accuracy, location_no } = request.body
+    const { employee_id, latitude, altitude, longitude, accuracy, location_no, timeZoneAsia } = request.body
     const { employee_id2 } = employee_id;
     // console.log (employee_id, latitude, altitude, longitude, accuracy, location_no)
 
@@ -21,10 +21,7 @@ var controller = {
     let randomNumber = Math.floor(Math.random() * 90000) + 10000;
 
     var dateFormat = require('dateformat');
-    var day = dateFormat(new Date(), "yyyy-mm-dd-hh-MM-ss");
-
-   
-
+    const day = dateFormat(new Date(), "yyyy-mm-dd-hh-MM-ss");
     // console.log(day);
 
 
@@ -48,9 +45,14 @@ var controller = {
     let url_path = serve + dir + fileName;
     // console.log(url_path);
 
-     
+    var time_stamp_convert = 'Asia/jakarta'
+    if (timeZoneAsia == "WITA") {
+      time_stamp_convert = 'Asia/Makassar'
+    } else if (timeZoneAsia == "WIT") {
+      time_stamp_convert = 'Asia/Jayapura'
+    }
 
-    pool.db_MMFPROD.query("insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method , golid,golversion ) values ('MMF',$1, CURRENT_TIMESTAMP , 0, null, null, null, 'Transfer to Clocking Date:'|| to_char(current_date,'DD Mon YYYY'), 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1,nextval('emp_clocking_temp_tbl_golid_seq'),1)", [employee_id, latitude, altitude, longitude, accuracy, location_no, url_path, randomNumber, employee_id2], (error, results) => {
+    pool.db_MMFPROD.query("insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method , golid,golversion ) values ('MMF',$1, (CURRENT_TIMESTAMP AT TIME ZONE $11) , 0, null, null, null, 'Transfer to Clocking Date: '|| to_char(current_date,'DD Mon YYYY') ||' - '||to_char((CURRENT_TIMESTAMP AT TIME ZONE $11),'HH24:mm:ss')||' '||$10, 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1,nextval('emp_clocking_temp_tbl_golid_seq'),1)", [employee_id, latitude, altitude, longitude, accuracy, location_no, url_path, randomNumber, employee_id2, timeZoneAsia, time_stamp_convert], (error, results) => {
       if (error) {
         throw error
       }
@@ -59,7 +61,7 @@ var controller = {
           throw error
         }
         if (results.rows[0].count == 0) {
-          pool.db_MMFPROD.query("insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, CURRENT_TIMESTAMP , null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );", [employee_id, location_no], (error, results) => {
+          pool.db_MMFPROD.query("insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, (CURRENT_TIMESTAMP AT TIME ZONE $3) , null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );", [employee_id, location_no, time_stamp_convert], (error, results) => {
             if (error) {
               throw error
             }

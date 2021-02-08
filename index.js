@@ -6,6 +6,7 @@ const img = require('./Components/images_api')
 const fileUpload = require('express-fileupload');
 const path = require('path');
 //start app 
+require("dotenv").config()
 const port = process.env.PORT || 3000;
 const morgan = require('morgan');
 const _ = require('lodash');
