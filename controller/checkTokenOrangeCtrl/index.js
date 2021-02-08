@@ -9,14 +9,16 @@ var controller = {
 
             pool.db_MMFPROD.query(
                 "select case when count(*) = 0 "+
-                "then 'Session anda telah berakhir, harap login ulang' "+
-                "else 'session masih aktif'   end as status_session "+
-                "from( "+
-                "select * from session_tracking_tbl "+
-                "where user_id=$1 "+
-                "order by logon desc  "+
-                "limit 1 "+
-                ") x ", [employee_id], (error, results) => {
+                "then 'Session token anda telah berakhir, harap login ulang' "+
+              "else 'session token masih aktif'   end as status_session,  "+
+              "case when count(*) = 0  then '0' "+
+              "else '1'  end as resp_session "+
+              "from( "+
+              "select * from session_tracking_tbl  "+
+              "where user_id=$1 "+
+              "order by logon desc  "+
+              "limit 1  "+
+              ") x", [employee_id], (error, results) => {
                 if (error) {
                     throw error
                 }
