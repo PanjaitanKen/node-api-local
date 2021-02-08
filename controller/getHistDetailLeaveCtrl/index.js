@@ -4,11 +4,11 @@ const pool = require('../../db')
 var controller = {
     getHist_Detail_Leave: function (request, response) {
         try {
-            const { employee_id, golid } = request.body;
+            const { employee_id , golid } = request.body;
 
             pool.db_MMFPROD.query(
-                "select employee_id ,leave_name, "+
-                "to_char(a.leave_date_from,'DD')||' '|| "+
+                " select employee_id ,leave_name, "+
+                " to_char(a.leave_date_from,'DD')||' '|| "+
                 " case when to_char(a.leave_date_from ,'MM')='01' then 'Jan' "+
                 " when to_char(a.leave_date_from,'MM')='02' then 'Feb' "+
                 " when to_char(a.leave_date_from,'MM')='03' then 'Mar' "+
