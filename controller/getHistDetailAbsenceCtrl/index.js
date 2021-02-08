@@ -30,7 +30,7 @@ var controller = {
                 "when to_char(a.clocking_date,'MM')='11' then 'Des' end ||' '||to_char(a.clocking_date,'YYYY') as tgl_absen2," +
                 "case when in_out='0' then 'Absen Masuk' else 'Absen Pulang' end as kategori, " +
                 " to_char(a.clocking_date,'hh24:mi')  as jam, "+
-                " case when  a.state='Transferred' then '1' else '0' end as status, "+
+                " case when  a.state='Transfered' then '1' else '0' end as status, "+
                 " case when in_out='0' then '0' else '1' end as type_absen, "+
                 " case when b.clocking_date is null then '0' else '1' end as type_ijin, "+
                 " coalesce(to_char(b.work_off_from ,'HH24:MM')||' - '||to_char(b.work_off_to ,'HH24:MM'),' ') jam_ijin "+

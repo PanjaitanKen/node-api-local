@@ -1,5 +1,6 @@
 const pool = require('../../db')
 var nodemailer = require('nodemailer');
+var os = require('os');
 
 
 
@@ -42,76 +43,98 @@ var controller = {
                                     const email_to = results.rows[0].email_to;
                                     const cc_to = results.rows[0].cc_to;
                                     const subject_email = results.rows[0].subject_email;
-                                    const dateFormat = require('dateformat');
-                                    const day = dateFormat(new Date(), "yyyy-mm-dd hh:MM:ss");
-                                    pool.db_HCM.query(
-                                        "insert into trx_komplain (cabang,employee_id ,no_hp , email ,id_kategori_komplain ,keterangan, tgl_komplain , id_session ,transfer_message ) " +
-                                        "values ($1, $2 , $3,$4,$5,$6,$7, $8,$9)", [emp_cabang, employee_id, number_phone, emp_email, id_kategori_komplain, information_data, day, id_session, '0'], (error, results) => {
+                                    pool.db_MMFPROD.query(
+                                        "select a.position_id , b.internal_title "+
+                                        "from employee_position_tbl a "+
+                                        "left join position_tbl b on a.position_id = b.position_id "+
+                                        "where employee_id =$1", [employee_id], (error, results) => {
                                             if (error) {
                                                 throw error
                                             }
-                                            else {
+                                            if (results.rows != '') {
+                                                const positionId = results.rows[0].position_id;
+                                                const internalTitle = results.rows[0].internal_title;
+                                                const dateFormat = require('dateformat');
+                                                const day = dateFormat(new Date(), "yyyy-mm-dd hh:MM:ss");
                                                 pool.db_HCM.query(
-                                                    "select * from param_hcm ", (error, results) => {
+                                                    "insert into trx_komplain (cabang,employee_id ,no_hp , email ,id_kategori_komplain ,keterangan, tgl_komplain , id_session ,transfer_message,position_id, internal_title ) " +
+                                                    "values ($1, $2 , $3, $4, $5, $6, $7, $8, $9, $10, $11)", [emp_cabang, employee_id, number_phone, emp_email, id_kategori_komplain, information_data, day, id_session, '0', positionId, internalTitle], (error, results) => {
                                                         if (error) {
                                                             throw error
                                                         }
-                                                        if (results.rows != '') {
-                                                            const hostMail = results.rows[3].setting_value;
-                                                            const userMail = results.rows[4].setting_value;
-                                                            const passwordMail = results.rows[5].setting_value;
-                                                            let transporter = nodemailer.createTransport({
-                                                                // service: 'gmail',
-                                                                host: hostMail,
-                                                                port: 587,
-                                                                secure: false, // use SSL
-                                                                auth: {
-                                                                    user: userMail,
-                                                                    pass: passwordMail
-                                                                },
-                                                                tls: {
-                                                                    rejectUnauthorized: false
-                                                                }
-                                                            });
-
-                                                            let mailOptions = {
-                                                                from: userMail,
-                                                                to: 'kenbagas@gmail.com',
-                                                                cc: cc_to,
-                                                                subject: subject_email,
-                                                                text: 'Hello World'
-                                                            };
-
-                                                            transporter.sendMail(mailOptions, function (error, info) {
-                                                                if (error) {
-                                                                    console.log(error);
-                                                                } else {
-                                                                    console.log('Email sent: ' + info.response);
-                                                                    const resp_api_email = info.response;
-                                                                    pool.db_HCM.query(
-                                                                        "UPDATE trx_komplain " +
-                                                                        "SET transfer_message = $1" +
-                                                                        "WHERE tgl_komplain = $2", [resp_api_email, day], (error, results) => {
-                                                                            if (error) {
-                                                                                throw error
+                                                        else {
+                                                            pool.db_HCM.query(
+                                                                "select * from param_hcm ", (error, results) => {
+                                                                    if (error) {
+                                                                        throw error
+                                                                    }
+                                                                    if (results.rows != '') {
+                                                                        const hostMail = results.rows[3].setting_value;
+                                                                        const userMail = results.rows[4].setting_value;
+                                                                        const passwordMail = results.rows[5].setting_value;
+                                                                        let transporter = nodemailer.createTransport({
+                                                                            // service: 'gmail',
+                                                                            host: hostMail,
+                                                                            port: 587,
+                                                                            secure: false, // use SSL
+                                                                            auth: {
+                                                                                user: userMail,
+                                                                                pass: passwordMail
+                                                                            },
+                                                                            tls: {
+                                                                                rejectUnauthorized: false
                                                                             }
-                                                                            response.status(200).send({
-                                                                                status: 200,
-                                                                                message: 'Berhasil mengirim email dan masuk kedalam tabel',
-                                                                                data: '',
-                                                                            });
-                                                                        })
-                                                                }
-                                                            });
-                                                        } else {
-                                                            response.status(200).send({
-                                                                status: 200,
-                                                                message: 'Data Tidak Ditemukan',
-                                                                data: results.rows
-                                                            });
+                                                                        });
+
+                                                                        let mailOptions = {
+                                                                            from: userMail,
+                                                                            to: email_to,
+                                                                            cc: cc_to,
+                                                                            subject: subject_email,
+                                                                            text:   'Cabang: ' + emp_cabang + '\n' +
+                                                                                    'Employee Id: ' + employee_id + '\n' +
+                                                                                    'Jabatan: ' + positionId + '-' + internalTitle + '\n' +
+                                                                                    'Tanggal: ' + day + '\n' +
+                                                                                    'Feedback: ' + information_data + '\n' 
+                                                                        };
+
+                                                                        transporter.sendMail(mailOptions, function (error, info) {
+                                                                            if (error) {
+                                                                                console.log(error);
+                                                                            } else {
+                                                                                console.log('Email sent: ' + info.response);
+                                                                                const resp_api_email = info.response;
+                                                                                pool.db_HCM.query(
+                                                                                    "UPDATE trx_komplain " +
+                                                                                    "SET transfer_message = $1" +
+                                                                                    "WHERE tgl_komplain = $2", [resp_api_email, day], (error, results) => {
+                                                                                        if (error) {
+                                                                                            throw error
+                                                                                        }
+                                                                                        response.status(200).send({
+                                                                                            status: 200,
+                                                                                            message: 'Berhasil mengirim email dan masuk kedalam tabel',
+                                                                                            data: '',
+                                                                                        });
+                                                                                    })
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        response.status(200).send({
+                                                                            status: 200,
+                                                                            message: 'Data Tidak Ditemukan',
+                                                                            data: results.rows
+                                                                        });
+                                                                    }
+                                                                })
                                                         }
-                                                    }
-                                                )
+                                                    })
+                                            } else {
+                                                response.status(200).send({
+                                                    status: 200,
+                                                    message: 'Data Tidak Ditemukan',
+                                                    data: results.rows
+                                                });
                                             }
                                         })
                                 } else {
