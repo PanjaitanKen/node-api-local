@@ -11,7 +11,7 @@ var controller = {
                         ("select b.wage_name as jenis_ijin, "+
                          " a.employee_id as Nokar, to_char(work_off_from,'DD Mon YYYY') ||' - '|| to_char(work_off_to,'DD Mon YYYY') tglIjin, "+
                          " work_off_from::timestamp::time ||' - '||work_off_to::timestamp::time Waktu, reason alasan, "+
-                         " to_char(clocking_date,'DD-MM-YYYY') as tglpengajuan, "+
+                         " to_char(clocking_date,'DD Mon YYYY') as tglpengajuan, "+
                          " case when state='Approved' then 'Disetujui' "+
                          " when state='Rejected' then 'Ditolak' "+
                          " when state='Submitted' then 'Menunggu Persetujuan' "+

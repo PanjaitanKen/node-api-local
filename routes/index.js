@@ -25,6 +25,7 @@ const getLeaveCountCtrl = require('../controller/getLeaveCountCtrl')
 const checkTokenNotifCtrl = require('../controller/checkTokenNotifCtrl')
 const sendEmailCtrl = require('../controller/sendEmailCtrl')
 const addFeedbackCtrl = require('../controller/addFeedbackCtrl')
+const checkTokenOrangeCtrl = require('../controller/checkTokenOrangeCtrl')
 
 
 module.exports = function(app) {
@@ -105,6 +106,9 @@ module.exports = function(app) {
 
     app.route('/hcm/api/addFeedback')
         .post(addFeedbackCtrl.addFeedback);
+
+    app.route('/mmf/api/checkTokenOrange')
+        .post(checkTokenOrangeCtrl.checkTokenOrange);
               
     app.route('/hcm/api/param-versions').get(ParamVersionCtrl.index);
     app.route('/hcm/api/param-version').post(ParamVersionCtrl.store);

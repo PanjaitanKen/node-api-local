@@ -1,29 +1,17 @@
 var nodemailer = require('nodemailer');
 
-
 var controller = {
   sendEmail: function (request, response) {
-    let transporter = nodemailer.createTransport({
-      // service: 'gmail',
-      host: 'mail.mandalafinance.com',
-      port: 587,
-      secure: false, // use SSL
-      auth: {
-        user: 'mpower@mandalafinance.com',
-        pass: 'MandalaHCM123'
-      },
-      tls:{
-        rejectUnauthorized:false
-      }
-    });
-
-    //untuk gmail, ada pengaturan tambahan, klik tautan berikut dan pilih yes : https://myaccount.google.com/lesssecureapps?pli=1&rapt=AEjHL4MN8XIpiWqNLd6TaMwwGDnf5RBzKE34gCIha2_-D_QIUFiQcdq1alBxqA9L2GgH0_vAoHZhPewuIOdovF8VKGApG1oHHw
-
     let mailOptions = {
-      from: 'mpower@mandalafinance.com',
-      to: 'kenbagas@gmail.com',
-      subject: 'Sending Email using Node.js',
-      text: 'Hello World'
+      from: userMail,
+      to: email_to,
+      cc: cc_to,
+      subject: subject_email,
+      text: 'Cabang: ' + emp_cabang + '\n' +
+        'Employee Id: ' + employee_id + '\n' +
+        'Jabatan: ' + positionId + '-' + internalTitle + '\n' +
+        'Tanggal: ' + day + '\n' +
+        'Feedback: ' + information_data + '\n'
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -31,11 +19,20 @@ var controller = {
         console.log(error);
       } else {
         console.log('Email sent: ' + info.response);
-        response.status(200).send({
-          status: 200,
-          message: 'Load Data berhasil',
-          data: info.response
-        });
+        const resp_api_email = info.response;
+        pool.db_HCM.query(
+          "UPDATE trx_komplain " +
+          "SET transfer_message = $1" +
+          "WHERE tgl_komplain = $2", [resp_api_email, day], (error, results) => {
+            if (error) {
+              throw error
+            }
+            response.status(200).send({
+              status: 200,
+              message: 'Berhasil mengirim email dan masuk kedalam tabel',
+              data: '',
+            });
+          })
       }
     });
   }
