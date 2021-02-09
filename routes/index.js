@@ -26,6 +26,7 @@ const checkTokenNotifCtrl = require('../controller/checkTokenNotifCtrl')
 const sendEmailCtrl = require('../controller/sendEmailCtrl')
 const addFeedbackCtrl = require('../controller/addFeedbackCtrl')
 const checkTokenOrangeCtrl = require('../controller/checkTokenOrangeCtrl')
+const getComplaintCategoryCtrl = require('../controller/getComplaintCategoryCtrl')
 
 
 module.exports = function(app) {
@@ -109,6 +110,9 @@ module.exports = function(app) {
 
     app.route('/mmf/api/checkTokenOrange')
         .post(checkTokenOrangeCtrl.checkTokenOrange);
+        
+    app.route('/hcm/api/getComplaintCategory')
+        .post(getComplaintCategoryCtrl.getKategori_Komplain);
               
     app.route('/hcm/api/param-versions').get(ParamVersionCtrl.index);
     app.route('/hcm/api/param-version').post(ParamVersionCtrl.store);
