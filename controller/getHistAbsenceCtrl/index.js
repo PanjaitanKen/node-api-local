@@ -57,9 +57,12 @@ var controller = {
                 ") xx " +
                 "left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1 " +
                 "left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
-                "left join (select employee_id ,clocking_date ,to_char(work_off_from ,'HH24:MM') jam_ijin_dari, "+
-                          " to_char(work_off_to ,'HH24:MM') jam_ijin_sd "+
-                          " from employee_work_off_tbl)	qq on yy.employee_id = qq.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD')=to_char(qq.clocking_date,'YYYY-MM-DD') "+
+                "left join  "+
+                 " (select employee_id ,sequence_no ,status_date  as clocking_date "+
+                    "  from work_off_status_tbl  "+
+                    "  where employee_id = $1 "+
+                    "  group by employee_id ,sequence_no ,status_date   "+
+                    "  order by status_date desc ) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1 "+
                 "group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2 " +
                 "order by xx.tgl_absen desc"
                 , [employee_id, filter_date], (error, results) => {

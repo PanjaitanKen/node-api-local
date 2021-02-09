@@ -7,7 +7,8 @@ var controller = {
             const { employee_id , clocking_date } = request.body
             // console.log (request.body)
 
-            pool.db_MMFPROD.query("select employee_id ,clocking_date ,to_char(work_off_from ,'HH24:MM') jam_ijin_dari, to_char(work_off_to ,'HH24:MM') jam_ijin_sd from employee_work_off_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD')=$2 ", [employee_id, clocking_date], (error, results) => {
+            pool.db_MMFPROD.query(
+                "select employee_id ,clocking_date ,to_char(work_off_from ,'HH24:MM') jam_ijin_dari, to_char(work_off_to ,'HH24:MM') jam_ijin_sd from employee_work_off_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD')=$2 ", [employee_id, clocking_date], (error, results) => {
                 if (error) {
                     throw error
                 }
