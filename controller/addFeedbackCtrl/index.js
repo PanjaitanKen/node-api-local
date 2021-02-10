@@ -99,7 +99,7 @@ var controller = {
                                                                                     subject: subject_email,
                                                                                     text:   'No Feedback: ' + id_komplain + '\n' +
                                                                                             'Cabang: ' + emp_cabang + '\n' +
-                                                                                            'Employee Id: ' + employee_id + '\n' +
+                                                                                            'Employee Id: ' + employee_id + ' '+ '-' + ' ' + emp_displayName +'\n' +
                                                                                             'Jabatan: ' + positionId + '-' + internalTitle + '\n' +
                                                                                             'Tanggal: ' + day + '\n' + '\n' +
                                                                                             'Feedback: ' + information_data + '\n' 
