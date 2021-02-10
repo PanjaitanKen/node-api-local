@@ -94,7 +94,7 @@ var controller = {
                                                                     
                                                                                 let mailOptions = {
                                                                                     from: userMail,
-                                                                                    to: 'kenbagas@gmail.com',
+                                                                                    to: email_to,
                                                                                     cc: cc_to,
                                                                                     subject: subject_email,
                                                                                     text:   'No Feedback: ' + id_komplain + '\n' +
