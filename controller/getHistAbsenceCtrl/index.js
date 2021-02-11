@@ -51,7 +51,7 @@ var controller = {
                 "when to_char(dates_this_month,'MM')='11' then 'Nov' " +
                 "when to_char(dates_this_month,'MM')='12' then 'Des' end ||' '||to_char(dates_this_month,'YYYY') as tgl_absen2 " +
                 "from ( " +
-                "select * from generate_series(date_trunc('month',now()), " +
+                "select * from generate_series(date_trunc('month',CURRENT_DATE - interval '1 months'), " +
                 "date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month " +
                 ") a 	where dates_this_month between (current_date -interval '1 days' * $2) and now() " +
                 ") xx " +
