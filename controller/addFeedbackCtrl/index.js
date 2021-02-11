@@ -100,6 +100,8 @@ var controller = {
                                                                                     text:   'No Feedback: ' + id_komplain + '\n' +
                                                                                             'Cabang: ' + emp_cabang + '\n' +
                                                                                             'Employee Id: ' + employee_id + ' '+ '-' + ' ' + emp_displayName +'\n' +
+                                                                                            'Email: ' + emp_email +'\n' +
+                                                                                            'No HP: ' + number_phone +'\n' +
                                                                                             'Jabatan: ' + positionId + '-' + internalTitle + '\n' +
                                                                                             'Tanggal: ' + day + '\n' + '\n' +
                                                                                             'Feedback: ' + information_data + '\n' 
