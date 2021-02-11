@@ -27,6 +27,7 @@ const sendEmailCtrl = require('../controller/sendEmailCtrl')
 const addFeedbackCtrl = require('../controller/addFeedbackCtrl')
 const checkTokenOrangeCtrl = require('../controller/checkTokenOrangeCtrl')
 const getComplaintCategoryCtrl = require('../controller/getComplaintCategoryCtrl')
+const pushNotificationCtrl = require('../controller/pushNotificationCtrl')
 
 const authenticateApiKey = (req, res, next) => {
     const authHeader = req.headers.api_key;
@@ -151,6 +152,11 @@ module.exports = function(app) {
     app.route('/hcm/api/getComplaintCategory')
         .all(authenticateApiKey)
         .post(getComplaintCategoryCtrl.getKategori_Komplain);
+
+    
+    app.route('/hcm/api/pushNotification')
+        .all(authenticateApiKey)
+        .post(pushNotificationCtrl.pushNotification);
               
     app.route('/hcm/api/param-versions').all(authenticateApiKey).get(ParamVersionCtrl.index);
     app.route('/hcm/api/param-version').all(authenticateApiKey).post(ParamVersionCtrl.store);
