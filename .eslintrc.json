@@ -14,6 +14,14 @@
     "ecmaVersion": 2018
   },
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "no-console": "warn",
+    "func-names": "warn",
+    "no-unused-vars": "warn",
+    "comma-dangle": "off",
+    "consistent-return": "off",
+    "prefer-arrow-callback": "off",
+    "camelcase": "off",
+    "no-shadow": "off"
   }
 }
