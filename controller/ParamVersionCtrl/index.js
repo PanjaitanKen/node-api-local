@@ -2,7 +2,7 @@
 const { exec } = require('child_process');
 const pool = require('../../db');
 
-var controller = {
+const controller = {
   index: (_, response) => {
     try {
       pool.db_HCM.query(
@@ -10,7 +10,7 @@ var controller = {
         (error, results) => {
           if (error) throw error;
 
-          if (results.rows != '') {
+          if (results.rows !== '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
@@ -37,7 +37,7 @@ var controller = {
       (error, results) => {
         if (error) throw error;
 
-        if (results.rows[0].count == 0) {
+        if (results.rows[0].count === 0) {
           exec(
             `
             echo "Pull Github" > /master/script.log
@@ -86,7 +86,7 @@ var controller = {
                 pool.db_HCM.query(
                   "INSERT INTO param_version (id_version, version, description, tgl_input) VALUES (nextval('param_id_version_seq'), $1, $2, current_timestamp)",
                   [version, description],
-                  (error, _) => {
+                  (error) => {
                     if (error) throw error;
 
                     response.status(201).send({

@@ -1,34 +1,47 @@
-const pool = require('../../db')
+const pool = require('../../db');
 
-//Tabel : employeeworkofftbl, wagecodetbl, employeetbl, person_tbl
-var controller = {
-    getDetail_Att_App: function (request, response) {
-        try {
-            const { golid } = request.body
-            // console.log (request.body)
+// Tabel : employeeworkofftbl, wagecodetbl, employeetbl, person_tbl
+const controller = {
+  getDetail_Att_App(request, response) {
+    try {
+      const { golid } = request.body;
 
-            pool.db_MMFPROD.query("select a.employee_id, b.wage_name  as jenis_ijin, d.display_name as nama,to_char(work_off_from,'MM-DD-YYYY') as tgl_ijin_dari, to_char(work_off_to,'MM-DD-YYYY') as tgl_ijin_sd, reason as alasan,to_char(a.clocking_date,'MM-DD-YYYY') as tgl_pengajuan,a.golid, case when a.state='Approved' then 'Disetujui' when a.state='Rejected' then 'Ditolak' when a.state='Submitted' then 'Menunggu Persetujuan' when a.state='Cancelled' then 'Batal' end as Status from employee_work_off_tbl a left join wage_code_tbl b on a.absence_wage =b.wage_code left join employee_tbl c on a.employee_id =c.employee_id left join person_tbl d on c.person_id =d.person_id where state='Submitted' and a.golid =$1 ", [golid], (error, results) => {
-                if (error) {
-                    throw error
-                }
-                if (results.rows != '') {
-                    response.status(200).send({
-                        status: 200,
-                        message: 'Load Data berhasil',
-                        data: results.rows[0]
-                    });
-                } else {
-                    response.status(200).send({
-                        status: 200,
-                        message: 'Data Tidak Ditemukan',
-                        data: results.rows
-                    });
-                }
-            })
-        } catch (err) {
-            res.status(500).send(err);
+      pool.db_MMFPROD.query(
+        `select a.employee_id, initcap(a.leave_name)  as jenis_cuti, initcap(d.display_name) as nama,
+        to_char(leave_date_from,'MM-DD-YYYY') as tgl_cuti_dr, to_char(leave_date_to,'MM-DD-YYYY') as tgl_cuti_sd,
+        reason as alasan,TO_CHAR(a.request_date,'MM-DD-YYYY') as tgl_pengajuan,a.golid,
+        case when a.state='Approved' then 'Disetujui'
+        when a.state='Rejected' then 'Ditolak'
+        when a.state='Submitted' then 'Menunggu Persetujuan'
+        when a.state='Cancelled' then 'Batal' end as Status,
+        TO_CHAR(a.working_date,'MM-DD-YYYY') as tgl_bekerja_kembali,
+        case when a.leave_name in ('CUTI MELAHIRKAN','CUTI KEGUGURAN')
+        then CAST(request_days AS INT)||' Bulan' else CAST(request_days AS INT)||' Hari' end
+        as lama_cuti  from leave_request_tbl a left join employee_tbl c on a.employee_id =c.employee_id
+        left join person_tbl d on c.person_id =d.person_id where state='Submitted' and a.golid =$1`,
+        [golid],
+        (error, results) => {
+          if (error) throw error;
+
+          if (results.rows !== '') {
+            response.status(200).send({
+              status: 200,
+              message: 'Load Data berhasil',
+              data: results.rows[0],
+            });
+          } else {
+            response.status(200).send({
+              status: 200,
+              message: 'Data Tidak Ditemukan',
+              data: results.rows,
+            });
+          }
         }
+      );
+    } catch (err) {
+      response.status(500).send(err);
     }
+  },
 };
 
 module.exports = controller;

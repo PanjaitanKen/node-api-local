@@ -1,4 +1,5 @@
 const fs = require('fs');
+const dateFormat = require('dateformat');
 const pool = require('../../db');
 
 const serve = process.env.URL;
@@ -16,32 +17,19 @@ const controller = {
       timeZoneAsia,
     } = request.body;
     const { employee_id2 } = employee_id;
-    // console.log (employee_id, latitude, altitude, longitude, accuracy, location_no)
 
     // get image from base64
     const base64Data = request.body.photo.replace(
       /^data:image\/png;base64,/,
       ''
     );
+
     const randomNumber = Math.floor(Math.random() * 90000) + 10000;
-
-    // eslint-disable-next-line global-require
-    const dateFormat = require('dateformat');
     const day = dateFormat(new Date(), 'yyyy-mm-dd-hh-MM-ss');
-    // console.log(day);
-
-    // local
-    // var dir = './uploads/'+ employee_id +'/';
-    // server
     const dir = `./uploads/${employee_id}/`;
-
-    // console.log (dir)
-
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
     const fileName = `mfinhr19-${day}-mandala-${randomNumber}-Out.jpg`;
+
     // eslint-disable-next-line global-require
     require('fs').writeFile(
       dir + fileName,
@@ -51,12 +39,9 @@ const controller = {
         // console.log(err);
       }
     );
-
-    // server development
     const url_path = serve + dir + fileName;
-    // console.log(url_path);
-
     let time_stamp_convert = 'Asia/jakarta';
+
     if (timeZoneAsia === 'WITA') {
       time_stamp_convert = 'Asia/Makassar';
     } else if (timeZoneAsia === 'WIT') {
@@ -78,7 +63,7 @@ const controller = {
         timeZoneAsia,
         time_stamp_convert,
       ],
-      (error, results) => {
+      (error) => {
         if (error) {
           throw error;
         }
@@ -86,24 +71,21 @@ const controller = {
           'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
           [employee_id],
           (error, results) => {
-            if (error) {
-              throw error;
-            }
+            if (error) throw error;
+
             if (results.rows[0].count === 0) {
               pool.db_MMFPROD.query(
                 "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
                 [employee_id, location_no, time_stamp_convert],
-                (error, results) => {
-                  if (error) {
-                    throw error;
-                  }
+                (error) => {
+                  if (error) throw error;
+
                   pool.db_MMFPROD.query(
                     "insert into emp_clocking_tbl (company_id ,employee_id ,clocking_date ,result_revised ,presence ,normal_hour ,overtime_hour , absence_hour ,late_hour ,early_hour ,overtime_paid ,temp_day_type ,revised_company ,revised_by ,calc_day_type ,normal_hour_off , late_in_wage ,early_out_wage ,early_break_hour ,late_break_hour ,state ,golid ,golversion ) values ('MMF',$1,current_date,null,0,0,0,0,0,0,0,null,null,null,null,0,null,null,0,0, 'Prepared',nextval('emp_clocking_tbl_golid_seq'),1);",
                     [employee_id],
-                    (error, results) => {
-                      if (error) {
-                        throw error;
-                      }
+                    (error) => {
+                      if (error) throw error;
+
                       response.status(201).send({
                         status: 201,
                         message: 'Absen Pulang Berhasil',
@@ -118,24 +100,18 @@ const controller = {
                 'SELECT time_out FROM emp_clocking_detail_tbl where clocking_date =current_date and employee_id = $1',
                 [employee_id],
                 (error, results) => {
-                  if (error) {
-                    throw error;
-                  }
-                  // console.log(results.rows[0].time_out)
+                  if (error) throw error;
                   if (
-                    // eslint-disable-next-line prettier/prettier
                     // eslint-disable-next-line operator-linebreak
-                    results.rows[0].time_out === '' ||
-                    results.rows[0].time_out === null
+                    results.rows[0].time_out == '' ||
+                    results.rows[0].time_out == null
                   ) {
-                    // console.log(results.rows[0].time_out)
                     pool.db_MMFPROD.query(
                       "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
                       [employee_id, location_no, time_stamp_convert],
-                      (error, results) => {
-                        if (error) {
-                          throw error;
-                        }
+                      (error) => {
+                        if (error) throw error;
+
                         response.status(201).send({
                           status: 201,
                           message: 'Absen Pulang Berhasil',
