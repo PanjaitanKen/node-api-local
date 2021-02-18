@@ -21,7 +21,10 @@ const controller = {
     const { employee_id2 } = employee_id;
 
     // get image from base64
-    var base64Data = request.body.photo.replace(/^data:image\/png;base64,/, '');
+    const base64Data = request.body.photo.replace(
+      /^data:image\/png;base64,/,
+      ''
+    );
 
     const randomNumber = Math.floor(Math.random() * 90000) + 10000;
     const day = dateFormat(new Date(), 'yyyy-mm-dd-hh-MM-ss');

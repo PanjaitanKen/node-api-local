@@ -18,7 +18,7 @@ const controller = {
               (error, results) => {
                 if (error) throw error;
 
-                if (results.rows !== '') {
+                if (results.rows != '') {
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
@@ -40,7 +40,7 @@ const controller = {
               (error, results) => {
                 if (error) throw error;
 
-                if (results.rows !== '') {
+                if (results.rows != '') {
                   const location_name = results.rows[0].work_location;
                   pool.db_MMFPROD.query(
                     'select location_name,location_no, latitude,altitude, longitude, accuracy, radius_tolerance from mark_location_tbl where location_name=$1 order by location_no asc',

@@ -15,8 +15,8 @@ const controller = {
           if (results.rows != '' && results.rows != undefined) {
             if (
               // eslint-disable-next-line operator-linebreak
-              results.rows[0].time_in !== '' &&
-              results.rows[0].time_in !== null
+              results.rows[0].time_in != '' &&
+              results.rows[0].time_in != null
             ) {
               pool.db_MMFPROD.query(
                 'SELECT time_out FROM emp_clocking_detail_tbl where clocking_date =current_date and employee_id = $1',
@@ -26,8 +26,8 @@ const controller = {
 
                   if (
                     // eslint-disable-next-line operator-linebreak
-                    results.rows[0].time_out !== '' &&
-                    results.rows[0].time_out !== null
+                    results.rows[0].time_out != '' &&
+                    results.rows[0].time_out != null
                   ) {
                     response.status(200).send({
                       status: 200,

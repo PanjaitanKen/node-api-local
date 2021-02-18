@@ -20,7 +20,7 @@ const controller = {
           if (error) {
             throw error;
           }
-          if (results.rows !== '') {
+          if (results.rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',

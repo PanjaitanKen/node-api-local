@@ -11,7 +11,7 @@ const controller = {
         (error, results) => {
           if (error) throw error;
 
-          if (results.rows !== '') {
+          if (results.rows != '') {
             response.status(200).send({
               status: true,
               message: 'GET ALL CATEGORY COMPLAINT',

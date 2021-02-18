@@ -15,11 +15,11 @@ const controller = {
       } = request.body;
 
       if (
-        id_kategori_komplain !== '' &&
-        id_kategori_komplain !== ' ' &&
+        id_kategori_komplain != '' &&
+        id_kategori_komplain != ' ' &&
         // eslint-disable-next-line no-restricted-globals
         !isNaN(id_kategori_komplain) &&
-        id_kategori_komplain !== null
+        id_kategori_komplain != null
       ) {
         pool.db_MMFPROD.query(
           'select b.employee_id ,e.display_name,d.company_office cabang, ' +
@@ -38,7 +38,7 @@ const controller = {
             if (error) {
               throw error;
             }
-            if (results.rows !== '') {
+            if (results.rows != '') {
               const emp_cabang = results.rows[0].cabang;
               const emp_displayName = results.rows[0].display_name;
               const emp_email = results.rows[0].email;
@@ -50,8 +50,7 @@ const controller = {
                   if (error) {
                     throw error;
                   }
-                  console.log(results.rows);
-                  if (results.rows !== '') {
+                  if (results.rows != '') {
                     const { email_to, cc_to, subject_email } = results.rows[0];
 
                     pool.db_MMFPROD.query(
@@ -64,7 +63,7 @@ const controller = {
                         if (error) {
                           throw error;
                         }
-                        if (results.rows !== '') {
+                        if (results.rows != '') {
                           const positionId = results.rows[0].position_id;
                           const internalTitle = results.rows[0].internal_title;
                           const day = dateFormat(
@@ -99,7 +98,7 @@ const controller = {
                                     if (error) {
                                       throw error;
                                     }
-                                    if (results.rows !== '') {
+                                    if (results.rows != '') {
                                       const { id_komplain } = results.rows[0];
 
                                       pool.db_HCM.query(
@@ -108,7 +107,7 @@ const controller = {
                                           if (error) {
                                             throw error;
                                           }
-                                          if (results.rows !== '') {
+                                          if (results.rows != '') {
                                             const hostMail =
                                               results.rows[3].setting_value;
                                             const userMail =

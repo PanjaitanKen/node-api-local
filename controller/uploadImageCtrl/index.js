@@ -6,7 +6,7 @@
 //     uploadImage :function (req, res) {
 
 //         if(req.body){
-        
+
 //             var base64Data = req.body.profile.photo.replace(/^data:image\/png;base64,/, "");
 //             let randomNumber = Math.floor(Math.random()*90000) + 10000;
 //             let name = req.body.profile.employee_id;
@@ -14,8 +14,7 @@
 //             var dateFormat = require('dateformat');
 //             var day=dateFormat(new Date(), "yyyy-mm-dd-hh-MM-ss");
 //             console.log(day);
-            
-              
+
 //                 //local
 //                 var dir = './uploads/'+ name +'/';
 //                 //server
@@ -27,13 +26,11 @@
 //                 fs.mkdirSync(dir);
 //             }
 
-            
 //             let fileName = 'mfinhr19'+'-'+ day+ '-'+ 'mandala-'  + randomNumber + '-'+'in'+ '.jpg';
 //             require("fs").writeFile(dir+ fileName +'.jpg', base64Data, 'base64', function(err) {
 //             console.log(err);
 //             });
-            
-          
+
 //             // a.mv(dir+ 'mfinhr19'+'-'+ day+ '-'+ 'fileName'  + randomNumber + '-'+'in'+ '.jpg'+ '.jpg');
 //             res.send({
 //                 status: true,
@@ -46,7 +43,7 @@
 //         }
 
 //         //
-       
+
 //     }
 // };
 
@@ -89,9 +86,9 @@
 // //                 }
 
 // //                 avatar.mv(dir+ 'mfinhr19'+'-'+ day+ '-'+ fileName  + randomNumber + '-'+'in'+ '.jpg'+ '.jpg');
-// //                 //'~/root/mandala/hcm_backend/uploads/' 
+// //                 //'~/root/mandala/hcm_backend/uploads/'
 // //                 // avatar.mv('/app/uploads/'+employee_id+ avatar.name);
-    
+
 // //                 //send response
 // //                 res.send({
 // //                     status: true,
