@@ -31,14 +31,7 @@ const controller = {
     const fileName = `mfinhr19-${day}-mandala-${randomNumber}-Out.jpg`;
 
     // eslint-disable-next-line global-require
-    require('fs').writeFile(
-      dir + fileName,
-      base64Data,
-      'base64',
-      function (err) {
-        // console.log(err);
-      }
-    );
+    require('fs').writeFile(dir + fileName, base64Data, 'base64', () => {});
     const url_path = serve + dir + fileName;
     let time_stamp_convert = 'Asia/jakarta';
 
@@ -103,6 +96,7 @@ const controller = {
                   if (error) throw error;
                   if (
                     // eslint-disable-next-line operator-linebreak
+                    // eslint-disable-next-line eqeqeq
                     results.rows[0].time_out == '' ||
                     results.rows[0].time_out == null
                   ) {

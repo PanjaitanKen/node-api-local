@@ -13,6 +13,7 @@ const controller = {
         if (error) throw error;
 
         if (results.rowCount > 0) {
+          // eslint-disable-next-line eqeqeq
           if (results.rows[0].token_notification != token_notif) {
             pool.db_HCM.query(
               'update trx_notification set token_notification=$2 where employee_id=$1 ',

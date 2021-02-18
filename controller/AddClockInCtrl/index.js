@@ -21,10 +21,7 @@ const controller = {
     const { employee_id2 } = employee_id;
 
     // get image from base64
-    const base64Data = request.body.photo.replace(
-      /^data:image\/png;base64,/,
-      ''
-    );
+    const base64Data = photo.replace(/^data:image\/png;base64,/, '');
 
     const randomNumber = Math.floor(Math.random() * 90000) + 10000;
     const day = dateFormat(new Date(), 'yyyy-mm-dd-hh-MM-ss');
@@ -33,14 +30,7 @@ const controller = {
     const fileName = `mfinhr19-${day}-mandala-${randomNumber}-In.jpg`;
 
     // eslint-disable-next-line global-require
-    require('fs').writeFile(
-      dir + fileName,
-      base64Data,
-      'base64',
-      function (err) {
-        // console.log(err);
-      }
-    );
+    require('fs').writeFile(dir + fileName, base64Data, 'base64', () => {});
     const url_path = serve + dir + fileName;
     let time_stamp_convert = 'Asia/jakarta';
     if (timeZoneAsia === 'WITA') time_stamp_convert = 'Asia/Makassar';
@@ -70,6 +60,7 @@ const controller = {
           (error, results) => {
             if (error) throw error;
 
+            // eslint-disable-next-line eqeqeq
             if (results.rows[0].count == 0) {
               pool.db_MMFPROD.query(
                 "insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, (CURRENT_TIMESTAMP AT TIME ZONE $3) , null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );",

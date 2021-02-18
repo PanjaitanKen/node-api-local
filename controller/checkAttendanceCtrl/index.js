@@ -12,9 +12,11 @@ const controller = {
         (error, results) => {
           if (error) throw error;
 
+          // eslint-disable-next-line eqeqeq
           if (results.rows != '' && results.rows != undefined) {
             if (
               // eslint-disable-next-line operator-linebreak
+              // eslint-disable-next-line eqeqeq
               results.rows[0].time_in != '' &&
               results.rows[0].time_in != null
             ) {
@@ -26,6 +28,7 @@ const controller = {
 
                   if (
                     // eslint-disable-next-line operator-linebreak
+                    // eslint-disable-next-line eqeqeq
                     results.rows[0].time_out != '' &&
                     results.rows[0].time_out != null
                   ) {

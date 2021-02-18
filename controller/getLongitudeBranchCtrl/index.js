@@ -18,6 +18,7 @@ const controller = {
               (error, results) => {
                 if (error) throw error;
 
+                // eslint-disable-next-line eqeqeq
                 if (results.rows != '') {
                   response.status(200).send({
                     status: 200,
@@ -40,6 +41,7 @@ const controller = {
               (error, results) => {
                 if (error) throw error;
 
+                // eslint-disable-next-line eqeqeq
                 if (results.rows != '') {
                   const location_name = results.rows[0].work_location;
                   pool.db_MMFPROD.query(

@@ -11,6 +11,7 @@ const controller = {
         (error, results) => {
           if (error) throw error;
 
+          // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
             response.status(200).send({
               status: true,

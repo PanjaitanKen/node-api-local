@@ -15,7 +15,9 @@ const controller = {
       } = request.body;
 
       if (
+        // eslint-disable-next-line eqeqeq
         id_kategori_komplain != '' &&
+        // eslint-disable-next-line eqeqeq
         id_kategori_komplain != ' ' &&
         // eslint-disable-next-line no-restricted-globals
         !isNaN(id_kategori_komplain) &&
@@ -38,6 +40,7 @@ const controller = {
             if (error) {
               throw error;
             }
+            // eslint-disable-next-line eqeqeq
             if (results.rows != '') {
               const emp_cabang = results.rows[0].cabang;
               const emp_displayName = results.rows[0].display_name;
@@ -50,6 +53,7 @@ const controller = {
                   if (error) {
                     throw error;
                   }
+                  // eslint-disable-next-line eqeqeq
                   if (results.rows != '') {
                     const { email_to, cc_to, subject_email } = results.rows[0];
 
@@ -63,6 +67,7 @@ const controller = {
                         if (error) {
                           throw error;
                         }
+                        // eslint-disable-next-line eqeqeq
                         if (results.rows != '') {
                           const positionId = results.rows[0].position_id;
                           const internalTitle = results.rows[0].internal_title;
@@ -98,6 +103,7 @@ const controller = {
                                     if (error) {
                                       throw error;
                                     }
+                                    // eslint-disable-next-line eqeqeq
                                     if (results.rows != '') {
                                       const { id_komplain } = results.rows[0];
 
@@ -107,6 +113,7 @@ const controller = {
                                           if (error) {
                                             throw error;
                                           }
+                                          // eslint-disable-next-line eqeqeq
                                           if (results.rows != '') {
                                             const hostMail =
                                               results.rows[3].setting_value;
