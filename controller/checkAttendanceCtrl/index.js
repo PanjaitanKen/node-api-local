@@ -35,12 +35,14 @@ const controller = {
                     response.status(200).send({
                       status: 200,
                       message: 'Berhasil Clock In dan Clock Out',
+                      validate_id: employee_id,
                       data: 2,
                     });
                   } else {
                     response.status(200).send({
                       status: 200,
                       message: 'Berhasil Clock In dan Belum Clock Out',
+                      validate_id: employee_id,
                       data: 1,
                     });
                   }
@@ -50,6 +52,7 @@ const controller = {
               response.status(200).send({
                 status: 200,
                 message: 'Belum Melakukan Clock In dan Clock Out',
+                validate_id: employee_id,
                 data: 0,
               });
             }
@@ -57,6 +60,7 @@ const controller = {
             response.status(200).send({
               status: 200,
               message: 'Belum melakukan clock in dan clock out',
+              validate_id: employee_id,
               data: 0,
             });
           }

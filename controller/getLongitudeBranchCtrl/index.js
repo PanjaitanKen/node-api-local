@@ -23,12 +23,14 @@ const controller = {
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
+                    validate_id: employee_id,
                     data: results.rows,
                   });
                 } else {
                   response.status(200).send({
                     status: 200,
                     message: 'Data Tidak Ditemukan',
+                    validate_id: employee_id,
                     data: results.rows,
                   });
                 }
@@ -53,6 +55,7 @@ const controller = {
                       response.status(200).send({
                         status: 200,
                         message: 'Load Data berhasil',
+                        validate_id: employee_id,
                         data: results.rows,
                       });
                     }
@@ -61,6 +64,7 @@ const controller = {
                   response.status(200).send({
                     status: 200,
                     message: 'Data Tidak Ditemukan',
+                    validate_id: employee_id,
                     data: results.rows,
                   });
                 }
