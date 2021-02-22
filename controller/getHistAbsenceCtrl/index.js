@@ -28,7 +28,8 @@ const controller = {
         else '2' end) else '0' end ) as status_pulang_status,
         max(case when in_out='0' then transfer_message else null end ) as transfer_message_masuk,
         max(case when in_out='1' then transfer_message else null end ) as transfer_message_pulang,
-        case when qq.employee_id is not null then '1' else '0' end as status_izin
+        case when qq.employee_id is not null then '1' else '0' end as status_izin,
+        case when rr.absence_wage is not null then '1' else '0' end as status_cuti
         from
         (select to_char(dates_this_month, 'YYYY-MM-DD')  as Tgl_absen,
         case when trim(to_char(dates_this_month,'Day'))='Sunday' then 'Minggu'
@@ -58,7 +59,10 @@ const controller = {
         left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD')
         left join (select employee_id ,sequence_no ,status_date  as clocking_date from work_off_status_tbl where employee_id = $1 group by employee_id ,sequence_no ,status_date
         order by status_date desc ) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1
-        group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2
+        left join (select employee_id, clocking_date, absence_wage from 
+                  emp_clocking_detail_tbl where absence_wage like 'CT_%'
+         ) rr on rr.employee_id= $1 and xx.Tgl_absen=to_char(rr.clocking_date,'YYYY-MM-DD') 
+        group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2, rr.absence_wage
         order by xx.tgl_absen desc`,
         [employee_id, filter_date],
         (error, results) => {

@@ -33,6 +33,7 @@ const pushNotificationCtrl = require('../controller/pushNotificationCtrl');
 const CategoryComplaintCtrl = require('../controller/CategoryComplaintCtrl');
 const ComplaintCtrl = require('../controller/ComplaintCtrl');
 const checkPassRulesCtrl = require('../controller/checkPassRulesCtrl');
+const checkEmployeeLoginUATCtrl = require('../controller/checkEmployeeLoginUATCtrl');
 const NewsCtrl = require('../controller/NewsCtrl');
 const WebViewCtrl = require('../controller/WebViewCtrl');
 
@@ -181,6 +182,11 @@ module.exports = (app) => {
     .route('/hcm/api/addFeedback')
     .all(authenticateApiKey)
     .post(addFeedbackCtrl.addFeedback);
+
+  app
+    .route('/hcm/api/checkEmployeeLoginUAT')
+    .all(authenticateApiKey)
+    .post(checkEmployeeLoginUATCtrl.checkEmployeeLogin);
 
   app
     .route('/mmf/api/checkTokenOrange')

@@ -1,14 +1,18 @@
 const pool = require('../../db');
 
-// Tabel : user_config_tbl
+// Tabel : session_tracking_tbl
 const controller = {
-  checkPass_Rules(request, response) {
+  checkEmployeeLogin(request, response) {
     try {
-      pool.db_MMFPROD.query(
-        'select enable_rule ,mix_letter ,contain_number ,contain_char ,password_length from user_config_tbl',
-        (error, results) => {
-          if (error) throw error;
+      const { employee_id } = request.body;
 
+      pool.db_HCM.query(
+        ' select count(*) jumlah from mas_karyawan_uat where employee_code = $1',
+        [employee_id],
+        (error, results) => {
+          if (error) {
+            throw error;
+          }
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
             response.status(200).send({

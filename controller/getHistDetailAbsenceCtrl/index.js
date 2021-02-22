@@ -32,11 +32,18 @@ const controller = {
         case when  yy.state='Transfered' then '1' else '0' end as status,
         case when in_out='1' then '1' else '0' end as type_absen,
         case when b.clocking_date is null then '0' else '1' end as type_ijin,
-        coalesce(to_char(b.work_off_from ,'HH24:MM')||' - '||to_char(b.work_off_to ,'HH24:MM'),' ') jam_ijin from
+        coalesce(to_char(b.work_off_from ,'HH24:MM')||' - '||to_char(b.work_off_to ,'HH24:MM'),' ') jam_ijin ,
+        case when c.absence_wage is not null then '1' else '0' end as type_cuti
+        from
         (select * from generate_series(date_trunc('month',now()),
         date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month) xx
         left join emp_clocking_temp_tbl yy on to_char(xx.dates_this_month,'YYYY-MM-DD') = to_char(yy.clocking_date,'YYYY-MM-DD')  and yy.employee_id =$1
-        left join employee_work_off_tbl b on b.employee_id= $1  and xx.dates_this_month =b.clocking_date where
+        left join employee_work_off_tbl b on b.employee_id= $1  and xx.dates_this_month =b.clocking_date 
+        left join (select employee_id, clocking_date, absence_wage from 
+                  emp_clocking_detail_tbl where absence_wage like 'CT_%'
+                  ) c on c.employee_id= $1 and to_char(xx.dates_this_month,'YYYY-MM-DD')=to_char(c.clocking_date,'YYYY-MM-DD') 
+    
+        where
         to_char(xx.dates_this_month,'YYYY-MM-DD') = $2
         order by yy.clocking_date desc
         `,
