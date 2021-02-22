@@ -32,6 +32,9 @@ const getComplaintCategoryCtrl = require('../controller/getComplaintCategoryCtrl
 const pushNotificationCtrl = require('../controller/pushNotificationCtrl');
 const CategoryComplaintCtrl = require('../controller/CategoryComplaintCtrl');
 const ComplaintCtrl = require('../controller/ComplaintCtrl');
+const checkPassRulesCtrl = require('../controller/checkPassRulesCtrl');
+const NewsCtrl = require('../controller/NewsCtrl');
+const WebViewCtrl = require('../controller/WebViewCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -160,6 +163,11 @@ module.exports = (app) => {
     .post(getLeaveCountCtrl.getLeave_Count);
 
   app
+    .route('/mmf/api/checkPassRules')
+    .all(authenticateApiKey)
+    .post(checkPassRulesCtrl.checkPass_Rules);
+
+  app
     .route('/hcm/api/checkTokenNotif')
     .all(authenticateApiKey)
     .post(checkTokenNotifCtrl.checkToken_Notif);
@@ -264,4 +272,66 @@ module.exports = (app) => {
       ],
       CategoryComplaintCtrl.destroy
     );
+
+  // news routes
+  app.route('/hcm/api/news').all(authenticateApiKey).get(NewsCtrl.index);
+  app.route('/hcm/api/news/:id').all(authenticateApiKey).get(NewsCtrl.show);
+
+  app
+    .route('/hcm/api/news')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('kategori_berita').notEmpty().withMessage('CATEGORY REQUIRED!'),
+        check('ket_header').notEmpty().withMessage('TITLE REQUIRED!'),
+        check('deskripsi').notEmpty().withMessage('DESCRIPTION REQUIRED!'),
+
+        check('tgl_event_dr')
+          .notEmpty()
+          .withMessage('START EVENT DATE REQUIRED!'),
+
+        check('tgl_event_sd')
+          .notEmpty()
+          .withMessage('END EVENT DATE REQUIRED!'),
+
+        check('lokasi').notEmpty().withMessage('LOCATION REQUIRED!'),
+        check('tgl_expired').notEmpty().withMessage('EXPIRED DATE REQUIRED!'),
+      ],
+      NewsCtrl.store
+    );
+
+  app
+    .route('/hcm/api/news')
+    .all(authenticateApiKey)
+    .put(
+      [
+        check('berita_id').notEmpty().withMessage('BERITA ID REQUIRED!'),
+        check('kategori_berita').notEmpty().withMessage('CATEGORY REQUIRED!'),
+        check('ket_header').notEmpty().withMessage('TITLE REQUIRED!'),
+        check('deskripsi').notEmpty().withMessage('DESCRIPTION REQUIRED!'),
+
+        check('tgl_event_dr')
+          .notEmpty()
+          .withMessage('START EVENT DATE REQUIRED!'),
+
+        check('tgl_event_sd')
+          .notEmpty()
+          .withMessage('END EVENT DATE REQUIRED!'),
+
+        check('lokasi').notEmpty().withMessage('LOCATION REQUIRED!'),
+        check('tgl_expired').notEmpty().withMessage('EXPIRED DATE REQUIRED!'),
+      ],
+      NewsCtrl.update
+    );
+
+  app
+    .route('/hcm/api/news')
+    .all(authenticateApiKey)
+    .delete(
+      [check('berita_id').notEmpty().withMessage('BERITA ID REQUIRED!')],
+      NewsCtrl.destroy
+    );
+
+  // web view routes
+  app.route('/:category/:slug').get(WebViewCtrl.index);
 };

@@ -1,6 +1,5 @@
 require('dotenv').config();
 
-// const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
@@ -12,8 +11,6 @@ const compression = require('compression');
 const http = require('http');
 const https = require('https');
 
-// const img = require('./Components/images_api');
-// const db = require('./Components/MMF_api');
 const routes = require('./routes');
 
 // start app
@@ -51,6 +48,15 @@ app.use(
   })
 );
 
+app.use((_, response, next) => {
+  // allow access to https://cdn.jsdelivr.net
+  response.setHeader(
+    'Content-Security-Policy',
+    "script-src 'unsafe-inline' https://cdn.jsdelivr.net"
+  );
+  next();
+});
+
 // enable files upload
 app.use(
   '/uploads',
@@ -62,6 +68,9 @@ app.use(
     createParentPath: true,
   })
 );
+
+// render for web static (html & css) with pug package
+app.set('view engine', 'pug');
 
 // app routes
 app.get('/', (_, response) => {
