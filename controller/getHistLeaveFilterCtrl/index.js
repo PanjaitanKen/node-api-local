@@ -65,7 +65,7 @@ const controller = {
              when state='Rejected' then 'Ditolak'
              when state='Submitted' then 'Menunggu Persetujuan'
              when state='Cancelled' then 'Batal'
-        end as Status,a.golid
+        end as Status,a.golid, a.request_date as cuti_diambil
         from leave_request_tbl a where employee_id =$3 
         and a.request_date between (current_date -interval '1 days' * $1 ) and now()
         and a.leave_name = ANY($2)
