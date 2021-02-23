@@ -36,6 +36,8 @@ const checkPassRulesCtrl = require('../controller/checkPassRulesCtrl');
 const checkEmployeeLoginUATCtrl = require('../controller/checkEmployeeLoginUATCtrl');
 const NewsCtrl = require('../controller/NewsCtrl');
 const WebViewCtrl = require('../controller/WebViewCtrl');
+const getLeaveNameCtrl = require('../controller/getLeaveNameCtrl');
+const getHistLeaveFilterCtrl = require('../controller/getHistLeaveFilterCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -199,7 +201,7 @@ module.exports = (app) => {
     .post(getComplaintCategoryCtrl.getKategori_Komplain);
 
   app
-    .route('/hcm/api/pushNotification')
+    .route('/mmf/api/checkTokenOrange')
     .all(authenticateApiKey)
     .post(pushNotificationCtrl.pushNotification);
 
@@ -207,6 +209,16 @@ module.exports = (app) => {
     .route('/hcm/api/param-versions')
     .all(authenticateApiKey)
     .get(ParamVersionCtrl.index);
+
+  app
+    .route('/mmf/api/getLeaveName')
+    .all(authenticateApiKey)
+    .post(getLeaveNameCtrl.get_Leave_Name);
+
+  app
+    .route('/mmf/api/getHistLeaveFilter')
+    .all(authenticateApiKey)
+    .post(getHistLeaveFilterCtrl.get_Hist_Leave_Filter);
 
   app
     .route('/hcm/api/param-version')
