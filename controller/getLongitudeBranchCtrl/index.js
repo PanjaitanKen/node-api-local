@@ -38,7 +38,7 @@ const controller = {
             );
           } else {
             pool.db_MMFPROD.query(
-              'select work_location from emp_work_location_tbl where employee_id=$1',
+              'select work_location from emp_work_location_tbl where employee_id=$1 and  current_date between valid_from and valid_to ',
               [employee_id],
               (error, results) => {
                 if (error) throw error;
