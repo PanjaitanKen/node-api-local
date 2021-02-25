@@ -60,7 +60,7 @@ const controller = {
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows[0],
+              data: results.rows,
             });
           } else {
             response.status(200).send({
