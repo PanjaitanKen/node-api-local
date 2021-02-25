@@ -38,6 +38,7 @@ const controller = {
       (error, results) => {
         if (error) throw error;
 
+        // eslint-disable-next-line
         if (results.rows[0].count == 0) {
           exec(
             `

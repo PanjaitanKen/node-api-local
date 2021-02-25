@@ -39,6 +39,8 @@ const WebViewCtrl = require('../controller/WebViewCtrl');
 const getLeaveNameCtrl = require('../controller/getLeaveNameCtrl');
 const getHistLeaveFilterCtrl = require('../controller/getHistLeaveFilterCtrl');
 const sendDocPsdCtrl = require('../controller/sendDocPsdCtrl');
+const getHistManageCtrl = require('../controller/getHistManageCtrl');
+const getHistDetailManageCtrl = require('../controller/getHistDetailManageCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -230,6 +232,16 @@ module.exports = (app) => {
     .route('/hcm/api/sendDocsPsd')
     .all(authenticateApiKey)
     .post(sendDocPsdCtrl.send_Doc_Psd);
+
+  app
+    .route('/mmf/api/getHistManage')
+    .all(authenticateApiKey)
+    .post(getHistManageCtrl.getHistManage);
+
+  app
+    .route('/mmf/api/getHistDetailManage')
+    .all(authenticateApiKey)
+    .post(getHistDetailManageCtrl.getHistDetailManage);
 
   // complaint routes
   app
