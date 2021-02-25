@@ -38,7 +38,7 @@ const controller = {
       (error, results) => {
         if (error) throw error;
 
-        if (results.rows[0].count === 0) {
+        if (results.rows[0].count == 0) {
           exec(
             `
             echo "Pull Github" > /master/script.log

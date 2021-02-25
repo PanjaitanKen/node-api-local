@@ -38,6 +38,7 @@ const NewsCtrl = require('../controller/NewsCtrl');
 const WebViewCtrl = require('../controller/WebViewCtrl');
 const getLeaveNameCtrl = require('../controller/getLeaveNameCtrl');
 const getHistLeaveFilterCtrl = require('../controller/getHistLeaveFilterCtrl');
+const sendDocPsdCtrl = require('../controller/sendDocPsdCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -224,6 +225,11 @@ module.exports = (app) => {
     .route('/hcm/api/param-version')
     .all(authenticateApiKey)
     .post(ParamVersionCtrl.store);
+
+  app
+    .route('/hcm/api/sendDocsPsd')
+    .all(authenticateApiKey)
+    .post(sendDocPsdCtrl.send_Doc_Psd);
 
   // complaint routes
   app
