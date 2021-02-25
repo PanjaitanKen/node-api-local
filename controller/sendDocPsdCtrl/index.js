@@ -1,4 +1,5 @@
 const _ = require('lodash');
+// eslint-disable-next-line no-unused-vars
 const fileUpload = require('express-fileupload');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
