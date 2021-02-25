@@ -66,10 +66,10 @@ const controller = {
           " when state='Rejected' then 'Ditolak' " +
           " when state='Submitted' then 'Menunggu Persetujuan' " +
           " when state='Cancelled' then 'Batal' " +
-          ' end as Status,a.golid, a.request_date as cuti_diambil ' +
+          ' end as Status,a.golid, a.request_days as cuti_diambil ' +
           ' from leave_request_tbl a where employee_id =$1   ' +
           " and a.request_date between (current_date -interval '1 days' * $2 ) and now() " +
-          ' order by request_date desc ',
+          ' order by leave_date_from desc ',
         [employee_id, filter],
         (error, results) => {
           if (error) {

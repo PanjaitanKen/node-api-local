@@ -57,8 +57,10 @@ const controller = {
         ) xx
         left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1
         left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD')
-        left join (select employee_id ,sequence_no ,status_date  as clocking_date from work_off_status_tbl where employee_id = $1 group by employee_id ,sequence_no ,status_date
-        order by status_date desc ) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1
+        left join (select employee_id,clocking_date  
+                from employee_work_off_tbl 
+                where  employee_id = $1
+                order by clocking_date desc) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1
         left join (select employee_id, clocking_date, absence_wage from 
                   emp_clocking_detail_tbl where absence_wage like 'CT_%'
          ) rr on rr.employee_id= $1 and xx.Tgl_absen=to_char(rr.clocking_date,'YYYY-MM-DD') 
