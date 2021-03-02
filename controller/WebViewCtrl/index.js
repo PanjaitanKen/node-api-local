@@ -1,3 +1,4 @@
+const dateFormat = require('dateformat');
 const pool = require('../../db');
 
 const { URL } = process.env;
@@ -18,9 +19,24 @@ const controller = {
           if (results.rows.length > 0) {
             const { ket_header } = results.rows[0];
 
+            const createdAt = `${dateFormat(
+              results.rows[0].tgl_input,
+              'dd mmm yyyy, HH:MM'
+            )} WIB`;
+
+            const tglEvent = `${dateFormat(
+              results.rows[0].tgl_event_dr,
+              'dd mmm yyyy, HH:MM'
+            )} WIB s.d ${dateFormat(
+              results.rows[0].tgl_event_sd,
+              'dd mmm yyyy, HH:MM'
+            )} WIB`;
+
             response.render('webview', {
               title: `${ket_header} - Mandala`,
               data: results.rows[0],
+              createdAt,
+              tglEvent,
             });
           } else {
             response.set('Content-Type', 'text/html');

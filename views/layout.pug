@@ -7,7 +7,43 @@ html(lang="id")
 
     title #{title}
     
+    link(href="http://fonts.cdnfonts.com/css/circular-std-book" rel="stylesheet")
     link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous")
+
+    style(type="text/css").
+      .carousel-indicators [data-bs-target].active {
+        background: #006BEB !important;
+        width: 32px !important;
+        border-radius: 10px !important;
+      }
+
+      span.carousel-control-prev-icon {
+        background-image: url('/uploads/assets/webviews/left-arrow.png');
+      }
+
+      span.carousel-control-next-icon {
+        background-image: url('/uploads/assets/webviews/right-arrow.png');
+      }
+
+      @media screen and (max-width: 768px) {
+        .carousel-control-next span,
+        .carousel-control-prev span {
+          display: none;
+        }
+      }
+
+      @media screen and (min-width: 768px) {
+        .carousel-control-next:focus,
+        .carousel-control-next:hover,
+        .carousel-control-prev:focus,
+        .carousel-control-prev:hover {
+          background: #FFFFFF !important;
+        }
+
+        .carousel-item img {
+          height: 70vh;
+        }
+      }
   body
     block content
     

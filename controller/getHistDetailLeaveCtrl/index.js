@@ -20,7 +20,7 @@ const controller = {
           " when to_char(a.leave_date_from,'MM')='09' then 'Sep' " +
           " when to_char(a.leave_date_from,'MM')='10' then 'Okt' " +
           " when to_char(a.leave_date_from,'MM')='11' then 'Nov' " +
-          " when to_char(a.leave_date_from,'MM')='11' then 'Des' end ||' '||to_char(a.leave_date_from,'YYYY') ||' - '|| " +
+          " when to_char(a.leave_date_from,'MM')='12' then 'Des' end ||' '||to_char(a.leave_date_from,'YYYY') ||' - '|| " +
           " to_char(a.leave_date_from,'DD')||' '|| " +
           " case when to_char(a.leave_date_to ,'MM')='01' then 'Jan' " +
           " when to_char(a.leave_date_to,'MM')='02' then 'Feb' " +
@@ -33,7 +33,7 @@ const controller = {
           " when to_char(a.leave_date_to,'MM')='09' then 'Sep' " +
           " when to_char(a.leave_date_to,'MM')='10' then 'Okt' " +
           " when to_char(a.leave_date_to,'MM')='11' then 'Nov' " +
-          " when to_char(a.leave_date_to,'MM')='11' then 'Des' end ||' '||to_char(a.leave_date_to,'YYYY')  " +
+          " when to_char(a.leave_date_to,'MM')='12' then 'Des' end ||' '||to_char(a.leave_date_to,'YYYY')  " +
           ' as tgl_cuti, ' +
           " to_char(a.working_date,'DD')||' '|| " +
           " case when to_char(a.working_date ,'MM')='01' then 'Jan' " +
@@ -47,7 +47,7 @@ const controller = {
           " when to_char(a.working_date,'MM')='09' then 'Sep' " +
           " when to_char(a.working_date,'MM')='10' then 'Okt' " +
           " when to_char(a.working_date,'MM')='11' then 'Nov' " +
-          " when to_char(a.working_date,'MM')='11' then 'Des' end ||' '||to_char(a.working_date,'YYYY')  as tgl_kembali_kerja, " +
+          " when to_char(a.working_date,'MM')='12' then 'Des' end ||' '||to_char(a.working_date,'YYYY')  as tgl_kembali_kerja, " +
           ' reason as alasan_cuti, ' +
           " to_char(a.request_date ,'DD')||' '|| " +
           " case when to_char(a.request_date ,'MM')='01' then 'Jan' " +
@@ -61,7 +61,7 @@ const controller = {
           " when to_char(a.request_date,'MM')='09' then 'Sep' " +
           " when to_char(a.request_date,'MM')='10' then 'Okt' " +
           " when to_char(a.request_date,'MM')='11' then 'Nov' " +
-          " when to_char(a.request_date,'MM')='11' then 'Des' end ||' '||to_char(a.request_date,'YYYY')  as tgl_pengajuan, " +
+          " when to_char(a.request_date,'MM')='12' then 'Des' end ||' '||to_char(a.request_date,'YYYY')  as tgl_pengajuan, " +
           " case when state='Approved' then 'Disetujui' " +
           " when state='Rejected' then 'Ditolak' " +
           " when state='Submitted' then 'Menunggu Persetujuan' " +

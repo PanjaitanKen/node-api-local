@@ -4,11 +4,11 @@ const pool = require('../../db');
 const controller = {
   getHistManage(request, response) {
     try {
-      const { employee_id, jumlah_hari, jenis_cuti } = request.body;
+      const { employee_id, jumlah_hari, tipe_filter } = request.body;
 
       pool.db_MMFPROD.query(
         `with x as (
-          select 'Persetujuan Cuti' as Jenis, a.employee_id , b.sequence_no as no_urut,  initcap(d.display_name) nama,
+          select 'Persetujuan Cuti' as Jenis, a.employee_id , to_char(b.sequence_no,'9999999999999999') as no_urut,  initcap(d.display_name) nama,
           case  when current_date-b.status_date=0 then 'Hari ini'
             when current_date-b.status_date=1 then 'Kemarin'
             when current_date-b.status_date=2 then '2 Hari yang lalu'
@@ -18,16 +18,16 @@ const controller = {
             when current_date-b.status_date=6 then '6 Hari yang lalu'
             when current_date-b.status_date=7 then '7 Hari yang lalu'
             when current_date-b.status_date>7 then to_char(b.status_date,'DD Mon YYYY') 
-          end Durasi_Waktu ,b.status_date, a.golid
+          end Durasi_Waktu ,b.status_date, a.golid, a.leave_name as tipe_cuti, 'Cuti' as tipe_filter
           from leave_request_tbl a
-          left join l_r_status_history_tbl b on a.employee_id =b.employee_id and a.sequence_no = b.sequence_no  and b.status<>'Submitted'
+          left join l_r_status_history_tbl b on a.employee_id =b.employee_id and to_char(a.sequence_no,'9999999999999999') = to_char(b.sequence_no,'9999999999999999')  and b.status<>'Submitted'
           left join employee_tbl  c on a.employee_id = c.employee_id 
           left join person_tbl d on c.person_id =d.person_id 
           where  state not in ('Submitted') and 
           b.status_date between (current_date -interval '1 days' * $2) and now()
           --order by b.status_date desc,a.sequence_no desc
           union all 
-          select 'Persetujuan Ijin' as Jenis, a.employee_id,  b.sequence_no as no_urut, initcap(d.display_name) nama,
+          select 'Persetujuan Ijin' as Jenis, a.employee_id,  to_char(b.sequence_no,'9999999999999999') as no_urut, initcap(d.display_name) nama,
           case  when current_date-b.status_date=0 then 'Hari ini'
             when current_date-b.status_date=1 then 'Kemarin'
             when current_date-b.status_date=2 then '2 Hari yang lalu'
@@ -37,20 +37,38 @@ const controller = {
             when current_date-b.status_date=6 then '6 Hari yang lalu'
             when current_date-b.status_date=7 then '7 Hari yang lalu'
             when current_date-b.status_date>7 then to_char(b.status_date,'DD Mon YYYY') 
-          end Durasi_Waktu ,b.status_date, a.golid
+          end Durasi_Waktu ,b.status_date, a.golid, e.wage_name  as tipe_cuti, 'Izin' as tipe_filter
           from employee_work_off_tbl  a
-          left join l_r_status_history_tbl b on a.employee_id =b.employee_id and a.sequence_no = b.sequence_no  and b.status<>'Submitted'
+          left join work_off_status_tbl b on a.employee_id =b.employee_id and to_char(a.sequence_no,'9999999999999999') = to_char(b.sequence_no,'9999999999999999')  and b.status<>'Submitted'
           left join employee_tbl  c on a.employee_id = c.employee_id 
           left join person_tbl d on c.person_id =d.person_id 
+          left join wage_code_tbl e on a.absence_wage =e.wage_code
           where  state not in ('Submitted') and 
           b.status_date between (current_date -interval '1 days' *  $2 ) and now()
-          --order by b.status_date desc,a.sequence_no desc
+          union all
+          select 'Persetujuan Perjalanan Dinas' as Jenis, a.employee_id,  a.request_no as no_urut, initcap(c.display_name) nama,
+          case  when current_date-d.status_date=0 then 'Hari ini'
+            when current_date-d.status_date=1 then 'Kemarin'
+            when current_date-d.status_date=2 then '2 Hari yang lalu'
+            when current_date-d.status_date=3 then '3 Hari yang lalu'
+            when current_date-d.status_date=4 then '4 Hari yang lalu'
+            when current_date-d.status_date=5 then '5 Hari yang lalu'
+            when current_date-d.status_date=6 then '6 Hari yang lalu'
+            when current_date-d.status_date=7 then '7 Hari yang lalu'
+            when current_date-d.status_date>7 then to_char(d.status_date,'DD Mon YYYY') 
+          end Durasi_Waktu ,d.status_date, a.golid, 'Perjalanan Dinas'  as tipe_cuti, 'Perjalanan Dinas' as tipe_filter
+          from travel_request_tbl  a
+          left join employee_tbl  b on a.employee_id = b.employee_id 
+          left join person_tbl c on b.person_id =c.person_id 
+          left join travel_request_status_tbl d on a.employee_id = d.employee_id and a.request_no = d.request_no 
+          where  d.request_status not in ('Submitted','Prepared') and 
+          d.status_date between (current_date -interval '1 days' *  $2 ) and now()
         ) select * from x
-        where Jenis = ANY($3)  
+        where tipe_filter = ANY($3)  
         and employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1
         and valid_to=date'9999-01-01') 
         order by status_Date desc , no_urut desc`,
-        [employee_id, jumlah_hari, jenis_cuti],
+        [employee_id, jumlah_hari, tipe_filter],
         (error, results) => {
           if (error) throw error;
 

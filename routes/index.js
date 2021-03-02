@@ -41,6 +41,7 @@ const getHistLeaveFilterCtrl = require('../controller/getHistLeaveFilterCtrl');
 const sendDocPsdCtrl = require('../controller/sendDocPsdCtrl');
 const getHistManageCtrl = require('../controller/getHistManageCtrl');
 const getHistDetailManageCtrl = require('../controller/getHistDetailManageCtrl');
+const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -242,6 +243,11 @@ module.exports = (app) => {
     .route('/mmf/api/getHistDetailManage')
     .all(authenticateApiKey)
     .post(getHistDetailManageCtrl.getHistDetailManage);
+
+  app
+    .route('/mmf/api/getDetailTravelApp')
+    .all(authenticateApiKey)
+    .post(getDetailTravelAppCtrl.getDetail_Travel_App);
 
   // complaint routes
   app

@@ -26,19 +26,22 @@ const controller = {
         when to_char(xx.dates_this_month,'MM')='09' then 'Sep'
         when to_char(xx.dates_this_month,'MM')='10' then 'Okt'
         when to_char(xx.dates_this_month,'MM')='11' then 'Nov'
-        when to_char(xx.dates_this_month,'MM')='11' then 'Des' end ||' '||to_char(xx.dates_this_month,'YYYY') as tgl_absen2,
+        when to_char(xx.dates_this_month,'MM')='12' then 'Des' end ||' '||to_char(xx.dates_this_month,'YYYY') as tgl_absen2,
         case when in_out='0' then 'Absen Masuk' when in_out='1' then 'Absen Pulang'  else ' ' end as kategori,
-        to_char(yy.clocking_date,'hh24:mi')  as jam,
+        to_char(yy.clocking_date,'HH24:MI')  as jam,
         case when  yy.state='Transfered' then '1' else '0' end as status,
         case when in_out='1' then '1' else '0' end as type_absen,
         case when b.clocking_date is null then '0' else '1' end as type_ijin,
-        coalesce(to_char(b.work_off_from ,'HH24:MM')||' - '||to_char(b.work_off_to ,'HH24:MM'),' ') jam_ijin ,
+        coalesce(to_char(b.work_off_from ,'HH24:MI')||' - '||to_char(b.work_off_to ,'HH24:MI'),' ') jam_ijin ,
         case when c.absence_wage is not null then '1' else '0' end as type_cuti
         from
-        (select * from generate_series(date_trunc('month',now()),
-        date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month) xx
+        (select * from 
+          (select * from generate_series(date_trunc('month',CURRENT_DATE - interval '1 months'),
+           date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month) a 
+           where dates_this_month between (current_date -interval '1 days' * 90) and now()
+        ) xx
         left join emp_clocking_temp_tbl yy on to_char(xx.dates_this_month,'YYYY-MM-DD') = to_char(yy.clocking_date,'YYYY-MM-DD')  and yy.employee_id =$1
-        left join employee_work_off_tbl b on b.employee_id= $1  and xx.dates_this_month =b.clocking_date 
+        left join employee_work_off_tbl b on b.employee_id= $1  and xx.dates_this_month =b.clocking_date  and b.state ='Approved'
         left join (select employee_id, clocking_date, absence_wage from 
                   emp_clocking_detail_tbl where absence_wage like 'CT_%'
                   ) c on c.employee_id= $1 and to_char(xx.dates_this_month,'YYYY-MM-DD')=to_char(c.clocking_date,'YYYY-MM-DD') 

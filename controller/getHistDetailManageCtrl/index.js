@@ -73,7 +73,7 @@ const controller = {
           left join employee_tbl  c on a.employee_id = c.employee_id 
           left join person_tbl d on c.person_id =d.person_id 
           where  state not in ('Submitted')  and 
-        a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id ='0053722'
+        a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1
         and valid_to=date'9999-01-01') 
           
           union all 
@@ -146,7 +146,7 @@ const controller = {
         and valid_to=date'9999-01-01') 
           
         ) select * from x
-        where golid=$2
+        where golid = $2
         order by tgl_status desc , no_urut desc`,
         [employee_id, golid],
         (error, results) => {

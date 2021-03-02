@@ -10,15 +10,18 @@ const controller = {
         `select a.employee_id, b.wage_name  as jenis_ijin, d.display_name as nama,
         to_char(work_off_from,'MM-DD-YYYY') as tgl_ijin_dari,
         to_char(work_off_to,'MM-DD-YYYY') as tgl_ijin_sd, reason as alasan,
-        to_char(a.clocking_date,'MM-DD-YYYY') as tgl_pengajuan,a.golid,
+        to_char(e.status_date,'MM-DD-YYYY') as tgl_pengajuan,a.golid,
         case when a.state='Approved' then 'Disetujui'
         when a.state='Rejected' then 'Ditolak'
         when a.state='Submitted' then 'Menunggu Persetujuan'
-        when a.state='Cancelled' then 'Batal' end as Status
+        when a.state='Cancelled' then 'Batal' end as Status,
+        to_char(work_off_from,'HH24:MI')||' - '||to_char(work_off_to,'HH24:MI') waktu
         from employee_work_off_tbl a
         left join wage_code_tbl b on a.absence_wage =b.wage_code
         left join employee_tbl c on a.employee_id =c.employee_id
-        left join person_tbl d on c.person_id =d.person_id where
+        left join person_tbl d on c.person_id =d.person_id 
+        left join work_off_status_tbl e on a.employee_id = e.employee_id and a.sequence_no = e.sequence_no 
+        where
         state='Submitted' and a.golid =$1`,
         [golid],
         (error, results) => {

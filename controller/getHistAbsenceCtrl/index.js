@@ -8,7 +8,7 @@ const controller = {
 
       pool.db_MMFPROD.query(
         ' select $1::text employee_id, xx.tgl_absen, xx.tgl_absen2, ' +
-          ' ss.absen_masuk,ss.absen_pulang, ' +
+          " coalesce(ss.absen_masuk,' ') absen_masuk, coalesce(ss.absen_pulang,' ') absen_pulang, " +
           " max(case when in_out='0' then " +
           " (case when yy.state='Transfered' then 'Tercatat' " +
           " when yy.state = 'Prepared' then 'Belum Tercatat' " +
@@ -56,22 +56,22 @@ const controller = {
           ' ) xx ' +
           " left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1 " +
           " left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
-          ' left join (select employee_id,clocking_date  ' +
-          ' from employee_work_off_tbl  ' +
-          ' where  employee_id = $1 ' +
-          " order by clocking_date desc) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1 " +
+          ' left join (select employee_id,clocking_date, state  ' +
+          ' from employee_work_off_tbl where  '+
+          '  employee_id = $1 ' +
+          " order by clocking_date desc) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1  and qq.state='Approved' " +
           ' left join (select employee_id, clocking_date, absence_wage from  ' +
           " emp_clocking_detail_tbl where absence_wage like 'CT_%' " +
           " ) rr on rr.employee_id= $1 and xx.Tgl_absen=to_char(rr.clocking_date,'YYYY-MM-DD')  " +
           ' left join ( ' +
           ' with x as ( ' +
           " select employee_id ,'absen_masuk' as tipe, to_char(clocking_date ,'YYYY-MM-DD') clocking_date,  " +
-          " min(to_char(clocking_date ,'HH24:SS'))  jam " +
+          " min(to_char(clocking_date ,'HH24:MI'))  jam " +
           " from emp_clocking_temp_tbl where employee_id =$1  and in_out='0' " +
           " group by employee_id ,to_char(clocking_date ,'YYYY-MM-DD') " +
           ' union all ' +
           " select employee_id ,'absen_pulang' as tipe, to_char(clocking_date ,'YYYY-MM-DD') clocking_date,  " +
-          " max(to_char(clocking_date ,'HH24:SS'))  jam " +
+          " max(to_char(clocking_date ,'HH24:MI'))  jam " +
           " from emp_clocking_temp_tbl where employee_id =$1  and in_out='1' " +
           " group by employee_id ,to_char(clocking_date ,'YYYY-MM-DD') " +
           '  ) select employee_id ,clocking_date , ' +

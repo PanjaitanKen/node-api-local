@@ -9,7 +9,7 @@ const controller = {
       pool.db_MMFPROD.query(
         'select employee_id ,leave_name, ' +
           "to_char(a.leave_date_from,'DD')||' '|| " +
-          " case when to_char(a.leave_date_from ,'MM')='01' then 'Jan' " +
+          "case when to_char(a.leave_date_from ,'MM')='01' then 'Jan' " +
           " when to_char(a.leave_date_from,'MM')='02' then 'Feb' " +
           " when to_char(a.leave_date_from,'MM')='03' then 'Mar' " +
           " when to_char(a.leave_date_from,'MM')='04' then 'Apr' " +
@@ -20,8 +20,8 @@ const controller = {
           " when to_char(a.leave_date_from,'MM')='09' then 'Sep' " +
           " when to_char(a.leave_date_from,'MM')='10' then 'Okt' " +
           " when to_char(a.leave_date_from,'MM')='11' then 'Nov' " +
-          " when to_char(a.leave_date_from,'MM')='11' then 'Des' end ||' '||to_char(a.leave_date_from,'YYYY') ||' - '|| " +
-          " to_char(a.leave_date_from,'DD')||' '|| " +
+          " when to_char(a.leave_date_from,'MM')='12' then 'Des' end ||' '||to_char(a.leave_date_from,'YYYY') ||' - '|| " +
+          " to_char(a.leave_date_to,'DD')||' '|| " +
           " case when to_char(a.leave_date_to ,'MM')='01' then 'Jan' " +
           " when to_char(a.leave_date_to,'MM')='02' then 'Feb' " +
           " when to_char(a.leave_date_to,'MM')='03' then 'Mar' " +
@@ -33,7 +33,7 @@ const controller = {
           " when to_char(a.leave_date_to,'MM')='09' then 'Sep' " +
           " when to_char(a.leave_date_to,'MM')='10' then 'Okt' " +
           " when to_char(a.leave_date_to,'MM')='11' then 'Nov' " +
-          " when to_char(a.leave_date_to,'MM')='11' then 'Des' end ||' '||to_char(a.leave_date_to,'YYYY')  " +
+          " when to_char(a.leave_date_to,'MM')='12' then 'Des' end ||' '||to_char(a.leave_date_to,'YYYY')  " +
           ' as tgl_cuti, ' +
           " to_char(a.working_date,'DD')||' '|| " +
           " case when to_char(a.working_date ,'MM')='01' then 'Jan' " +
@@ -47,7 +47,7 @@ const controller = {
           " when to_char(a.working_date,'MM')='09' then 'Sep' " +
           " when to_char(a.working_date,'MM')='10' then 'Okt' " +
           " when to_char(a.working_date,'MM')='11' then 'Nov' " +
-          " when to_char(a.working_date,'MM')='11' then 'Des' end ||' '||to_char(a.working_date,'YYYY')  as tgl_kembali_kerja, " +
+          " when to_char(a.working_date,'MM')='12' then 'Des' end ||' '||to_char(a.working_date,'YYYY')  as tgl_kembali_kerja, " +
           ' reason as alasan_cuti, ' +
           " to_char(a.request_date ,'DD')||' '|| " +
           " case when to_char(a.request_date ,'MM')='01' then 'Jan' " +
@@ -61,15 +61,15 @@ const controller = {
           " when to_char(a.request_date,'MM')='09' then 'Sep' " +
           " when to_char(a.request_date,'MM')='10' then 'Okt' " +
           " when to_char(a.request_date,'MM')='11' then 'Nov' " +
-          " when to_char(a.request_date,'MM')='11' then 'Des' end ||' '||to_char(a.request_date,'YYYY')  as tgl_pengajuan, " +
+          " when to_char(a.request_date,'MM')='12' then 'Des' end ||' '||to_char(a.request_date,'YYYY')  as tgl_pengajuan, " +
           " case when state='Approved' then 'Disetujui' " +
           " when state='Rejected' then 'Ditolak' " +
           " when state='Submitted' then 'Menunggu Persetujuan' " +
           " when state='Cancelled' then 'Batal' " +
-          ' end as Status,a.golid, a.request_days as cuti_diambil ' +
-          ' from leave_request_tbl a where employee_id =$1   ' +
-          " and a.request_date between (current_date -interval '1 days' * $2 ) and now() " +
-          ' order by leave_date_from desc ',
+          ' end as Status,a.golid , a.request_days as cuti_diambil ' +
+          ' from leave_request_tbl a where employee_id = $1   ' +
+          ' order by request_date desc ' +
+          ' LIMIT $2 ',
         [employee_id, filter],
         (error, results) => {
           if (error) {
