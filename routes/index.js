@@ -42,6 +42,8 @@ const sendDocPsdCtrl = require('../controller/sendDocPsdCtrl');
 const getHistManageCtrl = require('../controller/getHistManageCtrl');
 const getHistDetailManageCtrl = require('../controller/getHistDetailManageCtrl');
 const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
+const getMenuDocCtrl = require('../controller/getMenuDocCtrl');
+const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDocCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -249,6 +251,15 @@ module.exports = (app) => {
     .all(authenticateApiKey)
     .post(getDetailTravelAppCtrl.getDetail_Travel_App);
 
+  app
+    .route('/hcm/api/getMenuDoc')
+    .all(authenticateApiKey)
+    .post(getMenuDocCtrl.getMenu_Doc);
+
+  app
+    .route('/mmf/api/getPositionEmployeeDoc')
+    .all(authenticateApiKey)
+    .post(getPositionEmployeeDocCtrl.getPositionEmployee_Doc);
   // complaint routes
   app
     .route('/hcm/api/complaints')
