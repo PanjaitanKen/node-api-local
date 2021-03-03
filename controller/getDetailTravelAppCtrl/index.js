@@ -7,7 +7,7 @@ const controller = {
       const { golid } = request.body;
 
       pool.db_MMFPROD.query(
-        " select a.request_no no_transaksi, coalesce(b.pcx_purpose||' - '|| b.destination,' - ') as keperluan, " +
+        " select a.employee_id, a.request_no nobukti, coalesce(b.pcx_purpose||' - '|| b.destination,' - ') as keperluan, " +
           " to_char(b.start_date,'DD')||' '||  " +
           " case when to_char(b.start_date,'MM')='01' then 'Jan' " +
           " when to_char(b.start_date,'MM')='02' then 'Feb'  " +
@@ -51,9 +51,11 @@ const controller = {
           " case when a.state='Approved' then 'Disetujui' " +
           " when state='Rejected' then 'Ditolak' " +
           " when state='Submitted' then 'Menunggu Persetujuan'  " +
-          " when state='Cancelled' then 'Batal' end as Status " +
+          " when state='Cancelled' then 'Batal' end as Status ,d.display_name as nama " +
           ' from travel_request_tbl a  ' +
           ' left join travel_request_destination_tbl b on a.company_id = b.company_id and a.employee_id =b.employee_id and a.request_no =b.request_no  ' +
+          ' left join employee_tbl c on a.employee_id =c.employee_id ' +
+          ' left join person_tbl d on c.person_id =d.person_id ' +
           ' where a.golid = $1  ',
         [golid],
         (error, results) => {
@@ -64,7 +66,7 @@ const controller = {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
-              data: results.rows[0],
+              data: results.rows,
             });
           } else {
             response.status(200).send({

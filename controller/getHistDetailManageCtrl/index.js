@@ -8,7 +8,7 @@ const controller = {
 
       pool.db_MMFPROD.query(
         `with x as ( 
-          select a.employee_id , b.sequence_no as no_urut,  initcap(d.display_name) nama, initcap(a.leave_name) as Jenis,
+          select a.employee_id , trim(to_char(b.sequence_no,'9999999999999999')) as no_urut,  initcap(d.display_name) nama, initcap(a.leave_name) as Jenis,
           to_char(a.leave_date_from,'DD')||' '||
           case when to_char(a.leave_date_from ,'MM')='01' then 'Jan'
             when to_char(a.leave_date_from,'MM')='02' then 'Feb'
@@ -67,7 +67,8 @@ const controller = {
                  when state='Rejected' then 'Ditolak'
                  when state='Submitted' then 'Menunggu Persetujuan'
                  when state='Cancelled' then 'Batal'
-        end as Status,a.golid
+        end as Status,a.golid,
+        a.employee_id||'/'||to_char(b.status_date,'YYYYMMDD')||'/'||trim(to_char(b.sequence_no,'9999999999999999')) as nobukti 
           from leave_request_tbl a
           left join l_r_status_history_tbl b on a.employee_id =b.employee_id and a.sequence_no = b.sequence_no  and b.status<>'Submitted'
           left join employee_tbl  c on a.employee_id = c.employee_id 
@@ -78,7 +79,7 @@ const controller = {
           
           union all 
           
-          select a.employee_id,  b.sequence_no as no_urut, initcap(d.display_name) nama, initcap(e.wage_name ) as Jenis,
+          select a.employee_id,  trim(to_char(b.sequence_no,'9999999999999999')) as no_urut, initcap(d.display_name) nama, initcap(e.wage_name ) as Jenis,
           case when to_char(a.work_off_from ,'MM')='01' then 'Jan'
             when to_char(a.work_off_from,'MM')='02' then 'Feb'
             when to_char(a.work_off_from,'MM')='03' then 'Mar'
@@ -135,7 +136,7 @@ const controller = {
                  when state='Rejected' then 'Ditolak'
                  when state='Submitted' then 'Menunggu Persetujuan'
                  when state='Cancelled' then 'Batal'
-        end as Status, a.golid
+        end as Status, a.golid,  a.employee_id||'/'||to_char(b.status_date,'YYYYMMDD')||'/'||trim(to_char(b.sequence_no,'9999999999999999')) as nobukti 
           from employee_work_off_tbl  a
           left join l_r_status_history_tbl b on a.employee_id =b.employee_id and a.sequence_no = b.sequence_no  and b.status<>'Submitted'
           left join employee_tbl  c on a.employee_id = c.employee_id 
