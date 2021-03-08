@@ -207,7 +207,7 @@ module.exports = (app) => {
     .post(getComplaintCategoryCtrl.getKategori_Komplain);
 
   app
-    .route('/mmf/api/checkTokenOrange')
+    .route('/hcm/api/pushNotification')
     .all(authenticateApiKey)
     .post(pushNotificationCtrl.pushNotification);
 

@@ -9,7 +9,19 @@ const FCM = new fcm('./privateKey.json');
 const controller = {
   pushNotification(request, response) {
     try {
-      const { employee_id, submission_type, employee_name } = request.body;
+      const {
+        employee_id,
+        submission_type,
+        employee_name,
+        submission_id,
+        submission_status,
+      } = request.body;
+
+      if (submission_id == '1') {
+        var msg_body = `telah mengajukan ${submission_type} dan membutuhkan approval`;
+      } else if (submission_id == '2') {
+        var msg_body = `pengajuan ${submission_type} kamu telah ${submission_status}`;
+      }
 
       pool.db_MMFPROD.query(
         "select supervisor_id from employee_supervisor_tbl where employee_id = $1 and valid_to=date'9999-01-01'",
@@ -29,7 +41,6 @@ const controller = {
                 }
                 if (results.rowCount > 0) {
                   const token = results.rows[0].token_notification;
-
                   const message = {
                     data: {
                       // This is only optional, you can send any data
@@ -40,13 +51,12 @@ const controller = {
                       title: `Approval Pengajuan ${_.startCase(
                         submission_type
                       )}`,
-                      body: `${_.startCase(
-                        employee_name
-                      )} telah mengajukan ${submission_type} dan membutuhkan approval`,
+                      // eslint-disable-next-line block-scoped-var
+                      body: `${_.startCase(employee_name)} ${msg_body} `,
                     },
                     token,
                   };
-
+                  console.log(message);
                   FCM.send(message, (err, result) => {
                     if (err) {
                       response.status(200).send({
