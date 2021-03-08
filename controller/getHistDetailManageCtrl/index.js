@@ -35,7 +35,7 @@ const controller = {
               when to_char(a.leave_date_to,'MM')='10' then 'Okt'
               when to_char(a.leave_date_to,'MM')='11' then 'Nov'
               when to_char(a.leave_date_to,'MM')='12' then 'Des' end ||' '||to_char(a.leave_date_to,'YYYY') tanggal , ' ' waktu,
-              leave_balance as cuti_diambil, a.reason as alasan, 
+              request_days as cuti_diambil, a.reason as alasan, 
               
               to_char(a.request_date,'DD')||' '||
               case when to_char(a.request_date ,'MM')='01' then 'Jan'
@@ -107,19 +107,19 @@ const controller = {
               when to_char(a.work_off_to,'MM')='11' then 'Nov'
               when to_char(a.work_off_to,'MM')='12' then 'Des' end ||' '||to_char(a.work_off_to,'YYYY') tanggal ,
               work_off_from::timestamp::time ||' - '||work_off_to::timestamp::time Waktu, 0 as cuti_diambil,a.reason as alasan,
-              to_char(a.clocking_date,'DD')||' '||
-              case when to_char(a.clocking_date ,'MM')='01' then 'Jan'
-              when to_char(a.clocking_date,'MM')='02' then 'Feb'
-              when to_char(a.clocking_date,'MM')='03' then 'Mar'
-              when to_char(a.clocking_date,'MM')='04' then 'Apr'
-              when to_char(a.clocking_date,'MM')='05' then 'Mei'
-              when to_char(a.clocking_date,'MM')='06' then 'Jun'
-              when to_char(a.clocking_date,'MM')='07' then 'Jul'
-              when to_char(a.clocking_date,'MM')='08' then 'Ags'
-              when to_char(a.clocking_date,'MM')='09' then 'Sep'
-              when to_char(a.clocking_date,'MM')='10' then 'Okt'
-              when to_char(a.clocking_date,'MM')='11' then 'Nov'
-              when to_char(a.clocking_date,'MM')='12' then 'Des' end ||' '||to_char(a.clocking_date,'YYYY') tgl_pengajuan,
+              to_char(bb.status_date,'DD')||' '||
+              case when to_char(bb.status_date ,'MM')='01' then 'Jan'
+              when to_char(bb.status_date,'MM')='02' then 'Feb'
+              when to_char(bb.status_date,'MM')='03' then 'Mar'
+              when to_char(bb.status_date,'MM')='04' then 'Apr'
+              when to_char(bb.status_date,'MM')='05' then 'Mei'
+              when to_char(bb.status_date,'MM')='06' then 'Jun'
+              when to_char(bb.status_date,'MM')='07' then 'Jul'
+              when to_char(bb.status_date,'MM')='08' then 'Ags'
+              when to_char(bb.status_date,'MM')='09' then 'Sep'
+              when to_char(bb.status_date,'MM')='10' then 'Okt'
+              when to_char(bb.status_date,'MM')='11' then 'Nov'
+              when to_char(bb.status_date,'MM')='12' then 'Des' end ||' '||to_char(bb.status_date,'YYYY') tgl_pengajuan,
               to_char(b.status_date ,'DD')||' '||
               case when to_char(b.status_date ,'MM')='01' then 'Jan'
               when to_char(b.status_date,'MM')='02' then 'Feb'
@@ -140,6 +140,7 @@ const controller = {
         end as Status, a.golid,  a.employee_id||'/'||to_char(b.status_date,'YYYYMMDD')||'/'||trim(to_char(b.sequence_no,'9999999999999999')) as nobukti 
           from employee_work_off_tbl  a
           left join work_off_status_tbl b on a.employee_id =b.employee_id and a.sequence_no = b.sequence_no  and b.status<>'Submitted'
+          left join work_off_status_tbl bb on a.employee_id =bb.employee_id and a.sequence_no = bb.sequence_no  and bb.status='Submitted'
           left join employee_tbl  c on a.employee_id = c.employee_id 
           left join person_tbl d on c.person_id =d.person_id 
           left join wage_code_tbl e on a.absence_wage =e.wage_code 

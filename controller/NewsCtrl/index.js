@@ -17,7 +17,24 @@ const controller = {
     try {
       if (limit) {
         pool.db_HCM.query(
-          'SELECT * FROM trx_berita ORDER BY berita_id DESC LIMIT $1',
+          ' SELECT berita_id,kategori_berita,' +
+            " to_char(tgl_input,'DD')||' '|| " +
+            " case when to_char(tgl_input,'MM')='01' then 'Jan' " +
+            " when to_char(tgl_input,'MM')='02' then 'Feb' " +
+            " when to_char(tgl_input,'MM')='03' then 'Mar' " +
+            " when to_char(tgl_input,'MM')='04' then 'Apr' " +
+            " when to_char(tgl_input,'MM')='05' then 'Mei' " +
+            " when to_char(tgl_input,'MM')='06' then 'Jun' " +
+            " when to_char(tgl_input,'MM')='07' then 'Jul' " +
+            " when to_char(tgl_input,'MM')='08' then 'Ags' " +
+            " when to_char(tgl_input,'MM')='09' then 'Sep' " +
+            " when to_char(tgl_input,'MM')='10' then 'Okt' " +
+            " when to_char(tgl_input,'MM')='11' then 'Nov' " +
+            " when to_char(tgl_input,'MM')='12' then 'Des' end ||' '||to_char(tgl_input,'YYYY')||', '||to_char(tgl_input,'HH24:MI')||' WIB' as tgl_input,  " +
+            ' ket_header, deskripsi, tgl_event_dr ,tgl_event_sd , ' +
+            ' lokasi, url_webview, tgl_expired,images ' +
+            ' FROM trx_berita ORDER BY tgl_input DESC ' +
+            ' LIMIT $1 ',
           [limit],
           (error, results) => {
             if (error) throw error;

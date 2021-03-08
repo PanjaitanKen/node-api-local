@@ -32,11 +32,11 @@ const controller = {
               .toString();
 
             pool.db_HCM.query(
-              `with x as (select group_dok ,no_urut_group ,sub_dok ,id_dok ,nama_dok , keterangan , url_dok from mas_dokumen
+              `with x as (select group_dok ,no_urut_group ,sub_dok ,id_dok ,nama_dok , keterangan , url_dok, shareable from mas_dokumen
                 where employee_id ='ALL' and grade_id ='ALL' and position_id ='ALL' and 
                 (tgl_laku is  null or tgl_laku<=current_date )
                 union all
-                select group_dok ,no_urut_group ,sub_dok ,id_dok ,nama_dok , keterangan , url_dok from  
+                select group_dok ,no_urut_group ,sub_dok ,id_dok ,nama_dok , keterangan , url_dok, shareable from  
                 (select * from mas_dokumen
                 where employee_id <>'ALL' or grade_id <>'ALL' or position_id <>'ALL'
                 order by no_urut_group asc

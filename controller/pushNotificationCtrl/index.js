@@ -56,6 +56,7 @@ const controller = {
                     },
                     token,
                   };
+                  console.log(message);
                   FCM.send(message, (err, result) => {
                     if (err) {
                       response.status(200).send({
