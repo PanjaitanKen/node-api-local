@@ -20,7 +20,7 @@ const controller = {
         when to_char(a.leave_date_from,'MM')='10' then 'Okt'
         when to_char(a.leave_date_from,'MM')='11' then 'Nov'
         when to_char(a.leave_date_from,'MM')='12' then 'Des' end ||' '||to_char(a.leave_date_from,'YYYY') ||' - '||
-        to_char(a.leave_date_from,'DD')||' '||
+        to_char(a.leave_date_to,'DD')||' '||
         case when to_char(a.leave_date_to ,'MM')='01' then 'Jan'
         when to_char(a.leave_date_to,'MM')='02' then 'Feb'
         when to_char(a.leave_date_to,'MM')='03' then 'Mar'

@@ -8,7 +8,7 @@ const controller = {
 
       pool.db_MMFPROD.query(
         `with x as (
-          select 'Persetujuan Cuti' as Jenis, a.employee_id , to_char(b.sequence_no,'9999999999999999') as no_urut,  initcap(d.display_name) nama,
+          select 'Persetujuan Cuti' as Jenis, 'Riwayat Persetujuan Cuti' as jenis2, a.employee_id , to_char(b.sequence_no,'9999999999999999') as no_urut,  initcap(d.display_name) nama,
           case  when current_date-b.status_date=0 then 'Hari ini'
             when current_date-b.status_date=1 then 'Kemarin'
             when current_date-b.status_date=2 then '2 Hari yang lalu'
@@ -28,7 +28,7 @@ const controller = {
           b.status_date between (current_date -interval '1 days' * $2) and now()
           --order by b.status_date desc,a.sequence_no desc
           union all 
-          select 'Persetujuan Izin' as Jenis, a.employee_id,  to_char(b.sequence_no,'9999999999999999') as no_urut, initcap(d.display_name) nama,
+          select 'Persetujuan Izin' as Jenis, 'Riwayat Persetujuan Izin' as Jenis2, a.employee_id,  to_char(b.sequence_no,'9999999999999999') as no_urut, initcap(d.display_name) nama,
           case  when current_date-b.status_date=0 then 'Hari ini'
             when current_date-b.status_date=1 then 'Kemarin'
             when current_date-b.status_date=2 then '2 Hari yang lalu'
@@ -48,7 +48,7 @@ const controller = {
           where  state not in ('Submitted') and 
           b.status_date between (current_date -interval '1 days' *  $2 ) and now()
           union all
-          select 'Persetujuan Perjalanan Dinas' as Jenis, a.employee_id,  a.request_no as no_urut, initcap(c.display_name) nama,
+          select 'Persetujuan Perjalanan Dinas' as Jenis, 'Riwayat Persetujuan Perjalanan Dinas' as Jenis2, a.employee_id,  a.request_no as no_urut, initcap(c.display_name) nama,
           case  when current_date-d.status_date=0 then 'Hari ini'
             when current_date-d.status_date=1 then 'Kemarin'
             when current_date-d.status_date=2 then '2 Hari yang lalu'
