@@ -10,6 +10,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const http = require('http');
 const https = require('https');
+const request = require('supertest');
 
 const routes = require('./routes');
 
