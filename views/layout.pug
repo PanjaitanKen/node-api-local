@@ -3,7 +3,7 @@ html(lang="id")
   head
     meta(charset="UTF-8")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
 
     title #{title}
     
@@ -11,6 +11,14 @@ html(lang="id")
     link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous")
 
     style(type="text/css").
+      /* Documents webview */
+      p.description-documents {
+        font-family: 'Circular Std', sans-serif;
+        font-size: 14px;
+        color: #4F4F4F;
+      }
+
+      /* Carousel Image */
       .carousel-indicators [data-bs-target].active {
         background: #006BEB !important;
         width: 32px !important;
@@ -44,7 +52,112 @@ html(lang="id")
           height: 70vh;
         }
       }
+
+      /* Modal Image */
+      .modal-image {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        padding-top: 20vh;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: black;
+      }
+
+      .modal-image-content {
+        width: 100%;
+        position: relative;
+      }
+
+      .modal-image-close {
+        color: white;
+        position: absolute;
+        top: 0;
+        left: 25px;
+        font-size: 35px;
+        font-weight: bold;
+      }
+
+      .modal-image-close:hover,
+      .modal-image-close:focus {
+        color: #999;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .modal-image-slides { display: none; }
+      .modal-image-cursor { cursor: pointer; }
+      .modal-image-next { right: 0; }
+
+      .modal-image-prev,
+      .modal-image-next {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 10px;
+        margin-top: -25px;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        transition: 0.6s ease;
+        border-radius: 0 3px 3px 0;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      .modal-image-container-dots {
+        text-align: center;
+        margin: 18px 0;
+      }
+
+      .modal-image-dots.active {
+        background: #006BEB !important;
+        width: 32px !important;
+        border-radius: 10px !important;
+      }
+
+      @media screen and (max-width: 768px) {
+        .modal-image-zoom:hover {
+          transform: scale(1.5);
+        }
+
+        .modal-image-container-dots {
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          transform: translate(-50%, 0);
+        }
+      }
   body
     block content
     
     script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous") 
+
+    script.
+      let slideIndex = 0;
+      const openModalImage = () => document.getElementById("modalImage").style.display = "block"
+      const closeModalImage = () => document.getElementById("modalImage").style.display = "none"
+      const plusSlidesImage = (n) => showSlidesImage(slideIndex += n)
+      const currentSlideImage = (n) => showSlidesImage(slideIndex = n)
+
+      showSlidesImage(slideIndex);
+
+      function showSlidesImage(n) {
+        const slides = document.getElementsByClassName("modal-image-slides");
+        const dots = document.getElementsByClassName("modal-image-dots");
+
+        if (n > slides.length - 1) slideIndex = 0;
+        if (n < 0) slideIndex = slides.length - 1;
+
+        for (let i = 0; i < slides.length; i++) {
+          slides[i].style.display = "none";
+          dots[i].className = dots[i].className.replace(" active", "");
+        }
+        
+        slides[slideIndex].style.display = "block";
+        dots[slideIndex].className += " active";
+      }

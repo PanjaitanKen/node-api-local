@@ -44,6 +44,7 @@ const getHistDetailManageCtrl = require('../controller/getHistDetailManageCtrl')
 const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
 const getMenuDocCtrl = require('../controller/getMenuDocCtrl');
 const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDocCtrl');
+const getListMenuDocCtrl = require('../controller/getListMenuDocCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -257,6 +258,11 @@ module.exports = (app) => {
     .post(getMenuDocCtrl.getMenu_Doc);
 
   app
+    .route('/hcm/api/getListMenuDoc')
+    .all(authenticateApiKey)
+    .post(getListMenuDocCtrl.getListMenu_Doc);
+
+  app
     .route('/mmf/api/getPositionEmployeeDoc')
     .all(authenticateApiKey)
     .post(getPositionEmployeeDocCtrl.getPositionEmployee_Doc);
@@ -386,5 +392,6 @@ module.exports = (app) => {
     );
 
   // web view routes
-  app.route('/:category/:slug').get(WebViewCtrl.index);
+  app.route('/documents/:slug').get(WebViewCtrl.documents); // documents
+  app.route('/:category/:slug').get(WebViewCtrl.news); // news
 };
