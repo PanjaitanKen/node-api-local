@@ -4,7 +4,7 @@ const pool = require('../../db');
 const { URL } = process.env;
 
 const controller = {
-  index(request, response) {
+  news(request, response) {
     const {
       params: { category, slug },
     } = request;
@@ -59,6 +59,49 @@ const controller = {
           <h2 style="text-align: center;">INTERNAL SERVER ERROR</h2>
         </div>
       `);
+    }
+  },
+  documents(request, response) {
+    const {
+      params: { slug },
+    } = request;
+
+    switch (slug) {
+      case 'komponen-fasilitas-kesehatan':
+        response.render('documents/komponen_fasilitas_kesehatan', {
+          title: 'Komponen Fasilitas Kesehatan - Mandala',
+        });
+        break;
+      case 'ketentuan-fasilitas-kesehatan':
+        response.render('documents/ketentuan_fasilitas_kesehatan', {
+          title: 'Ketentuan Fasilitas Kesehatan - Mandala',
+        });
+        break;
+      case 'fasilitas-rawat-jalan':
+        response.render('documents/fasilitas_rawat_jalan', {
+          title: 'Fasilitas Rawat Jalan - Mandala',
+        });
+        break;
+      case 'fasilitas-rawat-inap':
+        response.render('documents/fasilitas_rawat_inap', {
+          title: 'Fasilitas Rawat Inap - Mandala',
+        });
+        break;
+      case 'fasilitas-kacamata':
+        response.render('documents/fasilitas_kacamata', {
+          title: 'Fasilitas Kacamata - Mandala',
+        });
+        break;
+      // eslint-disable-next-line no-fallthrough
+      default:
+        response.set('Content-Type', 'text/html');
+
+        response.send(`
+          <div style="max-width: 50vw; margin: 45vh auto;">
+            <h1 style="text-align: center;">404</h1>
+            <h2 style="text-align: center;">URL NOT FOUND</h2>
+          </div>
+        `);
     }
   },
 };
