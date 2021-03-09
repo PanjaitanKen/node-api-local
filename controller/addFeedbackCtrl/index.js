@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const dateFormat = require('dateformat');
 const pool = require('../../db');
+const _ = require('lodash');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
@@ -115,12 +116,44 @@ const controller = {
                                           }
                                           // eslint-disable-next-line eqeqeq
                                           if (results.rows != '') {
+                                            //map hostmail
+                                            const hostMailValue = _.filter(
+                                              results.rows,
+                                              function (o) {
+                                                return (
+                                                  o.setting_name ==
+                                                  'Host Feedback'
+                                                );
+                                              }
+                                            );
+                                            //map userMailValue
+                                            const userMailValue = _.filter(
+                                              results.rows,
+                                              function (o) {
+                                                return (
+                                                  o.setting_name ==
+                                                  'Email Feedback'
+                                                );
+                                              }
+                                            );
+                                            //map passwordMailValue
+                                            const passwordMailValue = _.filter(
+                                              results.rows,
+                                              function (o) {
+                                                return (
+                                                  o.setting_name ==
+                                                  'Password Feedback'
+                                                );
+                                              }
+                                            );
+
                                             const hostMail =
-                                              results.rows[3].setting_value;
+                                              hostMailValue[0].setting_value;
                                             const userMail =
-                                              results.rows[4].setting_value;
+                                              userMailValue[0].setting_value;
                                             const passwordMail =
-                                              results.rows[5].setting_value;
+                                              passwordMailValue[0]
+                                                .setting_value;
                                             const transporter = nodemailer.createTransport(
                                               {
                                                 // service: 'gmail',
