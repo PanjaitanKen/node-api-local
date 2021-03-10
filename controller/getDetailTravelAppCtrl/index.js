@@ -24,7 +24,8 @@ const controller = {
           " when a.state='Rejected' then 'Ditolak' " +
           " when a.state='Submitted' then 'Menunggu Persetujuan'  " +
           " when a.state='Cancelled' then 'Batal' end as Status ,d.display_name as nama," +
-          ' appr_1, appr_2, appr_3, appr_4, appr_5, a.golid ' +
+          ' appr_1, appr_2, appr_3, appr_4, appr_5, a.golid, ' +
+          " 'MMF - Mandala Multifinance Tbk' as company_id " +
           ' from travel_request_tbl a  ' +
           ' left join employee_tbl c on a.employee_id =c.employee_id ' +
           ' left join person_tbl d on c.person_id =d.person_id ' +
@@ -87,7 +88,7 @@ const controller = {
           if (results.rows != '') {
             const respData = results.rows[0];
             pool.db_MMFPROD.query(
-              `select  coalesce(b.pcx_purpose||' - '|| b.destination,' - ') as keperluan, 
+              `select  coalesce(b.pcx_purpose,' - ') as keperluan, 
               to_char(b.start_date,'DD')||' '||  
               case when to_char(b.start_date,'MM')='01' then 'Jan' 
               when to_char(b.start_date,'MM')='02' then 'Feb'  
@@ -100,7 +101,7 @@ const controller = {
               when to_char(b.start_date,'MM')='09' then 'Sep'  
               when to_char(b.start_date,'MM')='10' then 'Okt'  
               when to_char(b.start_date,'MM')='11' then 'Nov'  
-              when to_char(b.start_date,'MM')='12' then 'Des' end ||' '||to_char(b.start_date,'YYYY') as tgl_dari, 
+              when to_char(b.start_date,'MM')='12' then 'Des' end ||' '||to_char(b.start_date,'YYYY') ||' s/d '||
               to_char(b.end_date,'DD')||' '||  
               case when to_char(b.end_date,'MM')='01' then 'Jan'  
               when to_char(b.end_date,'MM')='02' then 'Feb'  
@@ -113,7 +114,7 @@ const controller = {
               when to_char(b.end_date,'MM')='09' then 'Sep'  
               when to_char(b.end_date,'MM')='10' then 'Okt'  
               when to_char(b.end_date,'MM')='11' then 'Nov' 
-              when to_char(b.end_date,'MM')='12' then 'Des' end ||' '||to_char(b.end_date,'YYYY') as tgl_sampai, coalesce(destination,'-') as tujuan, 
+              when to_char(b.end_date,'MM')='12' then 'Des' end ||' '||to_char(b.end_date,'YYYY') as tgl_dari_sampai, coalesce(destination,'-') as tujuan, 
               coalesce(pcx_note,'-') as keterangan
               from travel_request_tbl a  
               left join travel_request_destination_tbl b on a.company_id = b.company_id and a.employee_id =b.employee_id and a.request_no =b.request_no  
