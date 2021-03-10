@@ -41,6 +41,7 @@ const getHistLeaveFilterCtrl = require('../controller/getHistLeaveFilterCtrl');
 const sendDocPsdCtrl = require('../controller/sendDocPsdCtrl');
 const getHistManageCtrl = require('../controller/getHistManageCtrl');
 const getHistDetailManageCtrl = require('../controller/getHistDetailManageCtrl');
+const getHistDetailManageTravelCtrl = require('../controller/getHistDetailManageTravelCtrl');
 const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
 const getMenuDocCtrl = require('../controller/getMenuDocCtrl');
 const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDocCtrl');
@@ -246,6 +247,11 @@ module.exports = (app) => {
     .route('/mmf/api/getHistDetailManage')
     .all(authenticateApiKey)
     .post(getHistDetailManageCtrl.getHistDetailManage);
+
+  app
+    .route('/mmf/api/getHistDetailManageTravel')
+    .all(authenticateApiKey)
+    .post(getHistDetailManageTravelCtrl.getHistDetailManageTravel);
 
   app
     .route('/mmf/api/getDetailTravelApp')

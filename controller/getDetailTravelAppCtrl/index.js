@@ -101,7 +101,7 @@ const controller = {
               when to_char(b.start_date,'MM')='09' then 'Sep'  
               when to_char(b.start_date,'MM')='10' then 'Okt'  
               when to_char(b.start_date,'MM')='11' then 'Nov'  
-              when to_char(b.start_date,'MM')='12' then 'Des' end ||' '||to_char(b.start_date,'YYYY') ||' s/d '||
+              when to_char(b.start_date,'MM')='12' then 'Des' end ||' '||to_char(b.start_date,'YYYY') ||' - '||
               to_char(b.end_date,'DD')||' '||  
               case when to_char(b.end_date,'MM')='01' then 'Jan'  
               when to_char(b.end_date,'MM')='02' then 'Feb'  
