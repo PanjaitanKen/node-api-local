@@ -45,8 +45,9 @@ const controller = {
             if (results.rows != '') {
               const emp_cabang = results.rows[0].cabang;
               const emp_displayName = results.rows[0].display_name;
-              const emp_email = results.rows[0].email;
-
+              const emp_email = results.rows[0].email
+                ? results.rows[0].email
+                : '-';
               pool.db_HCM.query(
                 'select * from mas_kategori_komplain where id_kategori_komplain =$1 ',
                 [id_kategori_komplain],
@@ -57,7 +58,7 @@ const controller = {
                   // eslint-disable-next-line eqeqeq
                   if (results.rows != '') {
                     const { email_to, cc_to, subject_email } = results.rows[0];
-
+                    const cc_receipt = cc_to + ', ' + emp_email;
                     pool.db_MMFPROD.query(
                       'select a.position_id , b.internal_title ' +
                         'from employee_position_tbl a ' +
@@ -173,7 +174,7 @@ const controller = {
                                             const mailOptions = {
                                               from: userMail,
                                               to: email_to,
-                                              cc: cc_to,
+                                              cc: cc_receipt,
                                               subject: subject_email,
                                               text:
                                                 `No Feedback: ${id_komplain}\n` +
