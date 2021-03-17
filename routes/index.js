@@ -46,6 +46,7 @@ const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
 const getMenuDocCtrl = require('../controller/getMenuDocCtrl');
 const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDocCtrl');
 const getListMenuDocCtrl = require('../controller/getListMenuDocCtrl');
+const mailNotifierCtrl = require('../controller/mailNotifierCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -272,6 +273,11 @@ module.exports = (app) => {
     .route('/mmf/api/getPositionEmployeeDoc')
     .all(authenticateApiKey)
     .post(getPositionEmployeeDocCtrl.getPositionEmployee_Doc);
+
+  app
+    .route('/hcm/api/mailNotifierCtrl')
+    .all(authenticateApiKey)
+    .post(mailNotifierCtrl.mailNotifier);
   // complaint routes
   app
     .route('/hcm/api/complaints')

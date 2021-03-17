@@ -10,12 +10,16 @@ const helmet = require('helmet');
 const compression = require('compression');
 const http = require('http');
 const https = require('https');
-const request = require('supertest');
+
+//supertest
+const app = require('./server')
+const supertest = require('supertest');
+const request = supertest(app);
 
 const routes = require('./routes');
+const notifier = require('mail-notifier');
 
 // start app
-const app = express();
 const port = process.env.PORT || 3000;
 
 // increase max sockets
@@ -90,6 +94,10 @@ process.on('unhandledRejection', (reason) => {
   console.error('unhandled promise rejection:', reason.message || reason);
 });
 
-app.listen(port, () => {
-  console.log(`App running on port ${port}.`);
-});
+// for API 
+// app.listen(port, () => {
+//   console.log(`App running on port ${port}.`);
+// });
+
+//for unit testing
+module.exports = app;
