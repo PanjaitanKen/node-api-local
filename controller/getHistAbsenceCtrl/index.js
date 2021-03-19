@@ -28,7 +28,8 @@ const controller = {
           " max(case when in_out='0' then transfer_message else null end ) as transfer_message_masuk, " +
           " max(case when in_out='1' then transfer_message else null end ) as transfer_message_pulang, " +
           " case when qq.employee_id is not null then '1' else '0' end as status_izin, " +
-          " case when rr.absence_wage is not null then '1' else '0' end as status_cuti " +
+          " case when rr.absence_wage is not null then '1' else '0' end as status_cuti, " +
+          " case when tt.employee_id is not null then '1' else '0' end as status_PD " +
           ' from ' +
           " (select to_char(dates_this_month, 'YYYY-MM-DD')  as Tgl_absen, " +
           " case when trim(to_char(dates_this_month,'Day'))='Sunday' then 'Minggu' " +
@@ -57,7 +58,7 @@ const controller = {
           " left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1 " +
           " left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
           ' left join (select employee_id,clocking_date, state  ' +
-          ' from employee_work_off_tbl where  '+
+          ' from employee_work_off_tbl where  ' +
           '  employee_id = $1 ' +
           " order by clocking_date desc) qq on xx.Tgl_absen=to_char(qq.clocking_date,'YYYY-MM-DD') and qq.employee_id= $1  and qq.state='Approved' " +
           ' left join (select employee_id, clocking_date, absence_wage from  ' +
@@ -81,7 +82,13 @@ const controller = {
           ' group by employee_id ,clocking_date  ' +
           ' order by clocking_date desc ' +
           ' ) ss on xx.Tgl_absen=ss.clocking_date and ss.employee_id= $1 ' +
-          ' group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2, rr.absence_wage,ss.absen_masuk, ss.absen_pulang ' +
+          ' left join ' +
+          " (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd " +
+          ' from travel_request_tbl a ' +
+          ' left join travel_request_destination_tbl b on a.request_no =b.request_no ' +
+          ' where a.employee_id = $1 ' +
+          " and state in ('Approved','Partially Approved')) tt on tt.employee_id= $1 and tt.tgl_pd = xx.Tgl_absen   " +
+          ' group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2, rr.absence_wage,ss.absen_masuk, ss.absen_pulang, tt.employee_id ' +
           ' order by xx.tgl_absen desc ',
         [employee_id, filter_date],
         (error, results) => {

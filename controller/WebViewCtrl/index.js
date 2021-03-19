@@ -92,6 +92,21 @@ const controller = {
           title: 'Fasilitas Kacamata - Mandala',
         });
         break;
+      case 'absensi':
+        response.render('documents/absensi', {
+          title: 'Absensi - Mandala',
+        });
+        break;
+      case 'absensi-dan-hak-cuti':
+        response.render('documents/absensi_dan_hak_cuti', {
+          title: 'Absensi dan Hak Cuti - Mandala',
+        });
+        break;
+      case 'cuti-dan-izin':
+        response.render('documents/cuti_dan_izin', {
+          title: 'Cuti dan Izin - Mandala',
+        });
+        break;
       // eslint-disable-next-line no-fallthrough
       default:
         response.set('Content-Type', 'text/html');

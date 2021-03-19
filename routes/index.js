@@ -46,6 +46,7 @@ const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
 const getMenuDocCtrl = require('../controller/getMenuDocCtrl');
 const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDocCtrl');
 const getListMenuDocCtrl = require('../controller/getListMenuDocCtrl');
+const getHolidayCtrl = require('../controller/getHolidayCtrl');
 const mailNotifierCtrl = require('../controller/mailNotifierCtrl');
 
 const authenticateApiKey = (req, res, next) => {
@@ -270,14 +271,19 @@ module.exports = (app) => {
     .post(getListMenuDocCtrl.getListMenu_Doc);
 
   app
-    .route('/mmf/api/getPositionEmployeeDoc')
+    .route('/hcm/api/getHoliday')
     .all(authenticateApiKey)
-    .post(getPositionEmployeeDocCtrl.getPositionEmployee_Doc);
+    .post(getHolidayCtrl.getHoliday);
 
   app
     .route('/hcm/api/mailNotifierCtrl')
     .all(authenticateApiKey)
     .post(mailNotifierCtrl.mailNotifier);
+
+  app
+    .route('/mmf/api/getPositionEmployeeDoc')
+    .all(authenticateApiKey)
+    .post(getPositionEmployeeDocCtrl.getPositionEmployee_Doc);
   // complaint routes
   app
     .route('/hcm/api/complaints')
