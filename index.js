@@ -94,10 +94,11 @@ process.on('unhandledRejection', (reason) => {
   console.error('unhandled promise rejection:', reason.message || reason);
 });
 
-// for API 
-// app.listen(port, () => {
-//   console.log(`App running on port ${port}.`);
-// });
+//app listen for api serv or api test
+//for API 
+app.listen(port, () => {
+  console.log(`App running on port ${port}.`);
+});
 
 //for unit testing
-module.exports = app;
+// module.exports = app;
