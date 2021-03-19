@@ -193,7 +193,22 @@ module.exports = (app) => {
   app
     .route('/hcm/api/addFeedback')
     .all(authenticateApiKey)
-    .post(addFeedbackCtrl.addFeedback);
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('id_kategori_komplain')
+          .notEmpty()
+          .withMessage('id_kategori_komplain TO REQUIRED!'),
+        check('information_data')
+          .notEmpty()
+          .withMessage('information_data TO REQUIRED!'),
+        check('id_session')
+          .notEmpty()
+          .withMessage('id_session EMAIL REQUIRED!'),
+        check('number_phone').notEmpty().withMessage('NO HP REQUIRED!'),
+      ],
+      addFeedbackCtrl.addFeedback
+    );
 
   app
     .route('/hcm/api/checkEmployeeLoginUAT')

@@ -2,10 +2,14 @@ const nodemailer = require('nodemailer');
 const dateFormat = require('dateformat');
 const pool = require('../../db');
 const _ = require('lodash');
+const { validationResult } = require('express-validator');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
   addFeedback(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
+
     try {
       const {
         employee_id,
