@@ -4,7 +4,7 @@ const pool = require('../../db');
 const controller = {
   getHist_Leave(request, response) {
     try {
-      const { employee_id, filter } = request.body;
+      const { employee_id, filter, waktu } = request.body;
 
       pool.db_MMFPROD.query(
         'select employee_id ,leave_name, ' +
@@ -68,9 +68,10 @@ const controller = {
           " when state='Cancelled' then 'Batal' " +
           ' end as Status,a.golid , a.request_days as cuti_diambil ' +
           ' from leave_request_tbl a where employee_id = $1   ' +
-          ' order by request_date desc ' +
+          " and a.request_date between (current_date -interval '1 days' * $3 ) and now() " +
+          ' order by leave_date_from desc ' +
           ' LIMIT $2 ',
-        [employee_id, filter],
+        [employee_id, filter, waktu],
         (error, results) => {
           if (error) {
             throw error;
