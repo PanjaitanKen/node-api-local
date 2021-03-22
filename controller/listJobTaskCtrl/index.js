@@ -7,7 +7,7 @@ const controller = {
       const { employee_id } = request.body;
 
       pool.db_MMFPROD.query(
-        "select 'Persetujuan Izin' Keterangan,initcap(c.display_name) nama , " +
+        " with x as ( select 'Persetujuan Izin' Keterangan,initcap(c.display_name) nama , " +
           " case  when current_date-clocking_date=0 then 'Hari ini' " +
           " when current_date-clocking_date=1 then 'Kemarin'  " +
           " when current_date-clocking_date=2 then '2 Hari yang lalu'  " +
@@ -17,7 +17,7 @@ const controller = {
           " when current_date-clocking_Date=6 then '6 Hari yang lalu'  " +
           " when current_date-clocking_Date=7 then '7 Hari yang lalu'  " +
           " when current_date-clocking_Date>7 then to_char(clocking_date,'DD Mon YYYY') end Durasi_Waktu , " +
-          " a.golid,'Pengajuan Ijin' Keterangan2  " +
+          " a.golid,'Pengajuan Ijin' Keterangan2 , clocking_date  tanggal " +
           ' from employee_work_off_tbl a  ' +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id  ' +
@@ -34,7 +34,7 @@ const controller = {
           " when current_date-request_date=6 then '6 Hari yang lalu' " +
           " when current_date-request_date=7 then '7 Hari yang lalu' " +
           " when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end Durasi_Waktu ," +
-          " a.golid,'Pengajuan Cuti' Keterangan2 from leave_request_tbl  a " +
+          " a.golid,'Pengajuan Cuti' Keterangan2, request_date tanggal from leave_request_tbl  a " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
           " where a.state='Submitted'  " +
@@ -50,7 +50,7 @@ const controller = {
           " when current_date-request_date=6 then '6 Hari yang lalu'  " +
           " when current_date-request_date=7 then '7 Hari yang lalu'  " +
           " when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end Durasi_Waktu , " +
-          " a.golid,'Pengajuan Perjalanan Dinas' Keterangan2 from travel_request_tbl  a  " +
+          " a.golid,'Pengajuan Perjalanan Dinas' Keterangan2, request_date tanggal from travel_request_tbl  a  " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
           ' where a.golid in  ' +
@@ -74,7 +74,10 @@ const controller = {
           ' select ref_id||seq_min as ref_id_min  ' +
           '  from x ' +
           '  ) ' +
-          " and state='Unapproved' ) ",
+          " and state='Unapproved' ) " +
+          '  )  select keterangan, nama, durasi_waktu,golid,keterangan2 ' +
+          ' from x ' +
+          ' order by tanggal desc ',
         [employee_id],
         (error, results) => {
           if (error) throw error;

@@ -7,16 +7,16 @@ const controller = {
 
       pool.db_HCM.query(
         ' with x as  ' +
-          ' (select employee_id, grade_id, position_id, tgl_expired, b.group_dok , b.no_urut_group , b.sub_dok , b.id_dok , b.nama_dok , b.keterangan , b.url_dok, b.shareable  ' +
+          ' (select employee_id, grade_id, position_id, tgl_expired, b.group_dok , b.no_urut_group , b.sub_dok , b.id_dok , b.nama_dok , b.keterangan , b.url_dok, b.shareable, b.url_image  ' +
           ' from mas_dokumen a ' +
           ' left join mas_menu_dokumen b on a.no_urut_group=b.no_urut_group and a.sub_dok=b.sub_dok and a.id_dok =b.id_dok  ' +
           " where a.employee_id ='ALL' and a.grade_id ='ALL' and a.position_id ='ALL' and " +
           ' (b.tgl_expired is  null or b.tgl_expired<=current_date ) ' +
           ' union all ' +
-          ' select employee_id, grade_id, position_id, tgl_expired, group_dok ,no_urut_group ,sub_dok ,id_dok ,nama_dok , keterangan , url_dok, shareable ' +
+          ' select employee_id, grade_id, position_id, tgl_expired, group_dok ,no_urut_group ,sub_dok ,id_dok ,nama_dok , keterangan , url_dok, shareable, url_image ' +
           ' from  ' +
           ' (select a.employee_id ,a.grade_id ,a.position_id ,b.tgl_expired ,b.group_dok , b.no_urut_group , b.sub_dok , b.id_dok , ' +
-          ' b.nama_dok , b.keterangan , b.url_dok, b.shareable  ' +
+          ' b.nama_dok , b.keterangan , b.url_dok, b.shareable, b.url_image  ' +
           ' from mas_dokumen a ' +
           ' left join mas_menu_dokumen b on a.no_urut_group=b.no_urut_group and a.sub_dok=b.sub_dok and a.id_dok = b.id_dok ' +
           " where a.employee_id <>'ALL' or a.grade_id <>'ALL' or a.position_id <>'ALL' " +

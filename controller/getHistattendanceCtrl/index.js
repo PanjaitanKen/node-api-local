@@ -4,7 +4,7 @@ const pool = require('../../db');
 const controller = {
   getHist_attendance(request, response) {
     try {
-      const { employee_id, filter_hari } = request.body;
+      const { employee_id, filter_hari, jenis_izin } = request.body;
 
       pool.db_MMFPROD.query(
         `select b.wage_name as jenis_ijin,
@@ -24,8 +24,9 @@ const controller = {
         group by employee_id ,sequence_no ,status_date
         order by status_date desc ) c on a.employee_id = c.employee_id and a.sequence_no = c.sequence_no
         where a.employee_id= $1 and c.status_date between (current_date -interval '1 days' * $2 ) and now()
+        and b.wage_name = ANY($3)
         order by c.status_date desc`,
-        [employee_id, filter_hari],
+        [employee_id, filter_hari, jenis_izin],
         (error, results) => {
           if (error) throw error;
 

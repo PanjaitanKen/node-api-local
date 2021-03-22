@@ -67,7 +67,7 @@ const controller = {
                       'select a.position_id , b.internal_title ' +
                         'from employee_position_tbl a ' +
                         'left join position_tbl b on a.position_id = b.position_id ' +
-                        'where employee_id =$1',
+                        'where employee_id =$1 and current_date between a.valid_from and a.valid_to ',
                       [employee_id],
                       (error, results) => {
                         if (error) {
