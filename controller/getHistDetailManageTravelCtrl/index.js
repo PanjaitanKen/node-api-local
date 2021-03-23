@@ -7,19 +7,19 @@ const controller = {
 
       pool.db_MMFPROD.query(
         ' select d.display_name as nama, a.employee_id, a.request_no nobukti,  ' +
-          " to_char(a.request_date,'DD')||' '||   " +
-          " case when to_char(a.request_date,'MM')='01' then 'Jan' " +
-          " when to_char(a.request_date,'MM')='02' then 'Feb'  " +
-          " when to_char(a.request_date,'MM')='03' then 'Mar' " +
-          " when to_char(a.request_date,'MM')='04' then 'Apr' " +
-          " when to_char(a.request_date,'MM')='05' then 'Mei' " +
-          " when to_char(a.request_date,'MM')='06' then 'Jun' " +
-          " when to_char(a.request_date,'MM')='07' then 'Jul' " +
-          " when to_char(a.request_date,'MM')='08' then 'Ags' " +
-          " when to_char(a.request_date,'MM')='09' then 'Sep' " +
-          " when to_char(a.request_date,'MM')='10' then 'Okt' " +
-          " when to_char(a.request_date,'MM')='11' then 'Nov' " +
-          " when to_char(a.request_date,'MM')='12' then 'Des' end ||' '||to_char(a.request_date,'YYYY') as tgl_pengajuan, " +
+          " to_char(f.status_date,'DD')||' '||   " +
+          " case when to_char(f.status_date,'MM')='01' then 'Jan' " +
+          " when to_char(f.status_date,'MM')='02' then 'Feb'  " +
+          " when to_char(f.status_date,'MM')='03' then 'Mar' " +
+          " when to_char(f.status_date,'MM')='04' then 'Apr' " +
+          " when to_char(f.status_date,'MM')='05' then 'Mei' " +
+          " when to_char(f.status_date,'MM')='06' then 'Jun' " +
+          " when to_char(f.status_date,'MM')='07' then 'Jul' " +
+          " when to_char(f.status_date,'MM')='08' then 'Ags' " +
+          " when to_char(f.status_date,'MM')='09' then 'Sep' " +
+          " when to_char(f.status_date,'MM')='10' then 'Okt' " +
+          " when to_char(f.status_date,'MM')='11' then 'Nov' " +
+          " when to_char(f.status_date,'MM')='12' then 'Des' end ||' '||to_char(f.status_date,'YYYY') as tgl_pengajuan, " +
           " e.state, case when e.state='Approved' then 'Disetujui' " +
           " when e.state='Rejected' then 'Ditolak' " +
           " when e.state='Submitted' then 'Menunggu Persetujuan'  " +
@@ -46,7 +46,10 @@ const controller = {
           ' left join (select *   ' +
           ' from approval_structure_tbl  ' +
           " where class_name ='com.sps.travelexpense.transaction.TravelRequest' " +
-          ' and ref_id= $2 and approver_id = $1) e on a.golid = e.ref_id and e.approver_id = $1	 ' +
+          ' and ref_id= $2 and approver_id = $1) e on a.golid = e.ref_id and e.approver_id = $1 ' +
+          ' left join (select request_no, min(status_date) status_date from  ' +
+          "            travel_request_status_tbl where request_status ='Prepared' " +
+          '            group by request_no) f  on a.request_no = f.request_no ' +
           ' where a.golid = $2 ',
         [employee_id, golid],
         (error, results) => {
