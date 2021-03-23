@@ -12,7 +12,7 @@ const http = require('http');
 const https = require('https');
 
 //supertest
-const app = require('./server')
+const app = require('./server');
 const supertest = require('supertest');
 const request = supertest(app);
 
@@ -95,7 +95,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 //app listen for api serv or api test
-//for API 
+//for API
 app.listen(port, () => {
   console.log(`App running on port ${port}.`);
 });
