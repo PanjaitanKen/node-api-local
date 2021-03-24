@@ -16,6 +16,6 @@ describe('POST /checkTokenNotif', () => {
         '$2y$12$YVwznP6BkSevltSe/d64l.MEQPf/tnNR4Rax1kG.8RCKD7iC.OEJa'
       );
     // .expect('Content-Type', 'application/json; charset=utf-8')
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(202);
   });
 });
