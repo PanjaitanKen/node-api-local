@@ -8,19 +8,20 @@ const controller = {
 
       pool.db_MMFPROD.query(
         " with x as ( select 'Persetujuan Izin' Keterangan,initcap(c.display_name) nama , " +
-          " case  when current_date-clocking_date=0 then 'Hari ini' " +
-          " when current_date-clocking_date=1 then 'Kemarin'  " +
-          " when current_date-clocking_date=2 then '2 Hari yang lalu'  " +
-          " when current_date-clocking_date=3 then '3 Hari yang lalu'  " +
-          " when current_date-clocking_Date=4 then '4 Hari yang lalu'  " +
-          " when current_date-clocking_Date=5 then '5 Hari yang lalu'  " +
-          " when current_date-clocking_Date=6 then '6 Hari yang lalu'  " +
-          " when current_date-clocking_Date=7 then '7 Hari yang lalu'  " +
-          " when current_date-clocking_Date>7 then to_char(clocking_date,'DD Mon YYYY') end Durasi_Waktu , " +
-          " a.golid,'Pengajuan Ijin' Keterangan2 , clocking_date  tanggal " +
+          " case  when current_date-d.status_date=0 then 'Hari ini' " +
+          " when current_date-d.status_date=1 then 'Kemarin'  " +
+          " when current_date-d.status_date=2 then '2 Hari yang lalu'  " +
+          " when current_date-d.status_date=3 then '3 Hari yang lalu'  " +
+          " when current_date-d.status_date=4 then '4 Hari yang lalu'  " +
+          " when current_date-d.status_date=5 then '5 Hari yang lalu'  " +
+          " when current_date-d.status_date=6 then '6 Hari yang lalu'  " +
+          " when current_date-d.status_date=7 then '7 Hari yang lalu'  " +
+          " when current_date-d.status_date>7 then to_char(d.status_date,'DD Mon YYYY') end Durasi_Waktu , " +
+          " a.golid,'Pengajuan Ijin' Keterangan2 , d.status_date  tanggal " +
           ' from employee_work_off_tbl a  ' +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id  ' +
+          ' left join work_off_status_tbl d on a.employee_id = d.employee_id and a.sequence_no = d.sequence_no '+
           " where a.state='Submitted'  " +
           " and a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and valid_to=date'9999-01-01') " +
           ' union all  ' +
@@ -41,18 +42,21 @@ const controller = {
           " and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and valid_to=date'9999-01-01') " +
           ' union all  ' +
           " select 'Persetujuan Perjalanan Dinas' Keterangan,initcap(c.display_name) nama,  " +
-          " case  when current_date-request_date=0 then 'Hari ini'   " +
-          " when current_date-request_date=1 then 'Kemarin'   " +
-          " when current_date-request_date=2 then '2 Hari yang lalu'  " +
-          " when current_date-request_date=3 then '3 Hari yang lalu'  " +
-          " when current_date-request_date=4 then '4 Hari yang lalu'  " +
-          " when current_date-request_date=5 then '5 Hari yang lalu'  " +
-          " when current_date-request_date=6 then '6 Hari yang lalu'  " +
-          " when current_date-request_date=7 then '7 Hari yang lalu'  " +
-          " when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end Durasi_Waktu , " +
-          " a.golid,'Pengajuan Perjalanan Dinas' Keterangan2, request_date tanggal from travel_request_tbl  a  " +
+          " case  when current_date-d.status_date=0 then 'Hari ini'   " +
+          " when current_date-d.status_date=1 then 'Kemarin'   " +
+          " when current_date-d.status_date=2 then '2 Hari yang lalu'  " +
+          " when current_date-d.status_date=3 then '3 Hari yang lalu'  " +
+          " when current_date-d.status_date=4 then '4 Hari yang lalu'  " +
+          " when current_date-d.status_date=5 then '5 Hari yang lalu'  " +
+          " when current_date-d.status_date=6 then '6 Hari yang lalu'  " +
+          " when current_date-d.status_date=7 then '7 Hari yang lalu'  " +
+          " when current_date-d.status_date>7 then to_char(d.status_date,'DD Mon YYYY') end Durasi_Waktu , " +
+          " a.golid,'Pengajuan Perjalanan Dinas' Keterangan2, d.status_date tanggal from travel_request_tbl  a  " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
+          ' left join (select request_no, min(status_date) status_date from  '+
+          "           travel_request_status_tbl where request_status ='Prepared' "+
+          '           group by request_no) d  on a.request_no = d.request_no '+
           ' where a.golid in  ' +
           ' (select ref_id from approval_structure_tbl ' +
           " where class_name ='com.sps.travelexpense.transaction.TravelRequest' " +

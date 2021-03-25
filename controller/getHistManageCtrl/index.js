@@ -67,7 +67,7 @@ const controller = {
                 from travel_request_tbl  a
                 left join employee_tbl  b on a.employee_id = b.employee_id 
                 left join person_tbl c on b.person_id =c.person_id 
-                left join travel_request_status_tbl d on a.employee_id = d.employee_id and a.request_no = d.request_no 
+                left join travel_request_status_tbl d on a.employee_id = d.employee_id and a.request_no = d.request_no  and d.user_emp_id = $1
                 left join (
                           select * from approval_structure_tbl where 
                           class_name ='com.sps.travelexpense.transaction.TravelRequest' 
