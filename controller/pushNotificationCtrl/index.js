@@ -31,10 +31,14 @@ const controller = {
             throw error;
           }
           if (results.rowCount > 0) {
-            const employee_supervisor = results.rows[0].supervisor_id;
+            const employee_token =
+              submission_id == '1'
+                ? results.rows[0].supervisor_id
+                : employee_id;
+            console.log(employee_token);
             pool.db_HCM.query(
               'SELECT token_notification FROM trx_notification where employee_id =$1',
-              [employee_supervisor],
+              [employee_token],
               (error, results) => {
                 if (error) {
                   throw error;
