@@ -48,8 +48,11 @@ const controller = {
                   const message = {
                     data: {
                       // This is only optional, you can send any data
-                      score: '850',
-                      time: '2:45',
+                      title: `Approval Pengajuan ${_.startCase(
+                        submission_type
+                      )}`,
+                      // eslint-disable-next-line block-scoped-var
+                      body: `${_.startCase(employee_name)} ${msg_body} `,
                     },
                     notification: {
                       title: `Approval Pengajuan ${_.startCase(
