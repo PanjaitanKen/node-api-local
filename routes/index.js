@@ -6,6 +6,7 @@ const countJobTaskCtrl = require('../controller/countJobTaskCtrl');
 const ListJobTaskCtrl = require('../controller/listJobTaskCtrl');
 const getLongitudeBranchCtrl = require('../controller/getLongitudeBranchCtrl');
 const getURLHCMCtrl = require('../controller/getURLHCMCtrl');
+const getURLAssetsCtrl = require('../controller/getURLAssetsCtrl');
 const AddClockInCtrl = require('../controller/AddClockInCtrl');
 const AddClockOutCtrl = require('../controller/AddClockOutCtrl');
 const getHistAttendanceCtrl = require('../controller/getHistattendanceCtrl');
@@ -89,6 +90,11 @@ module.exports = (app) => {
     .route('/hcm/api/getURLHCM')
     .all(authenticateApiKey)
     .post(getURLHCMCtrl.getURL_HCM);
+
+  app
+    .route('/hcm/api/getURLAssets')
+    .all(authenticateApiKey)
+    .post(getURLAssetsCtrl.getURL_Assets);
 
   app
     .route('/mmf/api/AddClockIn')
@@ -205,7 +211,6 @@ module.exports = (app) => {
         check('id_session')
           .notEmpty()
           .withMessage('id_session EMAIL REQUIRED!'),
-        check('number_phone').notEmpty().withMessage('NO HP REQUIRED!'),
       ],
       addFeedbackCtrl.addFeedback
     );

@@ -16,7 +16,6 @@ const controller = {
         id_kategori_komplain,
         information_data,
         id_session,
-        number_phone,
       } = request.body;
 
       if (
@@ -82,12 +81,11 @@ const controller = {
                             'yyyy-mm-dd hh:MM:ss'
                           );
                           pool.db_HCM.query(
-                            'insert into trx_komplain (cabang,employee_id ,no_hp , email ,id_kategori_komplain ,keterangan, tgl_komplain , id_session ,transfer_message,position_id, internal_title, nama_karyawan) ' +
-                              'values ($1, $2 , $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
+                            'insert into trx_komplain (cabang,employee_id , email ,id_kategori_komplain ,keterangan, tgl_komplain , id_session ,transfer_message,position_id, internal_title, nama_karyawan) ' +
+                              'values ($1, $2 , $3, $4, $5, $6, $7, $8, $9, $10, $11)',
                             [
                               emp_cabang,
                               employee_id,
-                              number_phone,
                               emp_email,
                               id_kategori_komplain,
                               information_data,
@@ -187,7 +185,6 @@ const controller = {
                                                 '-' +
                                                 ` ${emp_displayName}\n` +
                                                 `Email: ${emp_email}\n` +
-                                                `No HP: ${number_phone}\n` +
                                                 `Jabatan: ${positionId}-${internalTitle}\n` +
                                                 `Tanggal: ${day}\n` +
                                                 '\n' +
