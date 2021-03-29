@@ -49,6 +49,7 @@ const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDoc
 const getListMenuDocCtrl = require('../controller/getListMenuDocCtrl');
 const getHolidayCtrl = require('../controller/getHolidayCtrl');
 const mailNotifierCtrl = require('../controller/mailNotifierCtrl');
+const UsersManagementCtrl = require('../controller/UsersManagementCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -432,4 +433,98 @@ module.exports = (app) => {
   // web view routes
   app.route('/documents/:slug').get(WebViewCtrl.documents); // documents
   app.route('/:category/:slug').get(WebViewCtrl.news); // news
+
+  // users management routes //
+  app
+    .route('/hcm/api/users-management/login')
+    .all(authenticateApiKey)
+    .post(UsersManagementCtrl.login);
+
+  app
+    .route('/hcm/api/users-management/get-user-has-menu/:userid')
+    .all(authenticateApiKey)
+    .get(UsersManagementCtrl.getUserHasMenus);
+
+  app
+    .route('/hcm/api/users-management/manage-user-menu')
+    .all(authenticateApiKey)
+    .post(
+      [check('user').notEmpty().withMessage('USER REQUIRED!')],
+      [check('menus').notEmpty().withMessage('MENUS REQUIRED!')],
+      UsersManagementCtrl.manageUserMenus
+    );
+
+  // users management routes -> system master menu
+  app
+    .route('/hcm/api/users-management/system-master-menu')
+    .all(authenticateApiKey)
+    .get(UsersManagementCtrl.getSystemMasterMenu);
+
+  app
+    .route('/hcm/api/users-management/system-master-menu')
+    .all(authenticateApiKey)
+    .post(
+      [check('kdsys').notEmpty().withMessage('KDSYS REQUIRED!')],
+      [check('nourut').notEmpty().withMessage('NOURUT REQUIRED!')],
+      [check('gprg').notEmpty().withMessage('GPRG REQUIRED!')],
+      [check('sprg').notEmpty().withMessage('SPRG REQUIRED!')],
+      [check('nprg').notEmpty().withMessage('NPRG REQUIRED!')],
+      [check('mode').notEmpty().withMessage('MODE REQUIRED!')],
+      [check('tgllaku').notEmpty().withMessage('TGLLAKU REQUIRED!')],
+      UsersManagementCtrl.insertSystemMasterMenu
+    );
+
+  // users management routes -> users
+  app
+    .route('/hcm/api/users-management/users')
+    .all(authenticateApiKey)
+    .get(UsersManagementCtrl.getUsers);
+
+  app
+    .route('/hcm/api/users-management/users/:employee_code')
+    .all(authenticateApiKey)
+    .get(UsersManagementCtrl.showUsers);
+
+  app
+    .route('/hcm/api/users-management/users')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_code')
+          .notEmpty()
+          .withMessage('EMPLOYEE_CODE REQUIRED!'),
+        check('userid').notEmpty().withMessage('USERID REQUIRED!'),
+        check('nmuser').notEmpty().withMessage('NMUSER REQUIRED!'),
+        check('password').notEmpty().withMessage('PASSWORD REQUIRED!'),
+        check('tglaku').notEmpty().withMessage('TGLAKU REQUIRED!'),
+      ],
+      UsersManagementCtrl.insertUsers
+    );
+
+  app
+    .route('/hcm/api/users-management/users')
+    .all(authenticateApiKey)
+    .put(
+      [
+        check('employee_code')
+          .notEmpty()
+          .withMessage('EMPLOYEE_CODE REQUIRED!'),
+        check('userid').notEmpty().withMessage('USERID REQUIRED!'),
+        check('nmuser').notEmpty().withMessage('NMUSER REQUIRED!'),
+        check('tglaku').notEmpty().withMessage('TGLAKU REQUIRED!'),
+      ],
+      UsersManagementCtrl.updateUsers
+    );
+
+  app
+    .route('/hcm/api/users-management/users')
+    .all(authenticateApiKey)
+    .delete(
+      [
+        check('employee_code')
+          .notEmpty()
+          .withMessage('EMPLOYEE_CODE REQUIRED!'),
+      ],
+      UsersManagementCtrl.deleteUsers
+    );
 };
