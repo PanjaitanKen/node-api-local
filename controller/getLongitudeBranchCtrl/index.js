@@ -11,8 +11,7 @@ const controller = {
         [employee_id],
         (error, results) => {
           if (error) throw error;
-
-          if (results.rows[0].count === 1) {
+          if (results.rows[0].count == 1) {
             pool.db_MMFPROD.query(
               'select location_name,location_no, latitude,altitude, longitude, accuracy, radius_tolerance from mark_location_tbl order by location_no asc',
               (error, results) => {
