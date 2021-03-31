@@ -7,7 +7,7 @@ const controller = {
       const { employee_id } = request.body;
 
       pool.db_MMFPROD.query(
-        "select count(*) from emp_work_schedule_tbl a left join emp_work_location_tbl b on a.employee_id =b.employee_id where clocking_all ='Y' and current_date between a.valid_from and a.valid_to and a.employee_id= $1 ",
+        "select count(*) from emp_work_schedule_tbl a left join emp_work_location_tbl b on a.employee_id =b.employee_id and current_date between b.valid_from and b.valid_to  where clocking_all ='Y' and current_date between a.valid_from and a.valid_to and a.employee_id= $1 ",
         [employee_id],
         (error, results) => {
           if (error) throw error;
@@ -37,7 +37,7 @@ const controller = {
             );
           } else {
             pool.db_MMFPROD.query(
-              "select case when work_location='JAKARTA' then 'PUSAT' else work_location end as work_location " +
+              "select case when work_location='JAKARTA' then 'PUSAT' when work_location='MAKASSAR' then 'MAKASSAR 2' else work_location end as work_location " +
                 ' from emp_work_location_tbl where employee_id=$1 and  current_date between valid_from and valid_to ',
               [employee_id],
               (error, results) => {

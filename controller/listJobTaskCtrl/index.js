@@ -23,7 +23,7 @@ const controller = {
           ' left join person_tbl c on b.person_id =c.person_id  ' +
           ' left join work_off_status_tbl d on a.employee_id = d.employee_id and a.sequence_no = d.sequence_no '+
           " where a.state='Submitted'  " +
-          " and a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and valid_to=date'9999-01-01') " +
+          ' and a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
           " select 'Persetujuan Cuti' Keterangan,initcap(c.display_name) nama,  " +
           " case  when current_date-request_date=0 then 'Hari ini'  " +
@@ -39,7 +39,7 @@ const controller = {
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
           " where a.state='Submitted'  " +
-          " and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and valid_to=date'9999-01-01') " +
+          ' and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
           " select 'Persetujuan Perjalanan Dinas' Keterangan,initcap(c.display_name) nama,  " +
           " case  when current_date-d.status_date=0 then 'Hari ini'   " +
@@ -69,12 +69,12 @@ const controller = {
           ' (select golid from travel_request_tbl trt ' +
           " where  state in ('Submitted','Partially Approved') " +
           ' and employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id in ' +
-          " (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and valid_to=date'9999-01-01') " +
-          " and valid_to=date'9999-01-01' " +
+          ' (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
+          ' and current_date between valid_from  and valid_to ' +
           ' union all ' +
-          " select employee_id from employee_supervisor_tbl where supervisor_id = $1 and valid_to=date'9999-01-01') " +
+          ' select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
           ' )' +
-          ' group by ref_id	) ' +
+          ' group by ref_id) ' +
           ' select ref_id||seq_min as ref_id_min  ' +
           '  from x ' +
           '  ) ' +

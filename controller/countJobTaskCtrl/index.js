@@ -10,14 +10,14 @@ const controller = {
         ' select sum(jumlahJobTask) jumlahJobTask,  ' +
           ' (select count(*) as atasan  ' +
           ' from employee_supervisor_tbl ' +
-          " where supervisor_id = $1 and valid_to=date'9999-01-01') atasan " +
+          ' where supervisor_id = $1  and current_date between valid_from  and valid_to) atasan ' +
           ' from  ' +
           " (select count(*) jumlahJobTask from employee_work_off_tbl where state='Submitted' " +
           ' and employee_id in (select employee_id from employee_supervisor_tbl ' +
-          " where supervisor_id =$1 and valid_to=date'9999-01-01') " +
+          ' where supervisor_id =$1  and current_date between valid_from  and valid_to) ' +
           ' union all select count(*) jumlahJobTask ' +
           " from leave_request_tbl where state='Submitted' " +
-          " and employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and valid_to=date'9999-01-01') " +
+          ' and employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1  and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
           ' select count(*) jumlahJobTask from travel_request_tbl  a  ' +
           ' left join employee_tbl  b on a.employee_id = b.employee_id   ' +
@@ -35,18 +35,18 @@ const controller = {
           ' (select golid from travel_request_tbl trt ' +
           " where  state in ('Submitted','Partially Approved') " +
           ' and employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id in ' +
-          " (select employee_id from employee_supervisor_tbl where supervisor_id =  $1 and valid_to=date'9999-01-01') " +
-          " and valid_to=date'9999-01-01' " +
+          ' (select employee_id from employee_supervisor_tbl where supervisor_id =  $1  and current_date between valid_from  and valid_to) ' +
+          ' and current_date between valid_from  and valid_to ' +
           ' union all ' +
-          " select employee_id from employee_supervisor_tbl where supervisor_id = $1 and valid_to=date'9999-01-01') " +
-          ' )	 ' +
-          ' group by ref_id	) ' +
+          ' select employee_id from employee_supervisor_tbl where supervisor_id = $1  and current_date between valid_from  and valid_to) ' +
+          ' )' +
+          ' group by ref_id) ' +
           ' select ref_id||seq_min as ref_id_min  ' +
           ' from x ' +
           ' ) ' +
           " and state='Unapproved' " +
           ' ) ' +
-          ' ) a	 ',
+          ' ) a ',
         [employee_id],
         (error, results) => {
           if (error) throw error;
