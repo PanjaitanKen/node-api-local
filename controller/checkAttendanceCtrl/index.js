@@ -4,7 +4,7 @@ const pool = require('../../db');
 const controller = {
   checkAttendance(request, response) {
     try {
-      const { employee_id, attendance_date } = request.body;
+      const { employee_id } = request.body;
 
       pool.db_MMFPROD.query(
         `SELECT count(*) FROM emp_clocking_detail_tbl 
@@ -39,11 +39,11 @@ const controller = {
                   max(case when in_out='0' then to_char(clocking_date,'HH:MI')  else null end) as time_in,
                   max(case when in_out='1' then to_char(clocking_date,'HH:MI')  else null end) as time_out
                   from emp_clocking_temp_tbl where employee_id = $1
-                  and TO_CHAR(clocking_date,'YYYY-MM-DD') = $2
+                  and TO_CHAR(clocking_date,'YYYY-MM-DD') =to_char(current_date,'YYYY-MM-DD')
                   group by to_char(clocking_date,'yyyy-mm-dd') 
                   ) select *
                   from x `,
-                [employee_id, attendance_date],
+                [employee_id],
                 (error, results) => {
                   if (error) throw error;
 
