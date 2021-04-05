@@ -19,7 +19,7 @@ const controller = {
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
-            if (results.rows > 0) {
+            if (results.rows[0].count > 0) {
               response.status(200).send({
                 status: 200,
                 message: 'Berhasil Clock In dan Clock Out',
