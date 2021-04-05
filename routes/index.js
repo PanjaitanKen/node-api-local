@@ -180,7 +180,19 @@ module.exports = (app) => {
   app
     .route('/mmf/api/getLeaveCount')
     .all(authenticateApiKey)
-    .post(getLeaveCountCtrl.getLeave_Count);
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('leave_date_from')
+          .isISO8601()
+          .toDate()
+          .withMessage('leave_date_from TO REQUIRED!'),
+        check('leave_date_to')
+          .notEmpty()
+          .withMessage('leave_date_to TO REQUIRED!'),
+      ],
+      getLeaveCountCtrl.getLeave_Count
+    );
 
   app
     .route('/mmf/api/checkPassRules')

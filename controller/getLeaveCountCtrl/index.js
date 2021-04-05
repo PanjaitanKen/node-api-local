@@ -1,8 +1,11 @@
 const pool = require('../../db');
+const { validationResult } = require('express-validator');
 
 // Tabel : emp_work_schedule_tbl
 const controller = {
   getLeave_Count(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id, leave_date_from, leave_date_to } = request.body;
 
