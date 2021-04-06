@@ -185,10 +185,9 @@ module.exports = (app) => {
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
         check('leave_date_from')
           .isISO8601()
-          .toDate()
           .withMessage('leave_date_from TO REQUIRED!'),
         check('leave_date_to')
-          .notEmpty()
+          .isISO8601()
           .withMessage('leave_date_to TO REQUIRED!'),
       ],
       getLeaveCountCtrl.getLeave_Count
