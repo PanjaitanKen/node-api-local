@@ -22,8 +22,9 @@ const controller = {
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id  ' +
           ' left join work_off_status_tbl d on a.employee_id = d.employee_id and a.sequence_no = d.sequence_no '+
-          " where a.state='Submitted'  " +
-          ' and a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and current_date between valid_from  and valid_to) ' +
+          " left join (select * from approval_structure_tbl where template_name='APPROVAL_WORK_OFF') e on a.golid = e.ref_id "+
+          " where a.state='Submitted'  and e.approver_id= $1 " +
+          //' and a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
           " select 'Persetujuan Cuti' Keterangan,initcap(c.display_name) nama,  " +
           " case  when current_date-request_date=0 then 'Hari ini'  " +
@@ -38,8 +39,9 @@ const controller = {
           " a.golid,'Pengajuan Cuti' Keterangan2, request_date tanggal from leave_request_tbl  a " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
-          " where a.state='Submitted'  " +
-          ' and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
+          " left join (select * from approval_structure_tbl where  template_name='APPROVAL LEAVE') d on a.golid = d.ref_id "+
+          " where a.state='Submitted' and d.approver_id= $1 " +
+          //' and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
           " select 'Persetujuan Perjalanan Dinas' Keterangan,initcap(c.display_name) nama,  " +
           " case  when current_date-d.status_date=0 then 'Hari ini'   " +

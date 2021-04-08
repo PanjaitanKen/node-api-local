@@ -24,7 +24,7 @@ const controller = {
       }
 
       pool.db_MMFPROD.query(
-        "select supervisor_id from employee_supervisor_tbl where employee_id = $1 and valid_to=date'9999-01-01'",
+        'select supervisor_id from employee_supervisor_tbl where employee_id = $1 and current_date between valid_from  and valid_to ',
         [employee_id],
         (error, results) => {
           if (error) {

@@ -50,6 +50,7 @@ const getListMenuDocCtrl = require('../controller/getListMenuDocCtrl');
 const getHolidayCtrl = require('../controller/getHolidayCtrl');
 const mailNotifierCtrl = require('../controller/mailNotifierCtrl');
 const UsersManagementCtrl = require('../controller/UsersManagementCtrl');
+const oracleCheckAttendanceCtrl = require('../controller/oracle/checkAttendanceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -538,4 +539,10 @@ module.exports = (app) => {
       ],
       UsersManagementCtrl.deleteUsers
     );
+
+  // ORACLE
+  app
+    .route('/oracle/hcm/checkAttendance_oracle')
+    .all(authenticateApiKey)
+    .post(oracleCheckAttendanceCtrl.checkAttendance);
 };

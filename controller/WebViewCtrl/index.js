@@ -72,6 +72,11 @@ const controller = {
           title: 'Komponen Fasilitas Kesehatan - Mandala',
         });
         break;
+      case 'komponen-fasilitas-kesehatan-staff':
+        response.render('documents/komponen_fasilitas_kesehatan_staff', {
+          title: 'Komponen Fasilitas Kesehatan Staff - Mandala',
+        });
+        break;
       case 'ketentuan-fasilitas-kesehatan':
         response.render('documents/ketentuan_fasilitas_kesehatan', {
           title: 'Ketentuan Fasilitas Kesehatan - Mandala',

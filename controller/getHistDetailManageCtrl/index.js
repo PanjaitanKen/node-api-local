@@ -248,7 +248,7 @@ const controller = {
               when to_char(aa.work_off_to,'MM')='11' then 'Nov'
               when to_char(aa.work_off_to,'MM')='12' then 'Des' end ||' '||to_char(aa.work_off_to,'YYYY') tanggal ,
               work_off_from::timestamp::time ||' - '||work_off_to::timestamp::time Waktu, 0 as cuti_diambil,aa.reason as alasan,
-              to_char(a.approved_date,'DD')||' '||
+              to_char(bb.status_date,'DD')||' '||
               case when to_char(bb.status_date ,'MM')='01' then 'Jan'
               when to_char(bb.status_date,'MM')='02' then 'Feb'
               when to_char(bb.status_date,'MM')='03' then 'Mar'

@@ -1,6 +1,9 @@
 // Tabel : sys_mmenu, sys_muserid_d, sys_muserid_h
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
 const pool = require('../../db');
+
+const saltRounds = 10;
 
 const controller = {
   login(request, response) {
@@ -10,21 +13,35 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        'SELECT userid, nmuser FROM sys_muserid_h WHERE (employee_code = $1 OR userid = $1) AND password = $2',
-        [username, password],
+        'SELECT userid, password, nmuser FROM sys_muserid_h WHERE (employee_code = $1 OR userid = $1)',
+        [username],
         (error, results) => {
           if (error) throw error;
 
           if (results.rowCount > 0) {
-            response.status(200).send({
-              status: 'SUCCESS',
-              message: 'LOGIN SUCCESS',
-              data: {
-                token: `${results.rows[0].userid}-${
-                  results.rows[0].nmuser
-                }-${Math.random().toString(36).slice(2)}`,
-              },
-            });
+            bcrypt.compare(
+              password,
+              results.rows[0].password,
+              (_, hashResults) => {
+                if (hashResults) {
+                  response.status(200).send({
+                    status: 'SUCCESS',
+                    message: 'LOGIN SUCCESS',
+                    data: {
+                      token: `${results.rows[0].userid}-${
+                        results.rows[0].nmuser
+                      }-${Math.random().toString(36).slice(2)}`,
+                    },
+                  });
+                } else {
+                  response.status(500).send({
+                    status: 'FAILED',
+                    message: 'INCORRECT PASSWORD',
+                    data: [],
+                  });
+                }
+              }
+            );
           } else {
             response.status(500).send({
               status: 'FAILED',
@@ -271,20 +288,22 @@ const controller = {
     } = request;
 
     try {
-      pool.db_HCM.query(
-        `INSERT INTO sys_muserid_h (kdpt, employee_code, userid, nmuser, password, tglaku)
-          VALUES ('MFIN', $1, $2, $3, $4, $5)`,
-        [employee_code, userid, nmuser, password, tglaku],
-        (error) => {
-          if (error) throw error;
+      bcrypt.hash(password, saltRounds, (_, hash) => {
+        pool.db_HCM.query(
+          `INSERT INTO sys_muserid_h (kdpt, employee_code, userid, nmuser, password, tglaku)
+            VALUES ('MFIN', $1, $2, $3, $4, $5)`,
+          [employee_code, userid, nmuser, hash, tglaku],
+          (error) => {
+            if (error) throw error;
 
-          response.status(201).send({
-            status: 'SUCCESS',
-            message: 'INSERT USER',
-            data: '',
-          });
-        }
-      );
+            response.status(201).send({
+              status: 'SUCCESS',
+              message: 'INSERT USER',
+              data: '',
+            });
+          }
+        );
+      });
     } catch (error) {
       response.status(500).send(error);
     }
@@ -306,25 +325,25 @@ const controller = {
           if (error) throw error;
 
           if (results.rowCount > 0) {
-            pool.db_HCM.query(
-              'UPDATE sys_muserid_h SET userid = $2, nmuser = $3, password = $4, tglaku = $5 WHERE employee_code = $1',
-              [
-                employee_code,
-                userid,
-                nmuser,
-                password || results.rows[0].password,
-                tglaku,
-              ],
-              (error) => {
-                if (error) throw error;
+            bcrypt.hash(password, saltRounds, (_, hash) => {
+              const encryptPassword = password
+                ? hash
+                : results.rows[0].password;
 
-                response.status(200).send({
-                  status: 'SUCCESS',
-                  message: 'UPDATE USER',
-                  data: '',
-                });
-              }
-            );
+              pool.db_HCM.query(
+                'UPDATE sys_muserid_h SET userid = $2, nmuser = $3, password = $4, tglaku = $5 WHERE employee_code = $1',
+                [employee_code, userid, nmuser, encryptPassword, tglaku],
+                (error) => {
+                  if (error) throw error;
+
+                  response.status(200).send({
+                    status: 'SUCCESS',
+                    message: 'UPDATE USER',
+                    data: '',
+                  });
+                }
+              );
+            });
           } else {
             response.status(500).send({
               status: false,

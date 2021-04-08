@@ -20,7 +20,7 @@ const controller = {
         left join
         (select employee_id ,sequence_no ,status_date
         from work_off_status_tbl
-        where employee_id = $1
+        where employee_id = $1 and status='Submitted'
         group by employee_id ,sequence_no ,status_date
         order by status_date desc ) c on a.employee_id = c.employee_id and a.sequence_no = c.sequence_no
         where a.employee_id= $1 and c.status_date between (current_date -interval '1 days' * $2 ) and now()
