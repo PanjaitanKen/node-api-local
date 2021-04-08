@@ -66,7 +66,7 @@ const controller = {
           (error, results) => {
             if (error) throw error;
 
-            if (results.rows[0].count === 0) {
+            if (results.rows[0].count == 0) {
               pool.db_MMFPROD.query(
                 "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
                 [employee_id, location_no, time_stamp_convert],
@@ -94,25 +94,33 @@ const controller = {
                 [employee_id],
                 (error, results) => {
                   if (error) throw error;
-                  if (
-                    // eslint-disable-next-line operator-linebreak
-                    // eslint-disable-next-line eqeqeq
-                    results.rows[0].time_out == '' ||
-                    results.rows[0].time_out == null
-                  ) {
-                    pool.db_MMFPROD.query(
-                      "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
-                      [employee_id, location_no, time_stamp_convert],
-                      (error) => {
-                        if (error) throw error;
+                  if (results.rows != '') {
+                    if (
+                      // eslint-disable-next-line operator-linebreak
+                      // eslint-disable-next-line eqeqeq
+                      results.rows[0].time_out == '' ||
+                      results.rows[0].time_out == null
+                    ) {
+                      pool.db_MMFPROD.query(
+                        "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
+                        [employee_id, location_no, time_stamp_convert],
+                        (error) => {
+                          if (error) throw error;
 
-                        response.status(201).send({
-                          status: 201,
-                          message: 'Absen Pulang Berhasil',
-                          data: 2,
-                        });
-                      }
-                    );
+                          response.status(201).send({
+                            status: 201,
+                            message: 'Absen Pulang Berhasil',
+                            data: 2,
+                          });
+                        }
+                      );
+                    } else {
+                      response.status(201).send({
+                        status: 201,
+                        message: 'Absen Pulang Berhasil',
+                        data: 1,
+                      });
+                    }
                   } else {
                     response.status(201).send({
                       status: 201,
