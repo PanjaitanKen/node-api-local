@@ -28,6 +28,7 @@ const getLeaveCountCtrl = require('../controller/getLeaveCountCtrl');
 const checkTokenNotifCtrl = require('../controller/checkTokenNotifCtrl');
 const sendEmailCtrl = require('../controller/sendEmailCtrl');
 const addFeedbackCtrl = require('../controller/addFeedbackCtrl');
+const resendFeedbackCtrl = require('../controller/resendFeedbackCtrl');
 const checkTokenOrangeCtrl = require('../controller/checkTokenOrangeCtrl');
 const getComplaintCategoryCtrl = require('../controller/getComplaintCategoryCtrl');
 const pushNotificationCtrl = require('../controller/pushNotificationCtrl');
@@ -226,6 +227,14 @@ module.exports = (app) => {
           .withMessage('id_session EMAIL REQUIRED!'),
       ],
       addFeedbackCtrl.addFeedback
+    );
+
+  app
+    .route('/hcm/api/resendFeedback')
+    .all(authenticateApiKey)
+    .post(
+      [check('id_komplain').notEmpty().withMessage('id_komplain REQUIRED!')],
+      resendFeedbackCtrl.resendFeedback
     );
 
   app
