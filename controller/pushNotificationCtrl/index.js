@@ -35,7 +35,6 @@ const controller = {
               submission_id == '1'
                 ? results.rows[0].supervisor_id
                 : employee_id;
-            console.log(employee_token);
             pool.db_HCM.query(
               'SELECT token_notification FROM trx_notification where employee_id =$1',
               [employee_token],
@@ -63,7 +62,6 @@ const controller = {
                     },
                     token,
                   };
-                  console.log(message);
                   FCM.send(message, (err, result) => {
                     if (err) {
                       response.status(200).send({
