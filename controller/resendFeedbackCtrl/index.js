@@ -123,7 +123,7 @@ const controller = {
                                 status: 200,
                                 message:
                                   'Berhasil mengirim email dan masuk kedalam tabel',
-                                data: info.response,
+                                data: '',
                               });
                             }
                           );

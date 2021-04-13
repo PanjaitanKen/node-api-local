@@ -61,7 +61,7 @@ const controller = {
                                      (x.tgl_expired is  null or x.tgl_expired<=current_date ) 
                               ) select * from x where id_dok <>'0' 
                               and group_dok in (${groupDoks})   
-                              order by no_urut_group asc `,
+                              order by no_urut_group,sub_dok,id_dok asc `,
               [employee_id, grade_id, position_id],
               (error, results) => {
                 if (error) throw error;
