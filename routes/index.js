@@ -52,6 +52,7 @@ const getHolidayCtrl = require('../controller/getHolidayCtrl');
 const mailNotifierCtrl = require('../controller/mailNotifierCtrl');
 const UsersManagementCtrl = require('../controller/UsersManagementCtrl');
 const oracleCheckAttendanceCtrl = require('../controller/oracle/checkAttendanceCtrl');
+const notificationManagementCtrl = require('../controller/notificationManagementCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -554,4 +555,48 @@ module.exports = (app) => {
     .route('/oracle/hcm/checkAttendance_oracle')
     .all(authenticateApiKey)
     .post(oracleCheckAttendanceCtrl.checkAttendance);
+
+  // notification management routes //
+  app
+    .route('/hcm/api/notif-management/addTempNotif')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      [check('jenis').notEmpty().withMessage('jenis REQUIRED!')],
+      [check('ket1').notEmpty().withMessage('ket1 REQUIRED!')],
+      [check('ket2').notEmpty().withMessage('ket2 REQUIRED!')],
+      [check('nobukti').notEmpty().withMessage('nobukti REQUIRED!')],
+      [check('golid').notEmpty().withMessage('golid REQUIRED!')],
+      [
+        check('approved_date')
+          .notEmpty()
+          .withMessage('approved_date REQUIRED!'),
+      ],
+      notificationManagementCtrl.insert
+    );
+
+  app
+    .route('/hcm/api/notif-management/countTempNotif')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      notificationManagementCtrl.countTempNotif
+    );
+
+  app
+    .route('/hcm/api/notif-management/listTempNotif')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      notificationManagementCtrl.listTempNotif
+    );
+
+  app
+    .route('/hcm/api/notif-management/updateTempNotif')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      [check('golid').notEmpty().withMessage('golid REQUIRED!')],
+      notificationManagementCtrl.updateTempNotif
+    );
 };
