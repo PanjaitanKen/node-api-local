@@ -125,26 +125,35 @@ const controller = {
         [employee_id, golid],
         (error, results) => {
           if (error) throw error;
-
-          if (results.rows[0].sudah_baca == null) {
-            pool.db_HCM.query(
-              `update temp_notif set sudah_baca=current_date where employee_id =$1
+          if (results.rows != '') {
+            if (results.rows[0].sudah_baca == null) {
+              pool.db_HCM.query(
+                `update temp_notif set sudah_baca=current_date where employee_id =$1
               and sudah_baca is null and golid=$2 `,
-              [employee_id, golid],
-              (error, results) => {
-                if (error) throw error;
+                [employee_id, golid],
+                (error, results) => {
+                  if (error) throw error;
 
-                response.status(202).send({
-                  status: 'SUCCESS UPDATE',
-                  message: 'Notification succes update to table',
-                  data: '',
-                });
-              }
-            );
+                  response.status(202).send({
+                    status: 'SUCCESS UPDATE',
+                    message: 'Notification succes update to table',
+                    data: '',
+                  });
+                }
+              );
+            } else {
+              response.status(200).send({
+                status: 'UPDATE FAILED',
+                message: 'Notification data already set',
+                data: '',
+              });
+            }
           } else {
             response.status(200).send({
-              status: 'UPDATE FAILED',
-              message: 'Notification data already set',
+              status: 200,
+              message: 'Data Tidak Ditemukan',
+              validate_id: employee_id,
+              golid_id: golid,
               data: '',
             });
           }
