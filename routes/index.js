@@ -565,7 +565,6 @@ module.exports = (app) => {
       [check('jenis').notEmpty().withMessage('jenis REQUIRED!')],
       [check('ket1').notEmpty().withMessage('ket1 REQUIRED!')],
       [check('ket2').notEmpty().withMessage('ket2 REQUIRED!')],
-      [check('nobukti').notEmpty().withMessage('nobukti REQUIRED!')],
       [check('golid').notEmpty().withMessage('golid REQUIRED!')],
       [
         check('approved_date')

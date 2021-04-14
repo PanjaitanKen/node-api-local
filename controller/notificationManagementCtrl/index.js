@@ -50,7 +50,7 @@ const controller = {
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows,
+              data: results.rows[0],
             });
           } else {
             response.status(200).send({
@@ -121,23 +121,31 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        `update temp_notif set sudah_baca=current_date where employee_id =$1
-        and sudah_baca is null and golid=$2 `,
+        `select sudah_baca from temp_notif where employee_id = $1 and golid = $2`,
         [employee_id, golid],
         (error, results) => {
           if (error) throw error;
 
-          if (results.rowCount > 0) {
-            response.status(202).send({
-              status: 'SUCCESS UPDATE',
-              message: 'Notification succes update to table',
-              data: '',
-            });
+          if (results.rows[0].sudah_baca == null) {
+            pool.db_HCM.query(
+              `update temp_notif set sudah_baca=current_date where employee_id =$1
+              and sudah_baca is null and golid=$2 `,
+              [employee_id, golid],
+              (error, results) => {
+                if (error) throw error;
+
+                response.status(202).send({
+                  status: 'SUCCESS UPDATE',
+                  message: 'Notification succes update to table',
+                  data: '',
+                });
+              }
+            );
           } else {
-            response.status(500).send({
-              status: false,
-              message: 'EMPLOYEE_CODE NOT FOUND',
-              data: [],
+            response.status(200).send({
+              status: 'UPDATE FAILED',
+              message: 'Notification data already set',
+              data: '',
             });
           }
         }
