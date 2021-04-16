@@ -99,6 +99,43 @@ const controller = {
       response.status(500).send(err);
     }
   },
+
+  pushNotifNewsEvent(request, response) {
+    try {
+      const { employee_token, msg_body, title_body } = request.body;
+
+      const Tokens = employee_token;
+      console.log(Tokens, msg_body, title_body);
+      const message = {
+        data: {
+          score: '850',
+          time: '2:45',
+        },
+        notification: {
+          title: `${title_body}`,
+          // eslint-disable-next-line block-scoped-var
+          body: `${msg_body}`,
+        },
+      };
+      FCM.sendToMultipleToken(message, Tokens, (err, results) => {
+        if (err) {
+          response.status(200).send({
+            status: 200,
+            message: 'Token is not valid',
+            data: err,
+          });
+        } else {
+          response.status(200).send({
+            status: 200,
+            message: 'Load Data berhasil',
+            data: results,
+          });
+        }
+      });
+    } catch (err) {
+      response.status(500).send(err);
+    }
+  },
 };
 
 module.exports = controller;

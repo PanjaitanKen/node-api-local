@@ -13,17 +13,34 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        `insert into temp_notif (employee_id ,jenis , ket1 ,ket2 ,nobukti , golid , approved_date ,sudah_baca )
-        values ($1 ,$2,$3,$4,$5,$6,$7,null)`,
-        [employee_id, jenis, ket1, ket2, nobukti, golid, approved_date],
+        `select * from temp_notif where employee_id = $1 and golid =$2 and jenis =$3`,
+        [employee_id, golid, jenis],
         (error, results) => {
           if (error) throw error;
 
-          response.status(201).send({
-            status: 'SUCCESS',
-            message: 'Notification succes insert to table',
-            data: '',
-          });
+          if (results.rows != '') {
+            response.status(200).send({
+              status: 200,
+              message: 'Data already exist',
+              validate_id: employee_id,
+              data: results.rows,
+            });
+          } else {
+            pool.db_HCM.query(
+              `insert into temp_notif (employee_id ,jenis , ket1 ,ket2 ,nobukti , golid , approved_date ,sudah_baca )
+              values ($1 ,$2,$3,$4,$5,$6,$7,null)`,
+              [employee_id, jenis, ket1, ket2, nobukti, golid, approved_date],
+              (error, results) => {
+                if (error) throw error;
+
+                response.status(201).send({
+                  status: 'SUCCESS',
+                  message: 'Notification succes insert to table',
+                  data: '',
+                });
+              }
+            );
+          }
         }
       );
     } catch (error) {
