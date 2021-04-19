@@ -14,7 +14,6 @@ const controller = {
         }
         // eslint-disable-next-line eqeqeq
         if (results.rows != '') {
-          //map hostmail
           const hcm_param_radius_tolerance = _.filter(
             results.rows,
             function (o) {

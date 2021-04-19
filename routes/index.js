@@ -53,7 +53,6 @@ const mailNotifierCtrl = require('../controller/mailNotifierCtrl');
 const UsersManagementCtrl = require('../controller/UsersManagementCtrl');
 const oracleCheckAttendanceCtrl = require('../controller/oracle/checkAttendanceCtrl');
 const notificationManagementCtrl = require('../controller/notificationManagementCtrl');
-const getTokenNotifCtrl = require('../controller/getTokenNotifCtrl');
 const addLogUserCtrl = require('../controller/addLogUserCtrl');
 
 const authenticateApiKey = (req, res, next) => {
@@ -605,11 +604,6 @@ module.exports = (app) => {
       [check('golid').notEmpty().withMessage('golid REQUIRED!')],
       notificationManagementCtrl.updateTempNotif
     );
-
-  app
-    .route('/hcm/api/getTokenNotif')
-    .all(authenticateApiKey)
-    .post(getTokenNotifCtrl.getTokenNotif);
 
   app
     .route('/hcm/api/addLogUser')

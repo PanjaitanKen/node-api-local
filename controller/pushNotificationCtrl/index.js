@@ -1,5 +1,6 @@
 const fcm = require('fcm-notification');
 const _ = require('lodash');
+const { token } = require('morgan');
 const pool = require('../../db');
 
 // eslint-disable-next-line new-cap
@@ -102,36 +103,82 @@ const controller = {
 
   pushNotifNewsEvent(request, response) {
     try {
-      const { employee_token, msg_body, title_body } = request.body;
+      const { jenis, ket1, ket2, nobukti, golid, approved_date } = request.body;
 
-      const Tokens = employee_token;
-      console.log(Tokens, msg_body, title_body);
-      const message = {
-        data: {
-          score: '850',
-          time: '2:45',
-        },
-        notification: {
-          title: `${title_body}`,
-          // eslint-disable-next-line block-scoped-var
-          body: `${msg_body}`,
-        },
-      };
-      FCM.sendToMultipleToken(message, Tokens, (err, results) => {
-        if (err) {
-          response.status(200).send({
-            status: 200,
-            message: 'Token is not valid',
-            data: err,
-          });
-        } else {
-          response.status(200).send({
-            status: 200,
-            message: 'Load Data berhasil',
-            data: results,
-          });
+      pool.db_HCM.query(
+        'select employee_id, token_notification from trx_notification',
+        (error, results) => {
+          if (error) throw error;
+
+          // eslint-disable-next-line eqeqeq
+          if (results.rows != '') {
+            let arr = [];
+            let employee_tokens = [];
+            const employee_id = results.rows;
+
+            arr = employee_id.map(function (a) {
+              const employee_id = a.employee_id;
+              pool.db_HCM.query(
+                `insert into temp_notif (employee_id ,jenis , ket1 ,ket2 ,nobukti , golid , approved_date ,sudah_baca )
+                values ($1 ,$2,$3,$4,$5,$6,$7,null)`,
+                [employee_id, jenis, ket1, ket2, nobukti, golid, approved_date],
+                (error, results) => {
+                  if (error) throw error;
+                }
+              );
+              return {
+                employee_id: a.employee_id,
+                jenis: jenis,
+                ket1: ket1,
+                ket2: ket2,
+                nobukti: nobukti,
+                golid: golid,
+                approved_date: approved_date,
+              };
+            });
+            employee_tokens = employee_id.map(function (a) {
+              const bb = a.token_notification;
+              return bb;
+            });
+            const message = {
+              data: {
+                score: '850',
+                time: '2:45',
+              },
+              notification: {
+                title: `${ket1}`,
+                // eslint-disable-next-line block-scoped-var
+                body: `${ket2}`,
+              },
+            };
+            FCM.sendToMultipleToken(
+              message,
+              employee_tokens,
+              (err, results) => {
+                if (err) {
+                  response.status(200).send({
+                    status: 200,
+                    message: 'Token is not valid',
+                    data: err,
+                  });
+                } else {
+                  response.status(200).send({
+                    status: 200,
+                    message: 'Load Data berhasil',
+                    data: results,
+                  });
+                }
+              }
+            );
+          } else {
+            response.status(200).send({
+              status: 200,
+              message: 'Data Tidak Ditemukan',
+              data: '',
+            });
+          }
         }
-      });
+      );
     } catch (err) {
       response.status(500).send(err);
     }
