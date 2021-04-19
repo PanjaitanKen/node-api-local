@@ -7,7 +7,7 @@ const controller = {
       const { employee_id, golid } = request.body;
 
       pool.db_MMFPROD.query(
-        ' select employee_id ,leave_name, ' +
+        ' select a.employee_id ,leave_name, ' +
           " to_char(a.leave_date_from,'DD')||' '|| " +
           " case when to_char(a.leave_date_from ,'MM')='01' then 'Jan' " +
           " when to_char(a.leave_date_from,'MM')='02' then 'Feb' " +
@@ -62,12 +62,22 @@ const controller = {
           " when to_char(a.request_date,'MM')='10' then 'Okt' " +
           " when to_char(a.request_date,'MM')='11' then 'Nov' " +
           " when to_char(a.request_date,'MM')='12' then 'Des' end ||' '||to_char(a.request_date,'YYYY')  as tgl_pengajuan, " +
-          " case when state='Approved' then 'Disetujui' " +
-          " when state='Rejected' then 'Ditolak' " +
-          " when state='Submitted' then 'Menunggu Persetujuan' " +
-          " when state='Cancelled' then 'Batal' " +
-          ' end as Status,a.golid ' +
-          ' from leave_request_tbl a where employee_id =$1   and golid=$2 ' +
+          " case when a.state='Approved' then 'Disetujui' " +
+          " when a.state='Rejected' then 'Ditolak' " +
+          " when a.state='Submitted' then 'Menunggu Persetujuan' " +
+          " when a.state='Cancelled' then 'Batal' " +
+          ' end as Status,a.golid, a.request_days as cuti_diambil, ' +
+          " a.employee_id||'/'||to_char(a.request_date,'YYYYMMDD')||'/'||trim(to_char(a.sequence_no,'9999999999999999')) as nobukti , " +
+          " case when a.state='Approved' then 'Disetujui' " +
+          " when a.state='Rejected' then 'Ditolak' " +
+          " when a.state='Submitted' then 'Menunggu Persetujuan' " +
+          " when a.state='Cancelled' then 'Batal' " +
+          " end||' '||initcap(d.display_name) nama_penyetuju " +
+          ' from leave_request_tbl a ' +
+          " left join approval_structure_tbl b on a.golid = b.ref_id and b.template_name='APPROVAL LEAVE' " +
+          ' left join employee_tbl  c on b.approved_by = c.employee_id  ' +
+          ' left join person_tbl d on c.person_id =d.person_id  ' +
+          ' where a.employee_id =$1   and a.golid=$2 ' +
           ' order by request_date desc ',
         [employee_id, golid],
         (error, results) => {

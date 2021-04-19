@@ -1,8 +1,11 @@
 // Tabel : sys_mmenu, sys_muserid_d, sys_muserid_h
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const dateFormat = require('dateformat');
 const pool = require('../../db');
 
+const { URL } = process.env;
 const saltRounds = 10;
 
 const controller = {
@@ -13,7 +16,7 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        'SELECT userid, password, nmuser FROM sys_muserid_h WHERE (employee_code = $1 OR userid = $1)',
+        'SELECT userid, password, nmuser, url_image FROM sys_muserid_h WHERE (employee_code = $1 OR userid = $1)',
         [username],
         (error, results) => {
           if (error) throw error;
@@ -28,6 +31,7 @@ const controller = {
                     status: 'SUCCESS',
                     message: 'LOGIN SUCCESS',
                     data: {
+                      url_image: results.rows[0].url_image,
                       token: `${results.rows[0].userid}-${
                         results.rows[0].nmuser
                       }-${Math.random().toString(36).slice(2)}`,
@@ -388,6 +392,91 @@ const controller = {
             response.status(500).send({
               status: 'FAILED',
               message: 'EMPLOYEE_CODE NOT FOUND',
+              data: [],
+            });
+          }
+        }
+      );
+    } catch (error) {
+      response.status(500).send(error);
+    }
+  },
+  uploadProfilePhoto(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
+
+    const {
+      body: { userid },
+      files: { image },
+    } = request;
+
+    try {
+      pool.db_HCM.query(
+        'SELECT userid, employee_code, url_image FROM sys_muserid_h WHERE userid = $1',
+        [userid],
+        (error, results) => {
+          if (error) throw error;
+
+          if (results.rowCount > 0) {
+            const { userid, employee_code } = results.rows[0];
+
+            const rootDir = './uploads/mportal';
+            if (!fs.existsSync(rootDir)) fs.mkdirSync(`${rootDir}`);
+
+            const rootDir2 = './uploads/mportal/users';
+            if (!fs.existsSync(rootDir2)) fs.mkdirSync(`${rootDir2}`);
+
+            const dir = `./uploads/mportal/users/${userid}-${employee_code}`;
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+            const fileName = `mandala-${dateFormat(
+              new Date(),
+              'ddmmyyyyhhMMss'
+            )}`;
+
+            const { data, mimetype } = image;
+            const fileExtension = mimetype.split('/')[1];
+            const url_image = `${URL}/uploads/mportal/users/${userid}-${employee_code}/${fileName}.${fileExtension}`;
+
+            fs.writeFile(
+              `${dir}/${fileName}.${fileExtension}`,
+              data,
+              (error) => {
+                if (error) throw error;
+              }
+            );
+
+            // Delete previous image
+            if (results.rows[0].url_image) {
+              const pathPrevious = `./uploads/mportal/users/${userid}-${employee_code}/${
+                results.rows[0].url_image
+                  .split('/')
+                  .reverse()
+                  .join('/')
+                  .split('/')[0]
+              }`;
+
+              if (fs.existsSync(pathPrevious)) fs.unlinkSync(pathPrevious);
+            }
+
+            // Update to database
+            pool.db_HCM.query(
+              'UPDATE sys_muserid_h SET url_image = $1 WHERE userid = $2 AND employee_code = $3',
+              [url_image, userid, employee_code],
+              (error) => {
+                if (error) throw error;
+
+                response.status(200).send({
+                  status: 'SUCCESS',
+                  message: 'UPLOAD PROFILE PHOTO',
+                  data: url_image,
+                });
+              }
+            );
+          } else {
+            response.status(404).send({
+              status: 'FAILED',
+              message: 'USERID NOT FOUND',
               data: [],
             });
           }
