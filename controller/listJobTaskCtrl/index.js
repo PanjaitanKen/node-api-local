@@ -1,10 +1,34 @@
 const pool = require('../../db');
+const axios = require('axios');
 
 // Tabel : employeeworkofftbl, leaverequest_tbl
 const controller = {
   getListJobTask(request, response) {
     try {
       const { employee_id } = request.body;
+
+      //insert log activity user -- start
+      const data = {
+        employee_id: employee_id,
+        menu: 'List Job Task',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(process.env.url + '/hcm/api/addLogUser', data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+        });
+      //insert log activity user -- end
 
       pool.db_MMFPROD.query(
         " with x as ( select 'Persetujuan Izin' Keterangan,initcap(c.display_name) nama , " +
@@ -21,8 +45,8 @@ const controller = {
           ' from employee_work_off_tbl a  ' +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id  ' +
-          ' left join work_off_status_tbl d on a.employee_id = d.employee_id and a.sequence_no = d.sequence_no '+
-          " left join (select * from approval_structure_tbl where template_name='APPROVAL_WORK_OFF') e on a.golid = e.ref_id "+
+          ' left join work_off_status_tbl d on a.employee_id = d.employee_id and a.sequence_no = d.sequence_no ' +
+          " left join (select * from approval_structure_tbl where template_name='APPROVAL_WORK_OFF') e on a.golid = e.ref_id " +
           " where a.state='Submitted'  and e.approver_id= $1 " +
           //' and a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id =$1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
@@ -39,7 +63,7 @@ const controller = {
           " a.golid,'Pengajuan Cuti' Keterangan2, request_date tanggal from leave_request_tbl  a " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
-          " left join (select * from approval_structure_tbl where  template_name='APPROVAL LEAVE') d on a.golid = d.ref_id "+
+          " left join (select * from approval_structure_tbl where  template_name='APPROVAL LEAVE') d on a.golid = d.ref_id " +
           " where a.state='Submitted' and d.approver_id= $1 " +
           //' and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
@@ -56,9 +80,9 @@ const controller = {
           " a.golid,'Pengajuan Perjalanan Dinas' Keterangan2, d.status_date tanggal from travel_request_tbl  a  " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
-          ' left join (select request_no, min(status_date) status_date from  '+
-          "           travel_request_status_tbl where request_status ='Prepared' "+
-          '           group by request_no) d  on a.request_no = d.request_no '+
+          ' left join (select request_no, min(status_date) status_date from  ' +
+          "           travel_request_status_tbl where request_status ='Prepared' " +
+          '           group by request_no) d  on a.request_no = d.request_no ' +
           ' where a.golid in  ' +
           ' (select ref_id from approval_structure_tbl ' +
           " where class_name ='com.sps.travelexpense.transaction.TravelRequest' " +
