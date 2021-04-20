@@ -1,10 +1,35 @@
 const pool = require('../../db');
+const axios = require('axios');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
   get_Hist_Leave_Filter(request, response) {
     try {
       const { employee_id, jenis_cuti, waktu } = request.body;
+
+      //insert log activity user -- start
+      const data = {
+        employee_id: employee_id,
+        menu: 'Cuti',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(process.env.URL + '/hcm/api/addLogUser', data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+        });
+      //insert log activity user -- end
+
       pool.db_MMFPROD.query(
         /* `select employee_id ,leave_name,
         to_char(a.leave_date_from,'DD')||' '||
