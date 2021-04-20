@@ -1,5 +1,6 @@
 const pool = require('../../db');
 const _ = require('lodash');
+const axios = require('axios');
 
 // Tabel : mark_location_tbl, emp_work_schedule_tbl, emp_work_location_tbl
 const controller = {
@@ -7,6 +8,29 @@ const controller = {
     try {
       const { employee_id } = request.body;
       var radius_tolerance = 0;
+
+      //insert log activity user -- start
+      const data = {
+        employee_id: employee_id,
+        menu: 'Absen',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(process.env.url + '/hcm/api/addLogUser', data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+        });
+      //insert log activity user -- end
 
       pool.db_HCM.query('select * from param_hcm ', (error, results) => {
         if (error) {

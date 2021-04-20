@@ -1,9 +1,34 @@
 const pool = require('../../db');
+const axios = require('axios');
+
 // Tabel : travel_request_tbl, travel_request_destination_tbl
 const controller = {
   getListMenu_Doc(request, response) {
     try {
       const { employee_id, grade_id, position_id } = request.body;
+
+      //insert log activity user -- start
+      const data = {
+        employee_id: employee_id,
+        menu: 'Informasi Untukmu',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(process.env.url + '/hcm/api/addLogUser', data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+        });
+      //insert log activity user -- end
 
       pool.db_HCM.query(
         ' with x as  ' +

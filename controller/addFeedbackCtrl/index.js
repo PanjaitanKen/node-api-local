@@ -3,6 +3,7 @@ const dateFormat = require('dateformat');
 const pool = require('../../db');
 const _ = require('lodash');
 const { validationResult } = require('express-validator');
+const axios = require('axios');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
@@ -17,6 +18,29 @@ const controller = {
         information_data,
         id_session,
       } = request.body;
+
+      //insert log activity user -- start
+      const data = {
+        employee_id: employee_id,
+        menu: 'Feedback',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(process.env.url + '/hcm/api/addLogUser', data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+        });
+      //insert log activity user -- end
 
       if (
         // eslint-disable-next-line eqeqeq
