@@ -1,10 +1,34 @@
 const pool = require('../../db');
+const axios = require('axios');
 
 // Tabel : employee_work_off_tbl, wage_code_tbl
 const controller = {
   getHist_attendance(request, response) {
     try {
       const { employee_id, filter_hari, jenis_izin } = request.body;
+
+      //insert log activity user -- start
+      const data = {
+        employee_id: employee_id,
+        menu: 'Izin',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(process.env.URL + '/hcm/api/addLogUser', data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+        });
+      //insert log activity user -- end
 
       pool.db_MMFPROD.query(
         `select b.wage_name as jenis_ijin,

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const dateFormat = require('dateformat');
 const pool = require('../../db');
+const axios = require('axios');
 
 const serve = process.env.URL;
 
@@ -19,6 +20,29 @@ const controller = {
     } = request.body;
 
     const { employee_id2 } = employee_id;
+
+    //insert log activity user -- start
+    const data = {
+      employee_id: employee_id,
+      menu: 'Absen',
+    };
+
+    const options = {
+      headers: {
+        'Content-Type': 'application/json',
+        API_KEY: process.env.API_KEY,
+      },
+    };
+
+    axios
+      .post(process.env.URL + '/hcm/api/addLogUser', data, options)
+      .then((res) => {
+        console.log('RESPONSE ==== : ', res.data);
+      })
+      .catch((err) => {
+        console.log('ERROR: ====', err);
+      });
+    //insert log activity user -- end
 
     // get image from base64
     const base64Data = photo.replace(/^data:image\/png;base64,/, '');

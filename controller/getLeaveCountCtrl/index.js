@@ -1,7 +1,5 @@
 const pool = require('../../db');
 const { validationResult } = require('express-validator');
-const axios = require('axios');
-
 // Tabel : emp_work_schedule_tbl
 const controller = {
   getLeave_Count(request, response) {
@@ -9,29 +7,6 @@ const controller = {
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id, leave_date_from, leave_date_to } = request.body;
-
-      //insert log activity user -- start
-      const data = {
-        employee_id: employee_id,
-        menu: 'Cuti',
-      };
-
-      const options = {
-        headers: {
-          'Content-Type': 'application/json',
-          API_KEY: process.env.API_KEY,
-        },
-      };
-
-      axios
-        .post(process.env.URL + '/hcm/api/addLogUser', data, options)
-        .then((res) => {
-          console.log('RESPONSE ==== : ', res.data);
-        })
-        .catch((err) => {
-          console.log('ERROR: ====', err);
-        });
-      //insert log activity user -- end
 
       pool.db_MMFPROD.query(
         `select count(*) jumlah_cuti_diambil from (
