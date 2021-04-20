@@ -1,9 +1,12 @@
 const pool = require('../../db');
 const axios = require('axios');
+const { validationResult } = require('express-validator');
 
 // Tabel : travel_request_tbl, travel_request_destination_tbl
 const controller = {
   getListMenu_Doc(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id, grade_id, position_id } = request.body;
 

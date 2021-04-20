@@ -317,7 +317,10 @@ module.exports = (app) => {
   app
     .route('/hcm/api/getListMenuDoc')
     .all(authenticateApiKey)
-    .post(getListMenuDocCtrl.getListMenu_Doc);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getListMenuDocCtrl.getListMenu_Doc
+    );
 
   app
     .route('/hcm/api/getHoliday')
