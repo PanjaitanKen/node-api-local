@@ -21,7 +21,7 @@ const controller = {
       };
 
       axios
-        .post(process.env.url + '/hcm/api/addLogUser', data, options)
+        .post(process.env.URL + '/hcm/api/addLogUser', data, options)
         .then((res) => {
           console.log('RESPONSE ==== : ', res.data);
         })
