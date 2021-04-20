@@ -622,7 +622,6 @@ module.exports = (app) => {
           .notEmpty()
           .withMessage('employee_code REQUIRED!'),
       ],
-      [check('date').isISO8601().withMessage('date TO REQUIRED!')],
       [check('menu').notEmpty().withMessage('menu REQUIRED!')],
       addLogUserCtrl.addLogUser
     );
