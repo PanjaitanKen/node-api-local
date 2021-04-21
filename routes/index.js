@@ -54,6 +54,7 @@ const UsersManagementCtrl = require('../controller/UsersManagementCtrl');
 const oracleCheckAttendanceCtrl = require('../controller/oracle/checkAttendanceCtrl');
 const notificationManagementCtrl = require('../controller/notificationManagementCtrl');
 const addLogUserCtrl = require('../controller/addLogUserCtrl');
+const addEMployeeId = require('../controller/addEMployeeId');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -320,6 +321,14 @@ module.exports = (app) => {
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
       getListMenuDocCtrl.getListMenu_Doc
+    );
+
+  app
+    .route('/hcm/api/addEMployeeid')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      addEMployeeId.storeEmployeeId
     );
 
   app
