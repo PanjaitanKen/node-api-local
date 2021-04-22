@@ -265,6 +265,11 @@ module.exports = (app) => {
     .post(pushNotificationCtrl.pushNotifNewsEvent);
 
   app
+    .route('/hcm/api/pushNotifBlastAll')
+    .all(authenticateApiKey)
+    .post(pushNotificationCtrl.pushNotifBlastAll);
+
+  app
     .route('/hcm/api/param-versions')
     .all(authenticateApiKey)
     .get(ParamVersionCtrl.index);

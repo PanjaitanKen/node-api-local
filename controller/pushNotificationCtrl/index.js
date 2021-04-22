@@ -183,6 +183,68 @@ const controller = {
       response.status(500).send(err);
     }
   },
+
+  pushNotifBlastAll(request, response) {
+    try {
+      const { ket1, ket2 } = request.body;
+
+      pool.db_HCM.query(
+        'select token_notification from trx_notification',
+        (error, results) => {
+          if (error) throw error;
+
+          // eslint-disable-next-line eqeqeq
+          if (results.rows != '') {
+            let employee_tokens = [];
+            const data_db = results.rows;
+
+            employee_tokens = data_db.map(function (a) {
+              const bb = a.token_notification;
+              return bb;
+            });
+            const message = {
+              data: {
+                score: '850',
+                time: '2:45',
+              },
+              notification: {
+                title: `${ket1}`,
+                // eslint-disable-next-line block-scoped-var
+                body: `${ket2}`,
+              },
+            };
+            FCM.sendToMultipleToken(
+              message,
+              employee_tokens,
+              (err, results) => {
+                if (err) {
+                  response.status(200).send({
+                    status: 200,
+                    message: 'Token is not valid',
+                    data: err,
+                  });
+                } else {
+                  response.status(200).send({
+                    status: 200,
+                    message: 'Load Data berhasil',
+                    data: results,
+                  });
+                }
+              }
+            );
+          } else {
+            response.status(200).send({
+              status: 200,
+              message: 'Data Tidak Ditemukan',
+              data: '',
+            });
+          }
+        }
+      );
+    } catch (err) {
+      response.status(500).send(err);
+    }
+  },
 };
 
 module.exports = controller;
