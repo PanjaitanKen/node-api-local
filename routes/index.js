@@ -45,7 +45,6 @@ const getHistManageCtrl = require('../controller/getHistManageCtrl');
 const getHistDetailManageCtrl = require('../controller/getHistDetailManageCtrl');
 const getHistDetailManageTravelCtrl = require('../controller/getHistDetailManageTravelCtrl');
 const getDetailTravelAppCtrl = require('../controller/getDetailTravelAppCtrl');
-const getMenuDocCtrl = require('../controller/getMenuDocCtrl');
 const getPositionEmployeeDocCtrl = require('../controller/getPositionEmployeeDocCtrl');
 const getListMenuDocCtrl = require('../controller/getListMenuDocCtrl');
 const getHolidayCtrl = require('../controller/getHolidayCtrl');
@@ -309,11 +308,6 @@ module.exports = (app) => {
     .route('/mmf/api/getDetailTravelApp')
     .all(authenticateApiKey)
     .post(getDetailTravelAppCtrl.getDetail_Travel_App);
-
-  app
-    .route('/hcm/api/getMenuDoc')
-    .all(authenticateApiKey)
-    .post(getMenuDocCtrl.getMenu_Doc);
 
   app
     .route('/hcm/api/getListMenuDoc')
