@@ -53,7 +53,7 @@ const UsersManagementCtrl = require('../controller/UsersManagementCtrl');
 const oracleCheckAttendanceCtrl = require('../controller/oracle/checkAttendanceCtrl');
 const notificationManagementCtrl = require('../controller/notificationManagementCtrl');
 const addLogUserCtrl = require('../controller/addLogUserCtrl');
-const addEMployeeId = require('../controller/addEMployeeId');
+const addEmployeeId = require('../controller/addEmployeeId');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -323,11 +323,11 @@ module.exports = (app) => {
     );
 
   app
-    .route('/hcm/api/addEMployeeid')
+    .route('/hcm/api/addEmployeeid')
     .all(authenticateApiKey)
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
-      addEMployeeId.storeEmployeeId
+      addEmployeeId.storeEmployeeId
     );
 
   app
