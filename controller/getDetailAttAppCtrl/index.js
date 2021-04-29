@@ -17,7 +17,8 @@ const controller = {
         TO_CHAR(a.working_date,'MM-DD-YYYY') as tgl_bekerja_kembali,
         case when a.leave_name in ('CUTI MELAHIRKAN','CUTI KEGUGURAN')
         then CAST(request_days AS INT)||' Bulan' else CAST(request_days AS INT)||' Hari' end
-        as lama_cuti  from leave_request_tbl a left join employee_tbl c on a.employee_id =c.employee_id
+        as lama_cuti, a.employee_id||'/'||to_char(a.request_Date,'YYYYMMDD')||'/'||trim(to_char(a.sequence_no,'9999999999999999')) as nobukti  
+        from leave_request_tbl a left join employee_tbl c on a.employee_id =c.employee_id
         left join person_tbl d on c.person_id =d.person_id where state='Submitted' and a.golid =$1`,
         [golid],
         (error, results) => {

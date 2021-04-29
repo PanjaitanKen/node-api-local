@@ -67,7 +67,7 @@ const controller = {
           " where a.state='Submitted' and d.approver_id= $1 " +
           //' and  a.employee_id in (select employee_id from employee_supervisor_tbl where supervisor_id = $1 and current_date between valid_from  and valid_to) ' +
           ' union all  ' +
-          " select 'Persetujuan Perjalanan Dinas' Keterangan,initcap(c.display_name) nama,  " +
+          " select 'Persetujuan Dinas' Keterangan,initcap(c.display_name) nama,  " +
           " case  when current_date-d.status_date=0 then 'Hari ini'   " +
           " when current_date-d.status_date=1 then 'Kemarin'   " +
           " when current_date-d.status_date=2 then '2 Hari yang lalu'  " +
@@ -77,7 +77,7 @@ const controller = {
           " when current_date-d.status_date=6 then '6 Hari yang lalu'  " +
           " when current_date-d.status_date=7 then '7 Hari yang lalu'  " +
           " when current_date-d.status_date>7 then to_char(d.status_date,'DD Mon YYYY') end Durasi_Waktu , " +
-          " a.golid,'Pengajuan Perjalanan Dinas' Keterangan2, d.status_date tanggal from travel_request_tbl  a  " +
+          " a.golid,'Pengajuan Dinas' Keterangan2, d.status_date tanggal from travel_request_tbl  a  " +
           ' left join employee_tbl  b on a.employee_id = b.employee_id  ' +
           ' left join person_tbl c on b.person_id =c.person_id ' +
           ' left join (select request_no, min(status_date) status_date from  ' +

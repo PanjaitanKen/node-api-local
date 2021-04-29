@@ -15,7 +15,8 @@ const controller = {
         when a.state='Rejected' then 'Ditolak'
         when a.state='Submitted' then 'Menunggu Persetujuan'
         when a.state='Cancelled' then 'Batal' end as Status,
-        to_char(work_off_from,'HH24:MI')||' - '||to_char(work_off_to,'HH24:MI') waktu
+        to_char(work_off_from,'HH24:MI')||' - '||to_char(work_off_to,'HH24:MI') waktu,
+        a.employee_id||'/'||to_char(e.status_date,'YYYYMMDD')||'/'||trim(to_char(a.sequence_no,'9999999999999999')) as nobukti 
         from employee_work_off_tbl a
         left join wage_code_tbl b on a.absence_wage =b.wage_code
         left join employee_tbl c on a.employee_id =c.employee_id

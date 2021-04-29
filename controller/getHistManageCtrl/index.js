@@ -120,7 +120,7 @@ const controller = {
                 where template_name='APPROVAL_WORK_OFF'
                 and approved_by =$1  and a.approved_date between (current_date -interval '1 days' * $2) and now()
                 union all 
-                select 'Persetujuan Perjalanan Dinas' as Jenis, 'Riwayat Persetujuan Perjalanan Dinas' as Jenis2, aa.employee_id,  	aa.request_no as no_urut, initcap(c.display_name) nama,
+                select 'Persetujuan Dinas' as Jenis, 'Riwayat Persetujuan Dinas' as Jenis2, aa.employee_id,  	aa.request_no as no_urut, initcap(c.display_name) nama,
                 case when current_date-a.approved_date=0 then 'Hari ini'
                    when current_date-a.approved_date=1 then 'Kemarin'
                    when current_date-a.approved_date=2 then '2 Hari yang lalu'

@@ -20,17 +20,17 @@ const controller = {
         max(case when tipe='PULANG' then jam else ' ' end) as jam_pulang
         from 
         (
-            select 'DATANG' AS tipe, replace(substr(:employee_id,1,12),'0','')  nokar, to_char(tgl,'YYYY-MM-DD') AS TGL,
+            select 'DATANG' AS tipe, LTRIM(:employee_id, '0')   nokar, to_char(tgl,'YYYY-MM-DD') AS TGL,
             min(to_char(jam,'HH24:MI')) jam
             from trx_Absensi a
-            where jenis='1' and nokar = replace(substr(:employee_id,1,12),'0','')  and to_char(tgl,'YYYY-MM-DD')=to_char(current_date,'YYYY-MM-DD')
-            group by replace(substr(:employee_id,1,12),'0','') ,to_char(tgl,'YYYY-MM-DD')
+            where jenis='1' and nokar = LTRIM(:employee_id, '0')   and to_char(tgl,'YYYY-MM-DD')=to_char(current_date,'YYYY-MM-DD')
+            group by LTRIM(:employee_id, '0')  ,to_char(tgl,'YYYY-MM-DD')
             union all
-            select 'PULANG' AS tipe, replace(substr(:employee_id,1,12),'0','')  nokar, to_char(tgl,'YYYY-MM-DD') AS TGL,
+            select 'PULANG' AS tipe, LTRIM(:employee_id, '0')   nokar, to_char(tgl,'YYYY-MM-DD') AS TGL,
             max(to_char(jam,'HH24:MI')) jam
             from trx_Absensi a
-            where jenis='2' and nokar = replace(substr(:employee_id,1,12),'0','')  and to_char(tgl,'YYYY-MM-DD')=to_char(current_date,'YYYY-MM-DD')
-            group by replace(substr(:employee_id,1,12),'0','') ,to_char(tgl,'YYYY-MM-DD')
+            where jenis='2' and nokar = LTRIM(:employee_id, '0')  and to_char(tgl,'YYYY-MM-DD')=to_char(current_date,'YYYY-MM-DD')
+            group by LTRIM(:employee_id, '0')  ,to_char(tgl,'YYYY-MM-DD')
         )
         group by nokar,tgl`,
         [employee_id]
@@ -50,14 +50,14 @@ const controller = {
           if (result.rows[0][3] != 0) {
             res.status(200).send({
               status: 200,
-              message: 'Berhasil Clock In dan Clock Out',
+              message: 'Berhasil Clock In & Clock Out',
               validate_id: employee_id,
               data: 2,
             });
           } else {
             res.status(200).send({
               status: 200,
-              message: 'Berhasil Clock In dan Belum Clock Out',
+              message: 'Berhasil Clock In & Belum Clock Out',
               validate_id: employee_id,
               data: 1,
             });
@@ -65,7 +65,7 @@ const controller = {
         } else {
           res.status(200).send({
             status: 200,
-            message: 'Belum melakukan clock in dan clock out',
+            message: 'Belum melakukan clock in & clock out',
             validate_id: employee_id,
             data: 0,
           });
@@ -74,7 +74,7 @@ const controller = {
         // send all employees
         res.status(200).send({
           status: 200,
-          message: 'Belum melakukan clock in dan clock out',
+          message: 'Belum melakukan clock in & clock out',
           validate_id: employee_id,
           data: 0,
         });
