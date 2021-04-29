@@ -54,6 +54,8 @@ const oracleCheckAttendanceCtrl = require('../controller/oracle/checkAttendanceC
 const notificationManagementCtrl = require('../controller/notificationManagementCtrl');
 const addLogUserCtrl = require('../controller/addLogUserCtrl');
 const addEmployeeId = require('../controller/addEmployeeId');
+const excelExportCtrl = require('../controller/excelExportCtrl');
+const updateAbsenceCatCtrl = require('../controller/updateAbsenceCatCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -635,5 +637,21 @@ module.exports = (app) => {
       ],
       [check('menu').notEmpty().withMessage('menu REQUIRED!')],
       addLogUserCtrl.addLogUser
+    );
+
+  app
+    .route('/hcm/api/logExportExcel')
+    .all(authenticateApiKey)
+    .post(
+      [check('tanggal').notEmpty().withMessage('tanggal REQUIRED!')],
+      excelExportCtrl.excelExport
+    );
+
+  app
+    .route('/hcm/api/updateAbsenceCategory')
+    .all(authenticateApiKey)
+    .post(
+      [check('absen_code').notEmpty().withMessage('absen_code REQUIRED!')],
+      updateAbsenceCatCtrl.updateAbsenceCat
     );
 };
