@@ -13,6 +13,7 @@ const controller = {
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
+            // eslint-disable-next-line eqeqeq
             if (results.rows[0].setting_value == 0) {
               pool.db_MMFPROD.query(
                 `SELECT count(*) FROM emp_clocking_detail_tbl 
@@ -114,6 +115,7 @@ const controller = {
                   }
                 }
               );
+              // eslint-disable-next-line eqeqeq
             } else if (results.rows[0].setting_value == 1) {
               response.status(200).send({
                 status: 200,
@@ -121,6 +123,7 @@ const controller = {
                 validate_id: employee_id,
                 data: 0,
               });
+              // eslint-disable-next-line eqeqeq
             } else if (results.rows[0].setting_value == 2) {
               response.status(200).send({
                 status: 200,
