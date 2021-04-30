@@ -3,7 +3,7 @@ const excel = require('exceljs');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  excelExport(request, response) {
+  excelExportlog(request, response) {
     try {
       const { tanggal } = request.body;
       let employee_id = [];
@@ -78,6 +78,56 @@ const controller = {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
+              data: results.rows,
+            });
+          }
+        }
+      );
+    } catch (err) {
+      response.status(500).send(err);
+    }
+  },
+  excelExportlogSummary(request, response) {
+    try {
+      const { tanggal } = request.body;
+
+      pool.db_HCM.query(
+        `select count(*) jumlah_akses, menu from trx_log_user
+        where to_char(tanggal,'YYYY-MM-DD')=$1
+        group by menu`,
+        [tanggal],
+        (error, results) => {
+          if (error) throw error;
+
+          // eslint-disable-next-line eqeqeq
+          if (results.rows != '') {
+            let workbook = new excel.Workbook();
+            let worksheet = workbook.addWorksheet('Summary Log');
+            worksheet.columns = [
+              { header: 'Jumlah akses', key: 'jumlah_akses', width: 25 },
+              { header: 'Menu', key: 'menu', width: 25 },
+            ];
+
+            // Add Array Rows
+            worksheet.addRows(results.rows);
+            // res is a Stream object
+            response.setHeader(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            );
+            response.setHeader(
+              'Content-Disposition',
+              'attachment; filename=' + 'mandalaSummaryReport.xlsx'
+            );
+
+            return workbook.xlsx.write(response).then(function () {
+              response.status(200).end();
+            });
+          } else {
+            response.status(200).send({
+              status: 200,
+              message: 'Data Tidak Ditemukan',
+              validate_id: employee_id,
               data: results.rows,
             });
           }

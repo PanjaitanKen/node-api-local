@@ -644,7 +644,15 @@ module.exports = (app) => {
     .all(authenticateApiKey)
     .post(
       [check('tanggal').notEmpty().withMessage('tanggal REQUIRED!')],
-      excelExportCtrl.excelExport
+      excelExportCtrl.excelExportlog
+    );
+
+  app
+    .route('/hcm/api/logExportExcelSummary')
+    .all(authenticateApiKey)
+    .post(
+      [check('tanggal').notEmpty().withMessage('tanggal REQUIRED!')],
+      excelExportCtrl.excelExportlogSummary
     );
 
   app
