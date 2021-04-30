@@ -19,12 +19,12 @@ const controller = {
       photo,
     } = request.body;
 
-    const { employee_id2 } = employee_id;
+    const employee_id2 = employee_id;
 
     //insert log activity user -- start
     const data = {
       employee_id: employee_id,
-      menu: 'Absen',
+      menu: 'Absen Masuk',
     };
 
     const options = {
@@ -78,42 +78,62 @@ const controller = {
       (error) => {
         if (error) throw error;
 
-        pool.db_MMFPROD.query(
-          'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
-          [employee_id],
-          (error, results) => {
+        pool.db_HCM.query(
+          "insert into emp_clocking_hcm (company_id ,employee_id ,clocking_date ,in_out , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name, location_method) values ('MMF',$1, (CURRENT_TIMESTAMP AT TIME ZONE $11) , 0, 'Transfer data by HCM to Clocking Date: '|| to_char(current_date,'DD Mon YYYY') ||' - '||to_char((CURRENT_TIMESTAMP AT TIME ZONE $11),'HH24:mm:ss')||' '||$10, 'Transfered',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMMSS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1)",
+          [
+            employee_id,
+            latitude,
+            altitude,
+            longitude,
+            accuracy,
+            location_no,
+            url_path,
+            randomNumber,
+            employee_id2,
+            timeZoneAsia,
+            time_stamp_convert,
+          ],
+          (error) => {
             if (error) throw error;
 
-            // eslint-disable-next-line eqeqeq
-            if (results.rows[0].count == 0) {
-              pool.db_MMFPROD.query(
-                "insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, (CURRENT_TIMESTAMP AT TIME ZONE $3) , null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );",
-                [employee_id, location_no, time_stamp_convert],
-                (error) => {
-                  if (error) throw error;
+            pool.db_MMFPROD.query(
+              'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
+              [employee_id],
+              (error, results) => {
+                if (error) throw error;
 
+                // eslint-disable-next-line eqeqeq
+                if (results.rows[0].count == 0) {
                   pool.db_MMFPROD.query(
-                    "insert into emp_clocking_tbl (company_id ,employee_id ,clocking_date ,result_revised ,presence ,normal_hour ,overtime_hour , absence_hour ,late_hour ,early_hour ,overtime_paid ,temp_day_type ,revised_company ,revised_by ,calc_day_type ,normal_hour_off , late_in_wage ,early_out_wage ,early_break_hour ,late_break_hour ,state ,golid ,golversion ) values ('MMF',$1,current_date,null,0,0,0,0,0,0,0,null,null,null,null,0,null,null,0,0,'Prepared',nextval('emp_clocking_tbl_golid_seq'),1);",
-                    [employee_id],
+                    "insert into emp_clocking_detail_tbl (company_id,employee_id,clocking_date,time_in,time_out,off_site,is_break,note,in_terminal, out_terminal, in_reg_type, out_reg_type, absence_wage, in_location,out_location,golid,golversion) values ('MFIN',$1,current_date, (CURRENT_TIMESTAMP AT TIME ZONE $3) , null, null, 'N', null, ' ',' ' ,5, null, null, $2, null, nextval('emp_clocking_detail_tbl_golid_seq'),1 );",
+                    [employee_id, location_no, time_stamp_convert],
                     (error) => {
                       if (error) throw error;
 
-                      response.status(201).send({
-                        status: 201,
-                        message: 'Absen Masuk Berhasil',
-                        data: 2,
-                      });
+                      pool.db_MMFPROD.query(
+                        "insert into emp_clocking_tbl (company_id ,employee_id ,clocking_date ,result_revised ,presence ,normal_hour ,overtime_hour , absence_hour ,late_hour ,early_hour ,overtime_paid ,temp_day_type ,revised_company ,revised_by ,calc_day_type ,normal_hour_off , late_in_wage ,early_out_wage ,early_break_hour ,late_break_hour ,state ,golid ,golversion ) values ('MMF',$1,current_date,null,0,0,0,0,0,0,0,null,null,null,null,0,null,null,0,0,'Prepared',nextval('emp_clocking_tbl_golid_seq'),1);",
+                        [employee_id],
+                        (error) => {
+                          if (error) throw error;
+
+                          response.status(201).send({
+                            status: 201,
+                            message: 'Absen Masuk Berhasil',
+                            data: 2,
+                          });
+                        }
+                      );
                     }
                   );
+                } else {
+                  response.status(201).send({
+                    status: 201,
+                    message: 'Absen Masuk Berhasil',
+                    data: 1,
+                  });
                 }
-              );
-            } else {
-              response.status(201).send({
-                status: 201,
-                message: 'Absen Masuk Berhasil',
-                data: 1,
-              });
-            }
+              }
+            );
           }
         );
       }
