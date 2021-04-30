@@ -104,7 +104,7 @@ const controller = {
         from temp_notif a 
         where
         employee_id =$1 
-        and approved_date between (current_date -interval '1 days' * 20) and now() order by a.approved_date desc `,
+        and approved_date between (current_date -interval '1 days' * 20) and now() order by a.nourut_notif desc `,
         [employee_id],
         (error, results) => {
           if (error) throw error;
