@@ -56,6 +56,7 @@ const addLogUserCtrl = require('../controller/addLogUserCtrl');
 const addEmployeeId = require('../controller/addEmployeeId');
 const excelExportCtrl = require('../controller/excelExportCtrl');
 const updateAbsenceCatCtrl = require('../controller/updateAbsenceCatCtrl');
+const ParamHcmCtrl = require('../controller/ParamHcmCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -661,5 +662,59 @@ module.exports = (app) => {
     .post(
       [check('absen_code').notEmpty().withMessage('absen_code REQUIRED!')],
       updateAbsenceCatCtrl.updateAbsenceCat
+    );
+
+  // param hcm routes
+  app
+    .route('/hcm/api/param-hcm')
+    .all(authenticateApiKey)
+    .get(ParamHcmCtrl.index);
+
+  app
+    .route('/hcm/api/param-hcm/:id')
+    .all(authenticateApiKey)
+    .get(ParamHcmCtrl.show);
+
+  app
+    .route('/hcm/api/param-hcm')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('setting_name').notEmpty().withMessage('SETTING_NAME REQUIRED!'),
+        check('setting_value')
+          .notEmpty()
+          .withMessage('SETTING_VALUE REQUIRED!'),
+        check('description').notEmpty().withMessage('DESCRIPTION REQUIRED!'),
+      ],
+      ParamHcmCtrl.store
+    );
+
+  app
+    .route('/hcm/api/param-hcm')
+    .all(authenticateApiKey)
+    .put(
+      [
+        check('param_id').notEmpty().withMessage('PARAM_ID REQUIRED!'),
+        check('setting_name').notEmpty().withMessage('SETTING_NAME REQUIRED!'),
+        check('setting_value')
+          .notEmpty()
+          .withMessage('SETTING_VALUE REQUIRED!'),
+        check('description').notEmpty().withMessage('DESCRIPTION REQUIRED!'),
+      ],
+      ParamHcmCtrl.update
+    );
+
+  app
+    .route('/hcm/api/param-hcm')
+    .all(authenticateApiKey)
+    .delete(
+      [
+        check('param_id')
+          .notEmpty()
+          .withMessage('PARAM_ID REQUIRED!')
+          .isNumeric()
+          .withMessage('PARAM_ID MUST NUMERIC!'),
+      ],
+      ParamHcmCtrl.destroy
     );
 };

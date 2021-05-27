@@ -39,7 +39,7 @@ const controller = {
                       pool.db_MMFPROD.query(
                         ` with x as ( 
                           SELECT to_char(clocking_date,'yyyy-mm-dd') clocking_date ,to_char(time_in ,'HH:MI') as time_in  ,to_char(time_out ,'HH:MI') as time_out 
-                          FROM emp_clocking_detail_tbl where clocking_date =date'2021-04-02' and employee_id = $1 
+                          FROM emp_clocking_detail_tbl where TO_CHAR(clocking_date,'YYYY-MM-DD') =to_char(current_date,'YYYY-MM-DD') and employee_id = $1 
                           and  (absence_wage not in ('CT_A_BPTIS','CT_A_NIKAH','CT_GUGUR','CT_HAJI','CT_I_LAHIR','CT_KLG_WFT',
                                                  'CT_LAHIR','CT_NIKAH','CT_RMH_WFT','CT_THN','CT_SKT','IJ_SAKIT') or 
                                                   note not like '%Travel Request')

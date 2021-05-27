@@ -192,7 +192,7 @@ const controller = {
   getSystemMasterMenu(_, response) {
     try {
       pool.db_HCM.query(
-        'SELECT * FROM sys_mmenu ORDER BY nourut ASC',
+        'SELECT * FROM sys_mmenu ORDER BY nourut, sprg ASC',
         (error, results) => {
           if (error) throw error;
 

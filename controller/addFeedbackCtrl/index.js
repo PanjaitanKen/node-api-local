@@ -59,7 +59,7 @@ const controller = {
             'from person_contact_method_tbl a ' +
             'left join employee_tbl b on  a.person_id =b.person_id  ' +
             'left join my_contact_method_tbl c on a.person_id = c.person_id  ' +
-            'left join emp_company_office_tbl d on b.employee_id =d.employee_id  ' +
+            'left join emp_company_office_tbl d on b.employee_id =d.employee_id  and current_date between valid_from and valid_to ' +
             'left join person_tbl e on a.person_id =e.person_id ' +
             "where b.employee_id =$1 and  a.contact_type ='4' " +
             'limit 1 ',
@@ -218,6 +218,14 @@ const controller = {
                                             transporter.sendMail(
                                               mailOptions,
                                               (error, info) => {
+                                                if (error) {
+                                                  response.status(200).send({
+                                                    status: 200,
+                                                    message:
+                                                      'Belum terkoneksi dengan email',
+                                                    data: '',
+                                                  });
+                                                }
                                                 const resp_api_email =
                                                   info.response;
                                                 pool.db_HCM.query(

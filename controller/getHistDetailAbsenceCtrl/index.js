@@ -29,7 +29,7 @@ const controller = {
         when to_char(xx.dates_this_month,'MM')='12' then 'Des' end ||' '||to_char(xx.dates_this_month,'YYYY') as tgl_absen2,
         case when in_out='0' then 'Absen Masuk' when in_out='1' then 'Absen Pulang'  else ' ' end as kategori,
         to_char(yy.clocking_date,'HH24:MI')  as jam,
-        case when  yy.state='Transfered' then '1' else '0' end as status,
+        case when  yy.state='Transfered' then '1' when yy.state='Error' then '2' else '0' end as status,
         case when in_out='1' then '1' else '0' end as type_absen,
         case when b.clocking_date is null then '0' else '1' end as type_ijin,
         coalesce(to_char(b.work_off_from ,'HH24:MI')||' - '||to_char(b.work_off_to ,'HH24:MI'),' ') jam_ijin ,

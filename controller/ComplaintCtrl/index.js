@@ -5,7 +5,18 @@ const controller = {
   index(_, response) {
     try {
       pool.db_HCM.query(
-        'SELECT id_komplain, cabang, no_hp, email, keterangan, tgl_komplain, internal_title, nama_karyawan FROM trx_komplain ORDER BY trx_komplain DESC',
+        `SELECT id_komplain,
+          ket_kategori,
+          nama_karyawan,
+          email,
+          trx_komplain.no_hp,
+          cabang,
+          keterangan,
+          tgl_komplain,
+          internal_title
+          FROM trx_komplain
+          LEFT JOIN mas_kategori_komplain ON trx_komplain.id_kategori_komplain = mas_kategori_komplain.id_kategori_komplain
+          ORDER BY trx_komplain.tgl_komplain DESC`,
         (error, results) => {
           if (error) throw error;
 

@@ -55,7 +55,7 @@ const controller = {
           " date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as dates_this_month " +
           " ) a where dates_this_month between (current_date -interval '1 days' * $2) and now() " +
           ' ) xx ' +
-          " left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.employee_id =$1 " +
+          " left join emp_clocking_temp_tbl yy on  xx.tgl_absen=to_char(yy.clocking_date,'YYYY-MM-DD') and yy.state<>'Error' and yy.employee_id =$1 " +
           " left join emp_clocking_tbl zz on yy.employee_id=zz.employee_id and to_char(yy.clocking_date,'YYYY-MM-DD') = to_char(zz.clocking_date,'YYYY-MM-DD') " +
           ' left join (select employee_id,clocking_date, state  ' +
           ' from employee_work_off_tbl where  ' +
@@ -68,12 +68,12 @@ const controller = {
           ' with x as ( ' +
           "  select employee_id ,'absen_masuk' as tipe, to_char(clocking_date ,'YYYY-MM-DD') clocking_date,  " +
           "  min(to_char(clocking_date ,'HH24:MI'))  jam " +
-          " from emp_clocking_temp_tbl where employee_id =$1  and in_out='0' " +
+          " from emp_clocking_temp_tbl where employee_id =$1  and in_out='0'  and state<>'Error' " +
           " group by employee_id ,to_char(clocking_date ,'YYYY-MM-DD') " +
           '  union all ' +
           "  select employee_id ,'absen_pulang' as tipe, to_char(clocking_date ,'YYYY-MM-DD') clocking_date,  " +
           "  max(to_char(clocking_date ,'HH24:MI'))  jam " +
-          "  from emp_clocking_temp_tbl where employee_id =$1  and in_out='1' " +
+          "  from emp_clocking_temp_tbl where employee_id =$1  and in_out='1' and state<>'Error' " +
           "  group by employee_id ,to_char(clocking_date ,'YYYY-MM-DD') " +
           '  ) select employee_id ,clocking_date , ' +
           "  max(case when tipe = 'absen_masuk' then jam else ' ' end) absen_masuk, " +
@@ -85,7 +85,7 @@ const controller = {
           ' left join ' +
           " (select employee_id ,to_char(clocking_date ,'YYYY-MM-DD') clocking_date,to_char(clocking_date ,'HH24:MI') jam,state, " +
           ' transfer_message  as transfer_message_masuk ' +
-          " from emp_clocking_temp_tbl where in_out='0' and employee_id= $1 ) sss on sss.employee_id =$1 " +
+          " from emp_clocking_temp_tbl where in_out='0'  and state<>'Error' and employee_id= $1 ) sss on sss.employee_id =$1 " +
           ' and ss.clocking_date = sss.clocking_date and ss.absen_masuk = sss.jam	' +
           ' left join ' +
           " (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd " +
