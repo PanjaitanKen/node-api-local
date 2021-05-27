@@ -1,8 +1,11 @@
 const pool = require('../../db');
+const { validationResult } = require('express-validator');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
   getEmployeeAccessMenu(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id } = request.body;
 
@@ -14,11 +17,16 @@ const controller = {
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
+            let employee_akses = [];
+            employee_akses = results.rows.map(function (a) {
+              const bb = a.akses;
+              return bb;
+            });
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: Object.values(results.rows).map(Object.values),
+              data: employee_akses,
             });
           } else {
             response.status(200).send({
