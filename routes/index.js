@@ -57,8 +57,11 @@ const addEmployeeId = require('../controller/addEmployeeId');
 const excelExportCtrl = require('../controller/excelExportCtrl');
 const updateAbsenceCatCtrl = require('../controller/updateAbsenceCatCtrl');
 const ParamHcmCtrl = require('../controller/ParamHcmCtrl');
-const getEmployeeAccessMenuCtrl = require('../controller/getEmployeeAccessMenuCtrl');
-const getProspectiveEmployeesCtrl = require('../controller/getProspectiveEmployeesCtrl');
+const checkReadCKCtrl = require('../controller/checkReadCKCtrl');
+const getInfoCKCtrl = require('../controller/getInfoCKCtrl');
+const checkProgressBarCKCtrl = require('../controller/checkProgressBarCKCtrl');
+const updateProgressBarCKCtrl = require('../controller/updateProgressBarCKCtrl');
+const getFirstDayGuideDataCtrl = require('../controller/getFirstDayGuideDataCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -721,18 +724,45 @@ module.exports = (app) => {
     );
 
   app
-    .route('/hcm/api/getEmployeeAccessMenu')
+    .route('/hcm/api/checkReadCK')
     .all(authenticateApiKey)
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
-      getEmployeeAccessMenuCtrl.getEmployeeAccessMenu
+      checkReadCKCtrl.checkReadCK
     );
 
   app
-    .route('/hcm/api/getProspectiveEmployees')
+    .route('/hcm/api/getInfoCK')
     .all(authenticateApiKey)
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
-      getProspectiveEmployeesCtrl.getProspectiveEmployees
+      getInfoCKCtrl.getInfoCK
+    );
+
+  app
+    .route('/hcm/api/checkProgressBarCK')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      checkProgressBarCKCtrl.checkProgressBarCK
+    );
+
+  app
+    .route('/hcm/api/updateProgressBarCK')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('id_menu_ck').notEmpty().withMessage('id_menu_ck REQUIRED!'),
+      ],
+      updateProgressBarCKCtrl.updateProgressBarCK
+    );
+
+  app
+    .route('/hcm/api/getFirstDayGuideData')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getFirstDayGuideDataCtrl.getFirstDayGuideData
     );
 };
