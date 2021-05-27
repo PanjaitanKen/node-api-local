@@ -57,6 +57,8 @@ const addEmployeeId = require('../controller/addEmployeeId');
 const excelExportCtrl = require('../controller/excelExportCtrl');
 const updateAbsenceCatCtrl = require('../controller/updateAbsenceCatCtrl');
 const ParamHcmCtrl = require('../controller/ParamHcmCtrl');
+const getEmployeeAccessMenuCtrl = require('../controller/getEmployeeAccessMenuCtrl');
+const getProspectiveEmployeesCtrl = require('../controller/getProspectiveEmployeesCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -716,5 +718,21 @@ module.exports = (app) => {
           .withMessage('PARAM_ID MUST NUMERIC!'),
       ],
       ParamHcmCtrl.destroy
+    );
+
+  app
+    .route('/hcm/api/getEmployeeAccessMenu')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getEmployeeAccessMenuCtrl.getEmployeeAccessMenu
+    );
+
+  app
+    .route('/hcm/api/getProspectiveEmployees')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getProspectiveEmployeesCtrl.getProspectiveEmployees
     );
 };
