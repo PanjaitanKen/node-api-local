@@ -12,14 +12,14 @@ const controller = {
       pool.db_HCM.query(
         `with x as (select 
           (select 
-           count(*) jumlah_konfirm
-           from trx_akses_menu_ck
-           where userid_ck = $1 
-           and tgl_akses is not null) jumlah_konfirm,
-           count(case when userid_ck = $1 then 1 else 0 end) jumlah_menu
-           from trx_akses_menu_ck
+            count(*) jumlah_konfirm
+            from trx_akses_menu_ck
+            where userid_ck = $1 
+            and tgl_akses is not null) jumlah_konfirm,
+            count(case when userid_ck = $1 then 1 else 0 end) jumlah_menu
+            from trx_akses_menu_ck
         where userid_ck = $1 )
-        select (jumlah_konfirm/jumlah_menu)*100 persen_progress 
+        select jumlah_konfirm progress,case when jumlah_konfirm=0 then 0 else (jumlah_konfirm/jumlah_menu)*100 end as persen_progress 
         from x`,
         [employee_id],
         (error, results) => {

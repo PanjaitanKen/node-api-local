@@ -35,9 +35,10 @@ const controller = {
                   if (error) throw error;
 
                   // eslint-disable-next-line eqeqeq
-                  response.status(200).send({
+                  response.status(202).send({
                     status: 'SUCCESS',
                     message: 'UPDATE USER',
+                    validate_id: employee_id,
                     data: '',
                   });
                 }
