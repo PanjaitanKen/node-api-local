@@ -735,7 +735,10 @@ module.exports = (app) => {
     .route('/hcm/api/getInfoCK')
     .all(authenticateApiKey)
     .post(
-      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('userid_ck').notEmpty().withMessage('userid_ck REQUIRED!'),
+      ],
       getInfoCKCtrl.getInfoCK
     );
 
