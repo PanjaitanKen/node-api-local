@@ -10,14 +10,11 @@ const helmet = require('helmet');
 const compression = require('compression');
 const http = require('http');
 const https = require('https');
+const cron = require('node-cron');
 
-//supertest
+const Jobs = require('./jobs');
 const app = require('./server');
-const supertest = require('supertest');
-const request = supertest(app);
-
 const routes = require('./routes');
-const notifier = require('mail-notifier');
 
 // start app
 const port = process.env.PORT || 3000;
@@ -69,6 +66,11 @@ app.use(
 );
 
 app.use(
+  '/assets',
+  express.static(path.join(__dirname, 'assets'), { maxAge: 31557600 })
+);
+
+app.use(
   fileUpload({
     createParentPath: true,
   })
@@ -86,19 +88,40 @@ routes(app);
 
 // Handling asynchronous error
 process.on('uncaughtException', (err) => {
+  // eslint-disable-next-line no-console
   console.error('global exception:', err.message);
 });
 
 // Handling rejected promises
 process.on('unhandledRejection', (reason) => {
+  // eslint-disable-next-line no-console
   console.error('unhandled promise rejection:', reason.message || reason);
 });
 
-//app listen for api serv or api test
-//for API
+// Schedule tasks to be run on the server.
+if (cron.validate(process.env.SCHEDULE_CALON_KARYAWAN)) {
+  cron.schedule(process.env.SCHEDULE_CALON_KARYAWAN, () => {
+    Jobs.handleCalonKaryawan('PERSONNEL_ACQUISITION');
+    Jobs.handleCalonKaryawan('NON_PERSONNEL_ACQUISITION');
+  });
+}
+
+if (process.env.NODE_ENV === 'development') {
+  cron.schedule('* * * * *', () => {
+    Jobs.checkServiceHost();
+  });
+
+  cron.schedule('0 0 * * *', () => {
+    Jobs.resetValueCheckServiceHostToZero();
+  });
+}
+
+// app listen for api serv or api test
+// for API
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`App running on port ${port}.`);
 });
 
-//for unit testing
+// for unit testing
 // module.exports = app;
