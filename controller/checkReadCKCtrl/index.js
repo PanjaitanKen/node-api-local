@@ -10,7 +10,7 @@ const controller = {
       const { employee_id } = request.body;
 
       pool.db_HCM.query(
-        `select case when tgl_akses is null then 0 else 1 end as akses from trx_akses_menu_ck where userid_ck =$1`,
+        `select case when tgl_akses is null then 0 else 1 end as akses from trx_akses_menu_ck where userid_ck =$1 order by id_menu_ck asc`,
         [employee_id],
         (error, results) => {
           if (error) throw error;
