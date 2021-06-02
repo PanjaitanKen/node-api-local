@@ -151,7 +151,7 @@ const controller = {
                                         const resp_api_email = info.response;
                                         //insert log activity user -- start
                                         const data = {
-                                          to: '085156249767',
+                                          to: emp_ph,
                                           header:
                                             'Informasi Karyawan Baru di PT Mandala Finance',
                                           text:
