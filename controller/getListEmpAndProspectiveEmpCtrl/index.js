@@ -56,6 +56,38 @@ const controller = {
                 } else {
                   response.status(200).send({
                     status: 200,
+                    message: 'Load Data berhasil',
+                    validate_id: employee_id,
+                    data: mmf_data,
+                  });
+                }
+              }
+            );
+          } else {
+            pool.db_HCM.query(
+              `select a.applicant_id,  coalesce(a.nama_depan ,'')||coalesce(a.nama_belakang,'') as nama_karyawan,
+              to_char(a.tgl_kerja,'YYYY-MM-DD') as  tgl_kerja, a.position_id as ket_jabatan,
+              to_char(a.tgl_lahir ,'YYYY-MM-DD') as  tgl_lahir, a.no_hp_ck, a.email_ck,
+              a.userid_ck||'-'||to_char(a.tgl_lahir ,'DDMMYYYY') ||'-'||"password" as qr_code,
+              'CALON KARYAWAN' as status
+              from trx_calon_karyawan a  
+              where nokar_atasan =$1 and 
+              tgl_scan_qr is null`,
+              [employee_id],
+              (error, results) => {
+                if (error) throw error;
+
+                // eslint-disable-next-line eqeqeq
+                if (results.rows != '') {
+                  response.status(200).send({
+                    status: 200,
+                    message: 'Load Data berhasil',
+                    validate_id: employee_id,
+                    data: results.rows[0],
+                  });
+                } else {
+                  response.status(200).send({
+                    status: 200,
                     message: 'Data Tidak Ditemukan',
                     validate_id: employee_id,
                     data: results.rows,
@@ -63,13 +95,6 @@ const controller = {
                 }
               }
             );
-          } else {
-            response.status(200).send({
-              status: 200,
-              message: 'Data Tidak Ditemukan',
-              validate_id: employee_id,
-              data: results.rows,
-            });
           }
         }
       );

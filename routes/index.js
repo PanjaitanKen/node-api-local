@@ -64,6 +64,7 @@ const updateProgressBarCKCtrl = require('../controller/updateProgressBarCKCtrl')
 const getFirstDayGuideDataCtrl = require('../controller/getFirstDayGuideDataCtrl');
 const ProspectiveEmployee = require('../controller/ProspectiveEmployee');
 const getListEmpAndProspectiveEmpCtrl = require('../controller/getListEmpAndProspectiveEmpCtrl');
+const getCountCKCtrl = require('../controller/getCountCKCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -786,5 +787,13 @@ module.exports = (app) => {
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
       getListEmpAndProspectiveEmpCtrl.getListEmpAndProspectiveEmp
+    );
+
+  app
+    .route('/hcm/api/getCountCK')
+    .all(authenticateApiKey)
+    .post(
+      [check('userid_ck').notEmpty().withMessage('userid_ck REQUIRED!')],
+      getCountCKCtrl.getCountCK
     );
 };
