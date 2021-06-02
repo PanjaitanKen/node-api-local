@@ -11,7 +11,7 @@ const controller = {
 
       pool.db_MMFPROD.query(
         `select count(*) flag from candidate_appointment_tbl
-        where new_assign_employee is not null
+        where (new_assign_employee is not null and new_assign_employee <>'')
         and candidate_id = $1`,
         [userid_ck],
         (error, results) => {
@@ -25,8 +25,8 @@ const controller = {
                 `select a.applicant_id,   a.state ,a.first_name as nama_depan,a.last_name as nama_belakang,
                 date_applied as tgl_input, b.appointment_date tgl_penunjukan, b.starting_date tgl_kerja,
                 point_of_hire tempat_rekrut,  
-                place_of_birth as tempat_lahir, date_of_birth as tgl_lahir, have_child punya_anak, 
-                address as alamat, address_state as prop_alamat, postal_code as kodepos_alamat,city as kota_alamat,
+                a.place_of_birth as tempat_lahir, a.date_of_birth as tgl_lahir, have_child punya_anak, 
+                a.address as alamat, address_state as prop_alamat, postal_code as kodepos_alamat,city as kota_alamat,
                 case when a.blood_type='1' then 'A+'
                     when a.blood_type='2' then 'B+'
                     when a.blood_type='3' then 'AB+' 
@@ -52,7 +52,8 @@ const controller = {
                 b.grade_id ,b.org_id ,k.identification_value as noktp,
                 b.npwp_no ,b.bank_code as kode_bank,b.branch_name as rek_bank_cabang ,
                 b.account_no as norek,b.acc_name_holder as an_rek,a.applicant_id as userid_ck,
-                null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer
+                null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer,
+                null as tgl_scan_qr, p.position_id, q.name as nama_suami_istri, r.name as nama_ibu, s.name as nama_ayah
                 from applicant_tbl a
                 left join candidate_appointment_tbl b on a.applicant_id = b.candidate_id
                 left join employee_tbl c on b.new_sup_emp = c.employee_id 
@@ -70,7 +71,13 @@ const controller = {
                 left join applicant_contact_info_tbl n on a.applicant_id = n.applicant_id and n.default_address ='Y' and n.contact_type='3' 
                 left join applicant_contact_info_tbl o on a.applicant_id = o.applicant_id and o.default_address ='Y' and o.contact_type='4'
                 
-                where b.candidate_id =$1 and new_assign_employee is not null`,
+                left join employee_position_tbl p on b.new_assign_employee = p.employee_id  and current_Date between p.valid_from and p.valid_to
+
+                left join applicant_family_tbl q on a.applicant_id = q.applicant_id and q.relationship_type ='1'
+                left join applicant_family_tbl r on a.applicant_id = r.applicant_id and r.relationship_type ='2' and r.gender='1'
+                left join applicant_family_tbl s on a.applicant_id = s.applicant_id and s.relationship_type ='2' and s.gender='2'   
+
+                where b.candidate_id =$1 and (new_assign_employee is not null and new_assign_employee <>'') `,
                 [userid_ck],
                 (error, results) => {
                   if (error) throw error;
@@ -122,7 +129,9 @@ const controller = {
                 e.supervisor_id as nokar_atasan, g.display_name as nama_atasan, 
                 n.employee_id as nokar_mentor, o.display_name as nama_mentor, 
                 h.org_id,p.identification_value as noktp, i.npwp_no ,j.bank_code as kode_bank, j.branch_name as rek_bank_cabang ,
-                j.account_no as norek,j.acc_name_holder as an_rek,null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer
+                j.account_no as norek,j.acc_name_holder as an_rek,null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer,
+                null as tgl_scan_qr, u.position_id,
+                v.name as nama_suami_istri, w.name as nama_ibu, x.name as nama_ayah
                 from person_tbl a 
                 left join employee_tbl b on a.person_id =b.person_id 
                 left join emp_company_office_tbl c on b.employee_id = c.employee_id 
@@ -133,7 +142,7 @@ const controller = {
                 left join employee_tbl f on e.supervisor_id = f.employee_id 
                 left join person_tbl g on f.person_id =g.person_id 
                 left join employee_organization_tbl h on b.employee_id = h.employee_id 
-                      and current_Date between e.valid_from and e.valid_to
+                      and current_Date between h.valid_from and h.valid_to
                 left join emp_payroll_info_tbl i on b.employee_id = i.employee_id  
                 left join (
                 select max(process_no) as process_no ,account_no ,
@@ -151,6 +160,13 @@ const controller = {
                 left join person_contact_method_tbl r on l.person_id = r.person_id and r.default_address ='Y' and r.contact_type='4' 
                 left join person_contact_method_tbl s on a.person_id = s.person_id and s.default_address ='Y' and s.contact_type='3' 
                 left join person_contact_method_tbl t on a.person_id = t.person_id and t.default_address ='Y' and t.contact_type='4'
+                
+                left join employee_position_tbl u on b.employee_id = u.employee_id  and current_Date between u.valid_from and u.valid_to
+
+                left join person_family_tbl v on a.person_id = v.person_id and v.relationship_type ='1'
+                left join person_family_tbl w on a.person_id = w.person_id and w.relationship_type ='2' and w.gender='1'
+                left join person_family_tbl x on a.person_id = x.person_id and x.relationship_type ='2' and x.gender='2'
+                
                 where b.employee_id =$1 and c.company_office is not null`,
                 [employee_id],
                 (error, results) => {
