@@ -64,7 +64,7 @@ const controller = {
                               const subject_email =
                                 'Informasi Karyawan Baru di PT Mandala Finance';
                               const emp_nokar = results.rows[0].employee_id;
-                              const emp_password = 'Mandala-123';
+                              const emp_password = emp_nokar;
                               const emp_name = results.rows[0].nama;
                               const emp_ph = results.rows[0].no_hp;
                               // eslint-disable-next-line eqeqeq
