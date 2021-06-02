@@ -1,5 +1,6 @@
 const pool = require('../../db');
 const { validationResult } = require('express-validator');
+const _ = require('lodash');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
@@ -33,10 +34,10 @@ const controller = {
               `select a.applicant_id,  coalesce(a.nama_depan ,'')||coalesce(a.nama_belakang,'') as nama_karyawan,
               to_char(a.tgl_kerja,'YYYY-MM-DD') as  tgl_kerja, a.position_id as ket_jabatan,
               to_char(a.tgl_lahir ,'YYYY-MM-DD') as  tgl_lahir, a.no_hp_ck, a.email_ck,
-              a.userid_ck||'-'||to_char(a.tgl_lahir ,'DDMMYYYY') ||'-'||right("password",10) as qr_code,
+              a.userid_ck||'-'||to_char(a.tgl_lahir ,'DDMMYYYY') ||'-'||"password" as qr_code,
               'CALON KARYAWAN' as status
               from trx_calon_karyawan a  
-              where nokar_atasan = $1 and 
+              where nokar_atasan =$1 and 
               tgl_scan_qr is null`,
               [employee_id],
               (error, results) => {
@@ -44,12 +45,13 @@ const controller = {
 
                 // eslint-disable-next-line eqeqeq
                 if (results.rows != '') {
+                  let arr = [mmf_data];
+                  arr = [...arr, results.rows[0]];
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
                     validate_id: employee_id,
-                    data1: mmf_data,
-                    data2: results.rows[0],
+                    data: arr,
                   });
                 } else {
                   response.status(200).send({
