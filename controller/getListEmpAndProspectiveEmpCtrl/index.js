@@ -8,21 +8,22 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
-      const { employee_id, login_type } = request.body;
+      const { employee_id } = request.body;
 
       pool.db_MMFPROD.query(
-        `select a.applicant_id, coalesce(a.first_name,'')||coalesce(a.last_name,'') as nama_karyawan,
-        to_char(b.starting_date,'YYYY-MM-DD') as  tgl_kerja, q.internal_title as ket_jabatan,
-        to_char(a.date_of_birth ,'YYYY-MM-DD') as  tgl_lahir,n.contact_value as no_hp_ck, o.contact_value as email_ck,
+        `select a.employee_id , c.display_name as nama_karyawan,
+        to_char(first_join_date,'YYYY-MM-DD') as  tgl_kerja, e.internal_title as ket_jabatan,
+        to_char(birth_Date,'YYYY-MM-DD') as  tgl_lahir,f.contact_value as no_hp_ck, g.contact_value as email_ck,
         ' ' qr_code,'KARYAWAN' as status
-        from applicant_tbl a
-        left join candidate_appointment_tbl b on a.applicant_id = b.candidate_id
-        left join applicant_contact_info_tbl n on a.applicant_id = n.applicant_id and n.default_address ='Y' and n.contact_type='3' 
-        left join applicant_contact_info_tbl o on a.applicant_id = o.applicant_id and o.default_address ='Y' and o.contact_type='4'
-        left join applicant_applied_pos_tbl p on a.applicant_id = p.applicant_id 
-        left join position_tbl q on p.position_id = q.position_id 
-        where new_assign_employee is not null
-        and b.new_sup_emp =$1  and current_date between appointment_date and starting_date`,
+        from employee_supervisor_tbl a
+        left join employee_tbl b on a.employee_id = b.employee_id 
+        left join person_tbl c on b.person_id = c.person_id 
+        left join employee_position_tbl d on b.employee_id = d.employee_id  and current_Date between d.valid_from and d.valid_to
+        left join position_tbl e on d.position_id = e.position_id  
+        left join person_contact_method_tbl f on c.person_id = f.person_id and f.contact_type ='3' and f.default_address ='Y'
+        left join person_contact_method_tbl g on c.person_id = g.person_id and g.contact_type ='4' and f.default_address ='Y'
+        where supervisor_id =$1 
+        and current_date between a.valid_from and a.valid_to`,
         [employee_id],
         (error, results) => {
           if (error) throw error;
