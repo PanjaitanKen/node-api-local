@@ -46,14 +46,14 @@ const controller = {
 
                 // eslint-disable-next-line eqeqeq
                 if (results.rows != '') {
-                  console.log(results.rows);
-                  let arr = [mmf_data];
-                  arr = [...arr, results.rows];
+                  let arr = mmf_data;
+                  let sumData = Object.assign(arr, results.rows);
+                  // arr = [...arr, results.rows];
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
                     validate_id: employee_id,
-                    data: arr,
+                    data: sumData,
                   });
                 } else {
                   response.status(200).send({
