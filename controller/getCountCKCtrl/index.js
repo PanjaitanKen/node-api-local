@@ -7,14 +7,14 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
-      const { userid_ck } = request.body;
+      const { employee_id } = request.body;
 
       pool.db_HCM.query(
         `select count(*) jumlah_calon_karyawan
         from trx_calon_karyawan a  
         where nokar_atasan =$1 and 
         tgl_scan_qr is null`,
-        [userid_ck],
+        [employee_id],
         (error, results) => {
           if (error) throw error;
 
@@ -23,14 +23,14 @@ const controller = {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
-              validate_id: userid_ck,
+              validate_id: employee_id,
               data: results.rows[0],
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
-              validate_id: userid_ck,
+              validate_id: employee_id,
               data: results.rows,
             });
           }

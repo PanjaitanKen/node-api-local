@@ -53,7 +53,8 @@ const controller = {
                 b.npwp_no ,b.bank_code as kode_bank,b.branch_name as rek_bank_cabang ,
                 b.account_no as norek,b.acc_name_holder as an_rek,a.applicant_id as userid_ck,
                 null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer,
-                null as tgl_scan_qr, p.position_id, q.name as nama_suami_istri, r.name as nama_ibu, s.name as nama_ayah
+                null as tgl_scan_qr, p.position_id, q.name as nama_suami_istri, r.name as nama_ibu, s.name as nama_ayah,
+                t.contact_value as no_hp_atasan, u.contact_value as email_atasan
                 from applicant_tbl a
                 left join candidate_appointment_tbl b on a.applicant_id = b.candidate_id
                 left join employee_tbl c on b.new_sup_emp = c.employee_id 
@@ -76,6 +77,9 @@ const controller = {
                 left join applicant_family_tbl q on a.applicant_id = q.applicant_id and q.relationship_type ='1'
                 left join applicant_family_tbl r on a.applicant_id = r.applicant_id and r.relationship_type ='2' and r.gender='1'
                 left join applicant_family_tbl s on a.applicant_id = s.applicant_id and s.relationship_type ='2' and s.gender='2'   
+
+                left join person_contact_method_tbl t on d.person_id = t.person_id and t.default_address ='Y' and t.contact_type='3' 
+                left join person_contact_method_tbl u on d.person_id = u.person_id and u.default_address ='Y' and u.contact_type='4' 
 
                 where b.candidate_id =$1 and (new_assign_employee is not null and new_assign_employee <>'') `,
                 [userid_ck],
@@ -131,7 +135,8 @@ const controller = {
                 h.org_id,p.identification_value as noktp, i.npwp_no ,j.bank_code as kode_bank, j.branch_name as rek_bank_cabang ,
                 j.account_no as norek,j.acc_name_holder as an_rek,null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer,
                 null as tgl_scan_qr, u.position_id,
-                v.name as nama_suami_istri, w.name as nama_ibu, x.name as nama_ayah
+                v.name as nama_suami_istri, w.name as nama_ibu, x.name as nama_ayah,
+                y.contact_value as no_hp_atasan, z.contact_value as email_atasan
                 from person_tbl a 
                 left join employee_tbl b on a.person_id =b.person_id 
                 left join emp_company_office_tbl c on b.employee_id = c.employee_id 
@@ -167,6 +172,10 @@ const controller = {
                 left join person_family_tbl w on a.person_id = w.person_id and w.relationship_type ='2' and w.gender='1'
                 left join person_family_tbl x on a.person_id = x.person_id and x.relationship_type ='2' and x.gender='2'
                 
+                left join person_contact_method_tbl y on o.person_id = y.person_id and y.default_address ='Y' and y.contact_type='3' 
+                left join person_contact_method_tbl z on o.person_id = z.person_id and z.default_address ='Y' and z.contact_type='4' 
+
+
                 where b.employee_id =$1 and c.company_office is not null`,
                 [employee_id],
                 (error, results) => {

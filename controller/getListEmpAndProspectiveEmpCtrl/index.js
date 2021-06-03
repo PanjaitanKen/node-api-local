@@ -30,7 +30,7 @@ const controller = {
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
-            const mmf_data = results.rows[0];
+            const mmf_data = results.rows;
             pool.db_HCM.query(
               `select a.applicant_id,  coalesce(a.nama_depan ,'')||coalesce(a.nama_belakang,'') as nama_karyawan,
               to_char(a.tgl_kerja,'YYYY-MM-DD') as  tgl_kerja, a.position_id as ket_jabatan,
@@ -46,8 +46,9 @@ const controller = {
 
                 // eslint-disable-next-line eqeqeq
                 if (results.rows != '') {
+                  console.log(results.rows);
                   let arr = [mmf_data];
-                  arr = [...arr, results.rows[0]];
+                  arr = [...arr, results.rows];
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
@@ -84,7 +85,7 @@ const controller = {
                     status: 200,
                     message: 'Load Data berhasil',
                     validate_id: employee_id,
-                    data: results.rows[0],
+                    data: results.rows,
                   });
                 } else {
                   response.status(200).send({

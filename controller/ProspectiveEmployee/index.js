@@ -13,7 +13,7 @@ const controller = {
       const passwordRequest = request.body.password;
 
       pool.db_HCM.query(
-        "SELECT userid_ck, to_char(tgl_kerja ,'DDMMYYYY') as tgl_kerja, password, nama_depan, nama_belakang FROM trx_calon_karyawan WHERE userid_ck = $1",
+        "SELECT userid_ck, to_char(tgl_kerja ,'DDMMYYYY') as tgl_kerja, password, nama_depan, nama_belakang FROM trx_calon_karyawan WHERE userid_ck = $1 and tgl_scan_qr is null ",
         [usernameRequest],
         (error, results) => {
           if (error) throw error;
@@ -25,20 +25,20 @@ const controller = {
             if (passwordDecrypt === passwordRequest) {
               response.status(200).send({
                 status: 200,
-                message: 'Successfully Login',
+                message: 'Login Berhasil',
                 data: results.rows[0],
               });
             } else {
               response.status(401).send({
                 status: 401,
-                message: 'Field password is incorrect',
+                message: 'Password yang di input salah',
                 data: null,
               });
             }
           } else {
             response.status(401).send({
               status: 401,
-              message: 'Field username is incorrect',
+              message: 'User ID yang di input salah atau User ID sudah tidak Valid ',
               data: null,
             });
           }

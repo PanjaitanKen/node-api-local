@@ -37,7 +37,7 @@ const controller = {
                     const employee_id = results.rows[0].employee_id;
                     //D
                     pool.db_HCM.query(
-                      `update trx_calon_karyawan set tgl_expired = current_Date where userid_ck=$1`,
+                      `update trx_calon_karyawan set tgl_expired = current_Date, tgl_scan_qr = Current_Date where userid_ck=$1`,
                       [userid_ck],
                       (error, results) => {
                         if (error) throw error;

@@ -794,7 +794,7 @@ module.exports = (app) => {
     .route('/hcm/api/getCountCK')
     .all(authenticateApiKey)
     .post(
-      [check('userid_ck').notEmpty().withMessage('userid_ck REQUIRED!')],
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
       getCountCKCtrl.getCountCK
     );
 
