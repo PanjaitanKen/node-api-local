@@ -54,7 +54,8 @@ const controller = {
                 b.account_no as norek,b.acc_name_holder as an_rek,a.applicant_id as userid_ck,
                 null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer,
                 null as tgl_scan_qr, p.position_id, q.name as nama_suami_istri, r.name as nama_ibu, s.name as nama_ayah,
-                t.contact_value as no_hp_atasan, u.contact_value as email_atasan
+                t.contact_value as no_hp_atasan, u.contact_value as email_atasan,
+                v.jumlah_tanggungan_ck
                 from applicant_tbl a
                 left join candidate_appointment_tbl b on a.applicant_id = b.candidate_id
                 left join employee_tbl c on b.new_sup_emp = c.employee_id 
@@ -80,6 +81,12 @@ const controller = {
 
                 left join person_contact_method_tbl t on d.person_id = t.person_id and t.default_address ='Y' and t.contact_type='3' 
                 left join person_contact_method_tbl u on d.person_id = u.person_id and u.default_address ='Y' and u.contact_type='4' 
+                
+                left join (
+                  select applicant_id,count(*) jumlah_tanggungan_ck 
+                  from applicant_family_tbl
+                  where relationship_type ='3' 
+                  group by applicant_id) v on a.applicant_id = v.applicant_id 
 
                 where b.candidate_id =$1 and (new_assign_employee is not null and new_assign_employee <>'') `,
                 [userid_ck],
@@ -136,7 +143,8 @@ const controller = {
                 j.account_no as norek,j.acc_name_holder as an_rek,null as password, null as tgl_expired, CURRENT_TIMESTAMP as tgl_transfer,
                 null as tgl_scan_qr, u.position_id,
                 v.name as nama_suami_istri, w.name as nama_ibu, x.name as nama_ayah,
-                y.contact_value as no_hp_atasan, z.contact_value as email_atasan
+                y.contact_value as no_hp_atasan, z.contact_value as email_atasan,
+                zz.jumlah_tanggungan_ck
                 from person_tbl a 
                 left join employee_tbl b on a.person_id =b.person_id 
                 left join emp_company_office_tbl c on b.employee_id = c.employee_id 
@@ -175,6 +183,11 @@ const controller = {
                 left join person_contact_method_tbl y on o.person_id = y.person_id and y.default_address ='Y' and y.contact_type='3' 
                 left join person_contact_method_tbl z on o.person_id = z.person_id and z.default_address ='Y' and z.contact_type='4' 
 
+                left join (
+                    select person_id ,count(*) jumlah_tanggungan_ck 
+                    from person_family_tbl
+                    where relationship_type ='3' 
+                    group by person_id) zz on a.person_id = zz.person_id 
 
                 where b.employee_id =$1 and c.company_office is not null`,
                 [employee_id],

@@ -10,9 +10,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const http = require('http');
 const https = require('https');
-const cron = require('node-cron');
 
-const Jobs = require('./jobs');
 const app = require('./server');
 const routes = require('./routes');
 
@@ -97,24 +95,6 @@ process.on('unhandledRejection', (reason) => {
   // eslint-disable-next-line no-console
   console.error('unhandled promise rejection:', reason.message || reason);
 });
-
-// Schedule tasks to be run on the server.
-if (cron.validate(process.env.SCHEDULE_CALON_KARYAWAN)) {
-  cron.schedule(process.env.SCHEDULE_CALON_KARYAWAN, () => {
-    Jobs.handleCalonKaryawan('PERSONNEL_ACQUISITION');
-    Jobs.handleCalonKaryawan('NON_PERSONNEL_ACQUISITION');
-  });
-}
-
-if (process.env.NODE_ENV === 'development') {
-  cron.schedule('* * * * *', () => {
-    Jobs.checkServiceHost();
-  });
-
-  cron.schedule('0 0 * * *', () => {
-    Jobs.resetValueCheckServiceHostToZero();
-  });
-}
 
 // app listen for api serv or api test
 // for API

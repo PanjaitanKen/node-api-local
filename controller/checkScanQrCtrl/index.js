@@ -65,6 +65,7 @@ const controller = {
                                 'Informasi Karyawan Baru di PT Mandala Finance';
                               const emp_nokar = results.rows[0].employee_id;
                               const emp_password = emp_nokar;
+                              const lms_password = 'Mandala-123';
                               const emp_name = results.rows[0].nama;
                               const emp_ph = results.rows[0].no_hp;
                               // eslint-disable-next-line eqeqeq
@@ -140,7 +141,7 @@ const controller = {
                                         `*Akses Learning Management System (LMS)*\n` +
                                         `di link http://lms.mandalafinance.com/\n` +
                                         `Userid : ${emp_nokar}\n` +
-                                        `Password : ${emp_password}\n` +
+                                        `Password : ${lms_password}\n` +
                                         `\n` +
                                         `Human Resource PT Mandala Finance`,
                                     };
@@ -162,7 +163,7 @@ const controller = {
                                             `*Akses Learning Management System (LMS)*\n` +
                                             `di link http://lms.mandalafinance.com/ \n` +
                                             `Userid : ${emp_nokar} \n` +
-                                            `Password : ${emp_password}\n`,
+                                            `Password : ${lms_password}\n`,
                                           text2:
                                             '*Human Resource PT Mandala Finance*',
                                         };

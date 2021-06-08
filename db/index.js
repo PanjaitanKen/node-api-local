@@ -1,4 +1,5 @@
-const Pool = require('pg').Pool;
+const { Pool } = require('pg');
+
 const db_MMFPROD = new Pool({
   user: process.env.USER_MMFPROD || 'postgres',
   host: process.env.HOST_MMFPROD || '192.168.0.111',
