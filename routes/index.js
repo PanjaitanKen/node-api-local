@@ -66,6 +66,7 @@ const ProspectiveEmployee = require('../controller/ProspectiveEmployee');
 const getListEmpAndProspectiveEmpCtrl = require('../controller/getListEmpAndProspectiveEmpCtrl');
 const getCountCKCtrl = require('../controller/getCountCKCtrl');
 const checkScanQrCtrl = require('../controller/checkScanQrCtrl');
+const getURLLMSCtrl = require('../controller/getURLLMSCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -805,4 +806,9 @@ module.exports = (app) => {
       [check('userid_ck').notEmpty().withMessage('userid_ck REQUIRED!')],
       checkScanQrCtrl.checkScanQr
     );
+
+  app
+    .route('/hcm/api/getURLLMS')
+    .all(authenticateApiKey)
+    .post(getURLLMSCtrl.getURLLMS);
 };
