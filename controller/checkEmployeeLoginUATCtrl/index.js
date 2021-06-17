@@ -44,7 +44,7 @@ const controller = {
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: '',
+              data: { jumlah: '1' },
             });
           }
         }
