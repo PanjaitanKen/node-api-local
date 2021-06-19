@@ -22,7 +22,6 @@ const getMedicalInfoCtrl = require('../controller/getMedicalInfoCtrl');
 const getBPJSInfoCtrl = require('../controller/getBPJSInfoCtrl');
 const getHistLeaveCtrl = require('../controller/getHistLeaveCtrl');
 const getHistDetailLeaveCtrl = require('../controller/getHistDetailLeaveCtrl');
-const ParamVersionCtrl = require('../controller/ParamVersionCtrl');
 const getCurrDateCtrl = require('../controller/getCurrDateCtrl');
 const getLeaveCountCtrl = require('../controller/getLeaveCountCtrl');
 const checkTokenNotifCtrl = require('../controller/checkTokenNotifCtrl');
@@ -284,11 +283,6 @@ module.exports = (app) => {
     .post(pushNotificationCtrl.pushNotifBlastAll);
 
   app
-    .route('/hcm/api/param-versions')
-    .all(authenticateApiKey)
-    .get(ParamVersionCtrl.index);
-
-  app
     .route('/mmf/api/getLeaveName')
     .all(authenticateApiKey)
     .post(getLeaveNameCtrl.get_Leave_Name);
@@ -297,11 +291,6 @@ module.exports = (app) => {
     .route('/mmf/api/getHistLeaveFilter')
     .all(authenticateApiKey)
     .post(getHistLeaveFilterCtrl.get_Hist_Leave_Filter);
-
-  app
-    .route('/hcm/api/param-version')
-    .all(authenticateApiKey)
-    .post(ParamVersionCtrl.store);
 
   app
     .route('/hcm/api/sendDocsPsd')
@@ -776,12 +765,51 @@ module.exports = (app) => {
     );
 
   app
-    .route('/hcm/api/prospective-employee/login')
+    .route('/hcm/api/prospective-employees')
+    .all(authenticateApiKey)
+    .get(ProspectiveEmployee.index);
+
+  app
+    .route('/hcm/api/prospective-employees/:id')
+    .all(authenticateApiKey)
+    .get(ProspectiveEmployee.show);
+
+  app
+    .route('/hcm/api/prospective-employees')
+    .all(authenticateApiKey)
+    .post(ProspectiveEmployee.store);
+
+  app
+    .route('/hcm/api/prospective-employees')
+    .all(authenticateApiKey)
+    .put(ProspectiveEmployee.update);
+
+  app
+    .route('/hcm/api/prospective-employees')
+    .all(authenticateApiKey)
+    .delete(
+      check('applicant_id').notEmpty().withMessage('APPLICANT_ID REQUIRED!'),
+      ProspectiveEmployee.destroy
+    );
+
+  app
+    .route('/hcm/api/prospective-employees/login')
     .all(authenticateApiKey)
     .post(
       [check('username').notEmpty().withMessage('USERNAME REQUIRED!')],
       [check('password').notEmpty().withMessage('PASSWORD REQUIRED!')],
       ProspectiveEmployee.login
+    );
+
+  app
+    .route('/hcm/api/prospective-employees/resend-notif')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('category').notEmpty().withMessage('CATEGORY REQUIRED!'),
+        check('applicant_id').notEmpty().withMessage('APPLICANT_ID REQUIRED!'),
+      ],
+      ProspectiveEmployee.resendNotif
     );
 
   app

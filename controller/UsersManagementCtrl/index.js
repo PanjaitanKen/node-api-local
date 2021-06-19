@@ -118,7 +118,9 @@ const controller = {
     const menuDatas = [];
 
     menusToArrayObject.forEach((item) => {
-      const existing = menuDatas.filter((v) => v.nprg === item.nprg);
+      const existing = menuDatas.filter(
+        (v) => v.kdsys === item.kdsys && v.nprg === item.nprg
+      );
 
       if (existing.length > 0) {
         const existingIndex = menuDatas.indexOf(existing[0]);

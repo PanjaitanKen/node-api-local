@@ -1,11 +1,15 @@
-const pool = require('../../db');
 const dateFormat = require('dateformat');
+const { validationResult } = require('express-validator');
+const pool = require('../../db');
 
 // Tabel : trx_log_user
 const controller = {
   addLogUser(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
+
     try {
-      const { employee_id, menu } = request.body;
+      const { employee_code, menu } = request.body;
       const date = dateFormat(new Date(), 'yyyy-mm-dd');
 
       pool.db_HCM.query(
@@ -13,24 +17,25 @@ const controller = {
         where employee_code=$1 and to_char(tanggal,'YYYY-MM-DD')=$2 
         and menu=$3
           `,
-        [employee_id, date, menu],
+        [employee_code, date, menu],
         (error, results) => {
           if (error) throw error;
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
+            // eslint-disable-next-line eqeqeq
             if (results.rows[0].cek != 0) {
               response.status(200).send({
                 status: 200,
                 message: 'Load Data berhasil',
-                validate_id: employee_id,
+                validate_id: employee_code,
                 data: results.rows[0],
               });
             } else {
               pool.db_HCM.query(
-                `insert into trx_log_user (employee_code ,tanggal ,menu) values ($1,current_timestamp,$2)`,
-                [employee_id, menu],
-                (error, results) => {
+                'insert into trx_log_user (employee_code ,tanggal ,menu) values ($1,current_timestamp,$2)',
+                [employee_code, menu],
+                (error) => {
                   if (error) throw error;
 
                   // eslint-disable-next-line eqeqeq
@@ -46,7 +51,7 @@ const controller = {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
-              validate_id: employee_id,
+              validate_id: employee_code,
               data: results.rows,
             });
           }
