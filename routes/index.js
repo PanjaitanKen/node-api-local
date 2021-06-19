@@ -67,6 +67,7 @@ const getListEmpAndProspectiveEmpCtrl = require('../controller/getListEmpAndPros
 const getCountCKCtrl = require('../controller/getCountCKCtrl');
 const checkScanQrCtrl = require('../controller/checkScanQrCtrl');
 const getURLLMSCtrl = require('../controller/getURLLMSCtrl');
+const getPICHRLearningCtrl = require('../controller/getPICHRLearningCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -811,4 +812,9 @@ module.exports = (app) => {
     .route('/hcm/api/getURLLMS')
     .all(authenticateApiKey)
     .post(getURLLMSCtrl.getURLLMS);
+
+  app
+    .route('/hcm/api/getPICHRLearning')
+    .all(authenticateApiKey)
+    .post(getPICHRLearningCtrl.getPICHRLearning);
 };
