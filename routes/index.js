@@ -630,15 +630,7 @@ module.exports = (app) => {
   app
     .route('/hcm/api/addLogUser')
     .all(authenticateApiKey)
-    .post(
-      [
-        check('employee_code')
-          .notEmpty()
-          .withMessage('employee_code REQUIRED!'),
-      ],
-      [check('menu').notEmpty().withMessage('menu REQUIRED!')],
-      addLogUserCtrl.addLogUser
-    );
+    .post(addLogUserCtrl.addLogUser);
 
   app
     .route('/hcm/api/logExportExcel')

@@ -1,5 +1,6 @@
 const pool = require('../../db');
 const { validationResult } = require('express-validator');
+const axios = require('axios');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
@@ -8,6 +9,30 @@ const controller = {
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id, id_menu_ck } = request.body;
+
+      // insert log activity user -- start
+      const data = {
+        employee_id,
+        menu: 'Menu CK',
+      };
+
+      const options = {
+        headers: {
+          'Content-Type': 'application/json',
+          API_KEY: process.env.API_KEY,
+        },
+      };
+
+      axios
+        .post(`${process.env.URL}/hcm/api/addLogUser`, data, options)
+        .then((res) => {
+          console.log('RESPONSE ==== : ', res.data);
+        })
+        .catch((err) => {
+          console.log('ERROR: ====', err);
+          throw err;
+        });
+      // insert log activity user -- end
 
       pool.db_HCM.query(
         `select count(*) sudah_akses from trx_akses_menu_ck

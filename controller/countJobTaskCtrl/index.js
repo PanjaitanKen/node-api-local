@@ -51,7 +51,10 @@ const controller = {
         ' select sum(jumlahJobTask) jumlahJobTask,  ' +
           ' (select count(*) as atasan ' +
           ' from employee_supervisor_tbl  ' +
-          ' where supervisor_id = $1  and current_date between valid_from  and valid_to) atasan  ' +
+          ' where supervisor_id = $1  and current_date between valid_from  and valid_to) atasan,  ' +
+          ' (select '+
+          "  case when current_date between first_join_date and first_join_date +INTERVAL '3 month' then 1 else 0 end masa_karyawan_baru "+
+          '  from employee_tbl et where employee_id = $1) as masa_karyawan_baru '+
           ' from   ' +
           ' (select count(*) jumlahJobTask from  ' +
           ' employee_work_off_tbl a  ' +

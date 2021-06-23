@@ -35,6 +35,33 @@ const controller = {
                   // eslint-disable-next-line eqeqeq
                   if (results.rows != '') {
                     const employee_id = results.rows[0].employee_id;
+                    // insert log activity user -- start
+                    const data = {
+                      employee_id,
+                      menu: 'Scan Qr Calon Karyawan',
+                    };
+
+                    const options = {
+                      headers: {
+                        'Content-Type': 'application/json',
+                        API_KEY: process.env.API_KEY,
+                      },
+                    };
+
+                    axios
+                      .post(
+                        `${process.env.URL}/hcm/api/addLogUser`,
+                        data,
+                        options
+                      )
+                      .then((res) => {
+                        console.log('RESPONSE ==== : ', res.data);
+                      })
+                      .catch((err) => {
+                        console.log('ERROR: ====', err);
+                        throw err;
+                      });
+                    // insert log activity user -- end
                     //D
                     pool.db_HCM.query(
                       `update trx_calon_karyawan set tgl_expired = current_Date, tgl_scan_qr = Current_Date where userid_ck=$1`,
@@ -150,7 +177,7 @@ const controller = {
                                       mailOptions,
                                       (error, info) => {
                                         const resp_api_email = info.response;
-                                        //insert log activity user -- start
+                                        //insert wa message -- start
                                         const data = {
                                           to: emp_ph,
                                           header:
@@ -190,7 +217,7 @@ const controller = {
                                           .catch((err) => {
                                             console.log('ERROR: ====', err);
                                           });
-                                        //insert log activity user -- end
+                                        //insert wa message -- end
                                         response.status(200).send({
                                           status: 200,
                                           message:
