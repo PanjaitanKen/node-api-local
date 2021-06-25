@@ -1,9 +1,12 @@
 const pool = require('../../db');
 const _ = require('lodash');
+const { validationResult } = require('express-validator');
 
 // Tabel : mark_location_tbl, emp_work_schedule_tbl, emp_work_location_tbl
 const controller = {
   getLongitude_Branch(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id } = request.body;
       var radius_tolerance = 0;

@@ -1,8 +1,11 @@
 const pool = require('../../db');
+const { validationResult } = require('express-validator');
 
 // Tabel : session_tracking_tbl
 const controller = {
   checkTokenOrange(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id, session_id } = request.body;
 

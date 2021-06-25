@@ -92,7 +92,10 @@ module.exports = (app) => {
   app
     .route('/mmf/api/getCountJobTask')
     .all(authenticateApiKey)
-    .post(countJobTaskCtrl.getCountJobTask);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      countJobTaskCtrl.getCountJobTask
+    );
 
   app
     .route('/mmf/api/getListJobTask')
@@ -102,7 +105,10 @@ module.exports = (app) => {
   app
     .route('/mmf/api/getLongitudeBranch')
     .all(authenticateApiKey)
-    .post(getLongitudeBranchCtrl.getLongitude_Branch);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getLongitudeBranchCtrl.getLongitude_Branch
+    );
 
   app
     .route('/hcm/api/getURLHCM')
@@ -260,7 +266,11 @@ module.exports = (app) => {
   app
     .route('/mmf/api/checkTokenOrange')
     .all(authenticateApiKey)
-    .post(checkTokenOrangeCtrl.checkTokenOrange);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      [check('session_id').notEmpty().withMessage('session_id REQUIRED!')],
+      checkTokenOrangeCtrl.checkTokenOrange
+    );
 
   app
     .route('/hcm/api/getComplaintCategory')
@@ -346,7 +356,10 @@ module.exports = (app) => {
   app
     .route('/mmf/api/getPositionEmployeeDoc')
     .all(authenticateApiKey)
-    .post(getPositionEmployeeDocCtrl.getPositionEmployee_Doc);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getPositionEmployeeDocCtrl.getPositionEmployee_Doc
+    );
   // complaint routes
   app
     .route('/hcm/api/complaints')

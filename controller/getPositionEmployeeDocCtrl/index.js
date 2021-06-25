@@ -1,8 +1,11 @@
 const pool = require('../../db');
+const { validationResult } = require('express-validator');
 
 // Tabel : travel_request_tbl, travel_request_destination_tbl
 const controller = {
   getPositionEmployee_Doc(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id } = request.body;
 
