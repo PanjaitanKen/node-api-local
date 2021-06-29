@@ -1,11 +1,25 @@
+const { validationResult } = require('express-validator');
 const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
   getHist_Absence(request, response) {
-    try {
-      const { employee_id, filter_date } = request.body;
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
 
+    const { employee_id, filter_date } = request.body;
+
+    Helpers.logger(
+      'SUCCESS',
+      {
+        employee_id,
+        filter_date,
+      },
+      'getHistAbsenceCtrl.getHist_Absence'
+    );
+
+    try {
       pool.db_MMFPROD.query(
         ' select  $1::text employee_id , xx.tgl_absen, xx.tgl_absen2, ' +
           " coalesce(ss.absen_masuk,' ') absen_masuk, coalesce(ss.absen_pulang,' ') absen_pulang, " +
@@ -86,7 +100,7 @@ const controller = {
           " (select employee_id ,to_char(clocking_date ,'YYYY-MM-DD') clocking_date,to_char(clocking_date ,'HH24:MI') jam,state, " +
           ' transfer_message  as transfer_message_masuk ' +
           " from emp_clocking_temp_tbl where in_out='0'  and state<>'Error' and employee_id= $1 ) sss on sss.employee_id =$1 " +
-          ' and ss.clocking_date = sss.clocking_date and ss.absen_masuk = sss.jam	' +
+          ' and ss.clocking_date = sss.clocking_date and ss.absen_masuk = sss.jam' +
           ' left join ' +
           " (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd " +
           ' from travel_request_tbl a ' +
@@ -98,7 +112,19 @@ const controller = {
           ' order by xx.tgl_absen desc ',
         [employee_id, filter_date],
         (error, results) => {
-          if (error) throw error;
+          if (error) {
+            Helpers.logger(
+              'ERROR',
+              {
+                employee_id,
+                filter_date,
+              },
+              'getHistAbsenceCtrl.getHist_Absence',
+              error
+            );
+
+            throw error;
+          }
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
@@ -119,6 +145,16 @@ const controller = {
         }
       );
     } catch (err) {
+      Helpers.logger(
+        'ERROR',
+        {
+          employee_id,
+          filter_date,
+        },
+        'getHistAbsenceCtrl.getHist_Absence',
+        err
+      );
+
       response.status(500).send(err);
     }
   },

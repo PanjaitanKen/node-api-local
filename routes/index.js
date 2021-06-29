@@ -87,7 +87,10 @@ module.exports = (app) => {
   app
     .route('/mmf/api/getBirthDatebyId')
     .all(authenticateApiKey)
-    .post(dateCtrl.getBirthDate);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      dateCtrl.getBirthDate
+    );
 
   app
     .route('/mmf/api/getCountJobTask')
@@ -128,7 +131,18 @@ module.exports = (app) => {
   app
     .route('/mmf/api/AddClockOut')
     .all(authenticateApiKey)
-    .post(AddClockOutCtrl.AddClock_Out);
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('latitude').notEmpty().withMessage('latitude REQUIRED!'),
+        check('altitude').notEmpty().withMessage('altitude REQUIRED!'),
+        check('longitude').notEmpty().withMessage('longitude REQUIRED!'),
+        check('accuracy').notEmpty().withMessage('accuracy REQUIRED!'),
+        check('location_no').notEmpty().withMessage('location_no REQUIRED!'),
+        check('timeZoneAsia').notEmpty().withMessage('timeZoneAsia REQUIRED!'),
+      ],
+      AddClockOutCtrl.AddClock_Out
+    );
 
   app
     .route('/mmf/api/getHistAttendance')
@@ -158,7 +172,10 @@ module.exports = (app) => {
   app
     .route('/mmf/api/checkAttendance')
     .all(authenticateApiKey)
-    .post(checkAttendanceCtrl.checkAttendance);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      checkAttendanceCtrl.checkAttendance
+    );
 
   app
     .route('/mmf/api/getHistDetail2Absence')
@@ -173,7 +190,13 @@ module.exports = (app) => {
   app
     .route('/mmf/api/getHistAbsence')
     .all(authenticateApiKey)
-    .post(getHistAbsenceCtrl.getHist_Absence);
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('filter_date').notEmpty().withMessage('filter_date REQUIRED!'),
+      ],
+      getHistAbsenceCtrl.getHist_Absence
+    );
 
   app
     .route('/mmf/api/getMedicalInfo')
@@ -267,8 +290,10 @@ module.exports = (app) => {
     .route('/mmf/api/checkTokenOrange')
     .all(authenticateApiKey)
     .post(
-      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
-      [check('session_id').notEmpty().withMessage('session_id REQUIRED!')],
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('session_id').notEmpty().withMessage('session_id REQUIRED!'),
+      ],
       checkTokenOrangeCtrl.checkTokenOrange
     );
 
@@ -504,8 +529,10 @@ module.exports = (app) => {
     .route('/hcm/api/users-management/manage-user-menu')
     .all(authenticateApiKey)
     .post(
-      [check('user').notEmpty().withMessage('USER REQUIRED!')],
-      [check('menus').notEmpty().withMessage('MENUS REQUIRED!')],
+      [
+        check('user').notEmpty().withMessage('USER REQUIRED!'),
+        check('menus').notEmpty().withMessage('MENUS REQUIRED!'),
+      ],
       UsersManagementCtrl.manageUserMenus
     );
 
@@ -527,13 +554,15 @@ module.exports = (app) => {
     .route('/hcm/api/users-management/system-master-menu')
     .all(authenticateApiKey)
     .post(
-      [check('kdsys').notEmpty().withMessage('KDSYS REQUIRED!')],
-      [check('nourut').notEmpty().withMessage('NOURUT REQUIRED!')],
-      [check('gprg').notEmpty().withMessage('GPRG REQUIRED!')],
-      [check('sprg').notEmpty().withMessage('SPRG REQUIRED!')],
-      [check('nprg').notEmpty().withMessage('NPRG REQUIRED!')],
-      [check('mode').notEmpty().withMessage('MODE REQUIRED!')],
-      [check('tgllaku').notEmpty().withMessage('TGLLAKU REQUIRED!')],
+      [
+        check('kdsys').notEmpty().withMessage('KDSYS REQUIRED!'),
+        check('nourut').notEmpty().withMessage('NOURUT REQUIRED!'),
+        check('gprg').notEmpty().withMessage('GPRG REQUIRED!'),
+        check('sprg').notEmpty().withMessage('SPRG REQUIRED!'),
+        check('nprg').notEmpty().withMessage('NPRG REQUIRED!'),
+        check('mode').notEmpty().withMessage('MODE REQUIRED!'),
+        check('tgllaku').notEmpty().withMessage('TGLLAKU REQUIRED!'),
+      ],
       UsersManagementCtrl.insertSystemMasterMenu
     );
 
@@ -602,12 +631,12 @@ module.exports = (app) => {
     .route('/hcm/api/notif-management/addTempNotif')
     .all(authenticateApiKey)
     .post(
-      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
-      [check('jenis').notEmpty().withMessage('jenis REQUIRED!')],
-      [check('ket1').notEmpty().withMessage('ket1 REQUIRED!')],
-      [check('ket2').notEmpty().withMessage('ket2 REQUIRED!')],
-      [check('golid').notEmpty().withMessage('golid REQUIRED!')],
       [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('jenis').notEmpty().withMessage('jenis REQUIRED!'),
+        check('ket1').notEmpty().withMessage('ket1 REQUIRED!'),
+        check('ket2').notEmpty().withMessage('ket2 REQUIRED!'),
+        check('golid').notEmpty().withMessage('golid REQUIRED!'),
         check('approved_date')
           .notEmpty()
           .withMessage('approved_date REQUIRED!'),
@@ -635,15 +664,20 @@ module.exports = (app) => {
     .route('/hcm/api/notif-management/updateTempNotif')
     .all(authenticateApiKey)
     .post(
-      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
-      [check('golid').notEmpty().withMessage('golid REQUIRED!')],
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('golid').notEmpty().withMessage('golid REQUIRED!'),
+      ],
       notificationManagementCtrl.updateTempNotif
     );
 
   app
     .route('/hcm/api/addLogUser')
     .all(authenticateApiKey)
-    .post(addLogUserCtrl.addLogUser);
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      addLogUserCtrl.addLogUser
+    );
 
   app
     .route('/hcm/api/logExportExcel')
@@ -801,8 +835,10 @@ module.exports = (app) => {
     .route('/hcm/api/prospective-employees/login')
     .all(authenticateApiKey)
     .post(
-      [check('username').notEmpty().withMessage('USERNAME REQUIRED!')],
-      [check('password').notEmpty().withMessage('PASSWORD REQUIRED!')],
+      [
+        check('username').notEmpty().withMessage('USERNAME REQUIRED!'),
+        check('password').notEmpty().withMessage('PASSWORD REQUIRED!'),
+      ],
       ProspectiveEmployee.login
     );
 

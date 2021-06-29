@@ -1,14 +1,22 @@
-const pool = require('../../db');
 const { validationResult } = require('express-validator');
+const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 // Tabel : travel_request_tbl, travel_request_destination_tbl
 const controller = {
   getPositionEmployee_Doc(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
-    try {
-      const { employee_id } = request.body;
 
+    const { employee_id } = request.body;
+
+    Helpers.logger(
+      'SUCCESS',
+      { employee_id },
+      'getPositionEmployeeDocCtrl.getPositionEmployee_Doc'
+    );
+
+    try {
       pool.db_MMFPROD.query(
         `select a.employee_id ,a.position_id, d.grade_id ,c.description 
         from employee_position_tbl a
@@ -18,7 +26,16 @@ const controller = {
         where a.employee_id =$1 `,
         [employee_id],
         (error, results) => {
-          if (error) throw error;
+          if (error) {
+            Helpers.logger(
+              'ERROR',
+              { employee_id },
+              'getPositionEmployeeDocCtrl.getPositionEmployee_Doc',
+              error
+            );
+
+            throw error;
+          }
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
@@ -39,6 +56,13 @@ const controller = {
         }
       );
     } catch (err) {
+      Helpers.logger(
+        'ERROR',
+        { employee_id },
+        'getPositionEmployeeDocCtrl.getPositionEmployee_Doc',
+        err
+      );
+
       response.status(500).send(err);
     }
   },

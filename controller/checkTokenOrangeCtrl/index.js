@@ -1,14 +1,22 @@
-const pool = require('../../db');
 const { validationResult } = require('express-validator');
+const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 // Tabel : session_tracking_tbl
 const controller = {
   checkTokenOrange(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
-    try {
-      const { employee_id, session_id } = request.body;
 
+    const { employee_id, session_id } = request.body;
+
+    Helpers.logger(
+      'SUCCESS',
+      { employee_id, session_id },
+      'checkTokenOrangeCtrl.checkTokenOrange'
+    );
+
+    try {
       pool.db_MMFPROD.query(
         'select case when count(*) = 0 ' +
           "then 'Session token anda telah berakhir, harap login ulang' " +
@@ -24,8 +32,16 @@ const controller = {
         [employee_id, session_id],
         (error, results) => {
           if (error) {
+            Helpers.logger(
+              'ERROR',
+              { employee_id, session_id },
+              'checkTokenOrangeCtrl.checkTokenOrange',
+              error
+            );
+
             throw error;
           }
+
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
             response.status(200).send({
@@ -45,6 +61,13 @@ const controller = {
         }
       );
     } catch (err) {
+      Helpers.logger(
+        'ERROR',
+        { employee_id, session_id },
+        'checkTokenOrangeCtrl.checkTokenOrange',
+        err
+      );
+
       response.status(500).send(err);
     }
   },

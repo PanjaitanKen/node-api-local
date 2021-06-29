@@ -1,15 +1,31 @@
 const fs = require('fs');
 const dateFormat = require('dateformat');
 const axios = require('axios');
+const { validationResult } = require('express-validator');
 const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 const serve = process.env.URL;
 
 // Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
 const controller = {
   AddClock_Out(request, response) {
-    try {
-      const {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
+
+    const {
+      employee_id,
+      latitude,
+      altitude,
+      longitude,
+      accuracy,
+      location_no,
+      timeZoneAsia,
+    } = request.body;
+
+    Helpers.logger(
+      'SUCCESS',
+      {
         employee_id,
         latitude,
         altitude,
@@ -17,7 +33,11 @@ const controller = {
         accuracy,
         location_no,
         timeZoneAsia,
-      } = request.body;
+      },
+      'AddClockOutCtrl.AddClock_Out'
+    );
+
+    try {
       const employee_id2 = employee_id;
 
       // insert log activity user -- start
@@ -86,6 +106,21 @@ const controller = {
         ],
         (error) => {
           if (error) {
+            Helpers.logger(
+              'ERROR',
+              {
+                employee_id,
+                latitude,
+                altitude,
+                longitude,
+                accuracy,
+                location_no,
+                timeZoneAsia,
+              },
+              'AddClockOutCtrl.AddClock_Out',
+              error
+            );
+
             throw error;
           }
           pool.db_HCM.query(
@@ -105,13 +140,45 @@ const controller = {
             ],
             (error) => {
               if (error) {
+                Helpers.logger(
+                  'ERROR',
+                  {
+                    employee_id,
+                    latitude,
+                    altitude,
+                    longitude,
+                    accuracy,
+                    location_no,
+                    timeZoneAsia,
+                  },
+                  'AddClockOutCtrl.AddClock_Out',
+                  error
+                );
+
                 throw error;
               }
               pool.db_MMFPROD.query(
                 'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
                 [employee_id],
                 (error, results) => {
-                  if (error) throw error;
+                  if (error) {
+                    Helpers.logger(
+                      'ERROR',
+                      {
+                        employee_id,
+                        latitude,
+                        altitude,
+                        longitude,
+                        accuracy,
+                        location_no,
+                        timeZoneAsia,
+                      },
+                      'AddClockOutCtrl.AddClock_Out',
+                      error
+                    );
+
+                    throw error;
+                  }
 
                   // eslint-disable-next-line eqeqeq
                   if (results.rows[0].count == 0) {
@@ -149,7 +216,24 @@ const controller = {
                       'SELECT time_out FROM emp_clocking_detail_tbl where clocking_date =current_date and employee_id = $1',
                       [employee_id],
                       (error, results) => {
-                        if (error) throw error;
+                        if (error) {
+                          Helpers.logger(
+                            'ERROR',
+                            {
+                              employee_id,
+                              latitude,
+                              altitude,
+                              longitude,
+                              accuracy,
+                              location_no,
+                              timeZoneAsia,
+                            },
+                            'AddClockOutCtrl.AddClock_Out',
+                            error
+                          );
+
+                          throw error;
+                        }
                         // eslint-disable-next-line eqeqeq
                         if (results.rows != '') {
                           if (
@@ -202,6 +286,21 @@ const controller = {
         }
       );
     } catch (error) {
+      Helpers.logger(
+        'ERROR',
+        {
+          employee_id,
+          latitude,
+          altitude,
+          longitude,
+          accuracy,
+          location_no,
+          timeZoneAsia,
+        },
+        'AddClockOutCtrl.AddClock_Out',
+        error
+      );
+
       response.status(500).send(error);
     }
   },

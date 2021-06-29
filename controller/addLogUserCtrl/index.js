@@ -5,6 +5,9 @@ const pool = require('../../db');
 // Tabel : trx_log_user
 const controller = {
   addLogUser(request, response) {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) return response.status(422).send(errors);
+
     try {
       const { employee_id, menu } = request.body;
       const date = dateFormat(new Date(), 'yyyy-mm-dd');

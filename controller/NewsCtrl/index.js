@@ -5,6 +5,7 @@ const { isArray } = require('lodash');
 const { validationResult } = require('express-validator');
 
 const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 const { URL } = process.env;
 
@@ -13,6 +14,8 @@ const controller = {
     const {
       query: { limit },
     } = request;
+
+    Helpers.logger('SUCCESS', { limit }, 'NewsCtrl.index');
 
     try {
       if (limit) {
@@ -37,7 +40,10 @@ const controller = {
             ' LIMIT $1 ',
           [limit],
           (error, results) => {
-            if (error) throw error;
+            if (error) {
+              Helpers.logger('ERROR', { limit }, 'NewsCtrl.index', error);
+              throw error;
+            }
 
             if (results.rows !== '') {
               response.status(200).send({
@@ -58,7 +64,10 @@ const controller = {
         pool.db_HCM.query(
           'SELECT * FROM trx_berita ORDER BY berita_id DESC',
           (error, results) => {
-            if (error) throw error;
+            if (error) {
+              Helpers.logger('ERROR', { limit }, 'NewsCtrl.index', error);
+              throw error;
+            }
 
             if (results.rows !== '') {
               response.status(200).send({
@@ -77,6 +86,7 @@ const controller = {
         );
       }
     } catch (err) {
+      Helpers.logger('ERROR', { limit }, 'NewsCtrl.index', err);
       response.status(500).send(err);
     }
   },
