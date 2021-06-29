@@ -18,7 +18,7 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        'select setting_value from param_hcm where setting_name = "AKTIF JENIS ABSEN"',
+        "select setting_value from param_hcm where setting_name = 'AKTIF JENIS ABSEN'",
         (error, results) => {
           if (error) {
             Helpers.logger(

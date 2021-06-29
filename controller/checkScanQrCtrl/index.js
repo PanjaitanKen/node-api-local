@@ -1,10 +1,11 @@
-/* eslint-disable prefer-template */
-/* eslint-disable prettier/prettier */
+/* eslint-disable no-console */
+/* eslint-disable eqeqeq */
+/* eslint-disable implicit-arrow-linebreak */
 const nodemailer = require('nodemailer');
-const pool = require('../../db');
 const _ = require('lodash');
 const { validationResult } = require('express-validator');
 const axios = require('axios');
+const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
@@ -12,9 +13,12 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
+    const {
+      body: { userid_ck },
+    } = request;
+
     try {
-      const { userid_ck } = request.body;
-      //A
+      // A
       pool.db_HCM.query(
         `select case when tgl_scan_qr is not null then 1 else 0 end as sudah_scan
         from trx_calon_karyawan tck where userid_ck=$1`,
@@ -22,19 +26,18 @@ const controller = {
         (error, results) => {
           if (error) throw error;
 
-          // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
-            if (results.rows[0].sudah_baca != 0) {
-              //B
+          if (results.rowCount > 0) {
+            if (results.rows[0].sudah_scan != 0) {
+              // B
               pool.db_HCM.query(
-                `select employee_id from trx_calon_karyawan  where userid_ck=$1`,
+                'select employee_id from trx_calon_karyawan where userid_ck=$1',
                 [userid_ck],
                 (error, results) => {
                   if (error) throw error;
 
-                  // eslint-disable-next-line eqeqeq
-                  if (results.rows != '') {
-                    const employee_id = results.rows[0].employee_id;
+                  if (results.rowCount > 0) {
+                    const { employee_id } = results.rows[0];
+
                     // insert log activity user -- start
                     const data = {
                       employee_id,
@@ -58,19 +61,19 @@ const controller = {
                         console.log('RESPONSE ==== : ', res.data);
                       })
                       .catch((err) => {
-                        console.log('ERROR: ====', err);
+                        console.error('ERROR: ====', err);
                         throw err;
                       });
                     // insert log activity user -- end
-                    //D
+
+                    // D
                     pool.db_HCM.query(
-                      `update trx_calon_karyawan set tgl_expired = current_Date, tgl_scan_qr = Current_Date where userid_ck=$1`,
+                      'update trx_calon_karyawan set tgl_expired = current_Date, tgl_scan_qr = Current_Date where userid_ck=$1',
                       [userid_ck],
-                      (error, results) => {
+                      (error) => {
                         if (error) throw error;
 
-                        // eslint-disable-next-line eqeqeq
-                        //C
+                        // C
                         pool.db_MMFPROD.query(
                           `select a.employee_id, b.display_name as nama, 
                           case when gender='1' then 'Laki-laki' when gender='2' then 'Wanita' end as gender ,
@@ -85,62 +88,53 @@ const controller = {
                           (error, results) => {
                             if (error) throw error;
 
-                            // eslint-disable-next-line eqeqeq
-                            if (results.rows != '') {
+                            if (results.rowCount > 0) {
                               const email_to = results.rows[0].email;
+
                               const subject_email =
                                 'Informasi Karyawan Baru di PT Mandala Finance';
+
                               const emp_nokar = results.rows[0].employee_id;
                               const emp_password = emp_nokar;
                               const lms_password = 'Mandala-123';
                               const emp_name = results.rows[0].nama;
                               const emp_ph = results.rows[0].no_hp;
-                              // eslint-disable-next-line eqeqeq
+
                               pool.db_HCM.query(
                                 'select * from param_hcm ',
                                 (error, results) => {
-                                  if (error) {
-                                    throw error;
-                                  }
-                                  // eslint-disable-next-line eqeqeq
-                                  if (results.rows != '') {
-                                    //map hostmail
+                                  if (error) throw error;
+
+                                  if (results.rowCount > 0) {
+                                    // map hostmail
                                     const hostMailValue = _.filter(
                                       results.rows,
-                                      function (o) {
-                                        return (
-                                          o.setting_name == 'Host Feedback'
-                                        );
-                                      }
+                                      (o) => o.setting_name == 'Host Feedback'
                                     );
-                                    //map userMailValue
+
+                                    // map userMailValue
                                     const userMailValue = _.filter(
                                       results.rows,
-                                      function (o) {
-                                        return (
-                                          o.setting_name == 'Email Feedback'
-                                        );
-                                      }
+                                      (o) => o.setting_name == 'Email Feedback'
                                     );
-                                    //map passwordMailValue
+
                                     const passwordMailValue = _.filter(
                                       results.rows,
-                                      function (o) {
-                                        return (
-                                          o.setting_name == 'Password Feedback'
-                                        );
-                                      }
+                                      (o) =>
+                                        o.setting_name == 'Password Feedback'
                                     );
 
                                     const hostMail =
                                       hostMailValue[0].setting_value;
+
                                     const userMail =
                                       userMailValue[0].setting_value;
+
                                     const passwordMail =
                                       passwordMailValue[0].setting_value;
-                                    const transporter = nodemailer.createTransport(
-                                      {
-                                        // service: 'gmail',
+
+                                    const transporter =
+                                      nodemailer.createTransport({
                                         host: hostMail,
                                         port: 587,
                                         secure: false, // use SSL
@@ -151,44 +145,44 @@ const controller = {
                                         tls: {
                                           rejectUnauthorized: false,
                                         },
-                                      }
-                                    );
+                                      });
 
                                     const mailOptions = {
                                       from: userMail,
                                       to: email_to,
                                       subject: subject_email,
                                       text:
-                                        `Hallo sobat Mandala, selamat bergabung di PT Mandala Finance \n` +
+                                        'Hallo sobat Mandala, selamat bergabung di PT Mandala Finance \n' +
                                         `${emp_name}, Sobat Mandala sudah dapat melakukan login di \n` +
-                                        `*Apps MPower/Web Orange*\n` +
+                                        '*Apps MPower/Web Orange*\n' +
                                         `Nomor Karyawan : ${emp_nokar}\n` +
                                         `Password : ${emp_password}\n` +
-                                        `\n` +
-                                        `*Akses Learning Management System (LMS)*\n` +
-                                        `di link http://lms.mandalafinance.com/\n` +
+                                        '\n' +
+                                        '*Akses Learning Management System (LMS)*\n' +
+                                        'di link http://lms.mandalafinance.com/\n' +
                                         `Userid : ${emp_nokar}\n` +
                                         `Password : ${lms_password}\n` +
-                                        `\n` +
-                                        `Human Resource PT Mandala Finance`,
+                                        '\n' +
+                                        'Human Resource PT Mandala Finance',
                                     };
 
                                     transporter.sendMail(
                                       mailOptions,
-                                      (error, info) => {
-                                        const resp_api_email = info.response;
-                                        //insert wa message -- start
+                                      (error) => {
+                                        if (error) throw error;
+
+                                        // insert wa message -- start
                                         const data = {
                                           to: emp_ph,
                                           header:
                                             'Informasi Karyawan Baru di PT Mandala Finance',
                                           text:
-                                            `Hallo sobat Mandala, selamat bergabung di PT Mandala Finance,Sobat Mandala sudah dapat melakukan login di\n\n` +
-                                            `*Apps MPower/Web Orange*\n` +
+                                            'Hallo sobat Mandala, selamat bergabung di PT Mandala Finance,Sobat Mandala sudah dapat melakukan login di\n\n' +
+                                            '*Apps MPower/Web Orange*\n' +
                                             `Nomor Karyawan : ${emp_nokar} \n` +
                                             `Password : ${emp_password}\n\n` +
-                                            `*Akses Learning Management System (LMS)*\n` +
-                                            `di link http://lms.mandalafinance.com/ \n` +
+                                            '*Akses Learning Management System (LMS)*\n' +
+                                            'di link http://lms.mandalafinance.com/ \n' +
                                             `Userid : ${emp_nokar} \n` +
                                             `Password : ${lms_password}\n`,
                                           text2:
@@ -215,9 +209,11 @@ const controller = {
                                             );
                                           })
                                           .catch((err) => {
-                                            console.log('ERROR: ====', err);
+                                            console.error('ERROR: ====', err);
+                                            throw err;
                                           });
-                                        //insert wa message -- end
+                                        // insert wa message -- end
+
                                         response.status(200).send({
                                           status: 200,
                                           message:
@@ -230,7 +226,7 @@ const controller = {
                                     response.status(200).send({
                                       status: 200,
                                       message: 'Data Tidak Ditemukan',
-                                      data: results.rows,
+                                      data: '',
                                     });
                                   }
                                 }
@@ -240,7 +236,7 @@ const controller = {
                                 status: 200,
                                 message: 'Data Tidak Ditemukan',
                                 validate_id: userid_ck,
-                                data: results.rows,
+                                data: '',
                               });
                             }
                           }
@@ -252,7 +248,7 @@ const controller = {
                       status: 200,
                       message: 'Data Tidak Ditemukan',
                       validate_id: userid_ck,
-                      data: results.rows,
+                      data: '',
                     });
                   }
                 }
@@ -261,7 +257,7 @@ const controller = {
               response.status(200).send({
                 status: 200,
                 message: 'already scanned',
-                validate_id: employee_id,
+                validate_id: userid_ck,
                 data: results.rows[0],
               });
             }
@@ -270,7 +266,7 @@ const controller = {
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: userid_ck,
-              data: results.rows,
+              data: '',
             });
           }
         }

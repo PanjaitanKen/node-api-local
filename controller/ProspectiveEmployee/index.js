@@ -503,7 +503,7 @@ const controller = {
             response.status(401).send({
               status: 401,
               message:
-                'User ID yang di input salah atau User ID sudah tidak Valid ',
+                'Oops, nomor calon karyawan sudah tidak berlaku. Mohon masuk sebagai karyawan.',
               data: null,
             });
           }
