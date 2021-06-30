@@ -68,7 +68,7 @@ const controller = {
 
                     // D
                     pool.db_HCM.query(
-                      'update trx_calon_karyawan set tgl_expired = current_Date, tgl_scan_qr = Current_Date where userid_ck=$1',
+                      'update trx_calon_karyawan set tgl_expired = current_date, tgl_scan_qr = current_date where userid_ck = $1',
                       [userid_ck],
                       (error) => {
                         if (error) throw error;
@@ -170,7 +170,20 @@ const controller = {
                                     transporter.sendMail(
                                       mailOptions,
                                       (error) => {
-                                        if (error) throw error;
+                                        if (error) {
+                                          console.error(
+                                            'ERROR (email tidak ada): ====',
+                                            error
+                                          );
+
+                                          response.status(500).send({
+                                            status: 500,
+                                            message:
+                                              'Kami mengetahui bahwa email ini di sistem tidak ada!',
+                                            validate_id: userid_ck,
+                                            data: '',
+                                          });
+                                        }
 
                                         // insert wa message -- start
                                         const data = {
@@ -210,8 +223,18 @@ const controller = {
                                             );
                                           })
                                           .catch((err) => {
-                                            console.error('ERROR: ====', err);
-                                            throw err;
+                                            console.error(
+                                              'ERROR (nomor telepon tidak ada): ====',
+                                              err
+                                            );
+
+                                            response.status(500).send({
+                                              status: 500,
+                                              message:
+                                                'Kami mengetahui bahwa nomor telepon ini di sistem tidak ada!',
+                                              validate_id: userid_ck,
+                                              data: '',
+                                            });
                                           });
                                         // insert wa message -- end
 
