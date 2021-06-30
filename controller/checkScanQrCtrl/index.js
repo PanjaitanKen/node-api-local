@@ -27,7 +27,7 @@ const controller = {
           if (error) throw error;
 
           if (results.rowCount > 0) {
-            if (results.rows[0].sudah_scan != 0) {
+            if (results.rows[0].sudah_scan != 1) {
               // B
               pool.db_HCM.query(
                 'select employee_id from trx_calon_karyawan where userid_ck=$1',
@@ -133,8 +133,8 @@ const controller = {
                                     const passwordMail =
                                       passwordMailValue[0].setting_value;
 
-                                    const transporter =
-                                      nodemailer.createTransport({
+                                    const transporter = nodemailer.createTransport(
+                                      {
                                         host: hostMail,
                                         port: 587,
                                         secure: false, // use SSL
@@ -145,7 +145,8 @@ const controller = {
                                         tls: {
                                           rejectUnauthorized: false,
                                         },
-                                      });
+                                      }
+                                    );
 
                                     const mailOptions = {
                                       from: userMail,
