@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const morgan = require('morgan');
@@ -37,16 +36,9 @@ app.use(
 // add other middleware
 app.use(helmet());
 app.use(cors());
-app.use(morgan('dev'));
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+app.use(morgan('tiny'));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use((_, response, next) => {
   // allow access to https://cdn.jsdelivr.net

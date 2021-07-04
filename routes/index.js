@@ -886,4 +886,55 @@ module.exports = (app) => {
     .route('/hcm/api/getPICHRLearning')
     .all(authenticateApiKey)
     .post(getPICHRLearningCtrl.getPICHRLearning);
+
+  app.route('/health').get(getLongitudeBranchCtrl.checkHealth);
+
+  app
+    .route('/hcm/api/trxPushNotif')
+    .all(authenticateApiKey)
+    .get(notificationManagementCtrl.getTrxPushNotif);
+
+  app
+    .route('/hcm/api/trxPushNotif/:id')
+    .all(authenticateApiKey)
+    .get(notificationManagementCtrl.showTrxPushNotif);
+
+  app
+    .route('/hcm/api/trxPushNotif')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('judul').notEmpty().withMessage('judul REQUIRED!'),
+        check('isi').notEmpty().withMessage('isi REQUIRED!'),
+        check('tanggal').notEmpty().withMessage('tanggal REQUIRED!'),
+      ],
+      notificationManagementCtrl.insertTrxPushNotif
+    );
+
+  app
+    .route('/hcm/api/trxPushNotif')
+    .all(authenticateApiKey)
+    .put(
+      [
+        check('id_push_notif')
+          .notEmpty()
+          .withMessage('id_push_notif REQUIRED!'),
+        check('judul').notEmpty().withMessage('judul REQUIRED!'),
+        check('isi').notEmpty().withMessage('isi REQUIRED!'),
+        check('tanggal').notEmpty().withMessage('tanggal REQUIRED!'),
+      ],
+      notificationManagementCtrl.updateTrxPushNotif
+    );
+
+  app
+    .route('/hcm/api/trxPushNotif')
+    .all(authenticateApiKey)
+    .delete(
+      [
+        check('id_push_notif')
+          .notEmpty()
+          .withMessage('id_push_notif REQUIRED!'),
+      ],
+      notificationManagementCtrl.deleteTrxPushNotif
+    );
 };
