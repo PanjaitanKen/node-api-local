@@ -13,6 +13,9 @@ const controller = {
         connectString,
       });
       const { employee_id } = request.body;
+      const day = new Date();
+      const dayinhours = day.getHours();
+      const clockInEnd = 11;
       // run query to get all employees
       const result = await connection.execute(
         `select nokar,TGL,
@@ -46,7 +49,7 @@ const controller = {
       }
 
       if (result.rows != 0) {
-        if (result.rows[0][2] != 0) {
+        if (result.rows[0][2] != 0 || dayinhours > clockInEnd) {
           if (result.rows[0][3] != 0) {
             res.status(200).send({
               status: 200,
@@ -62,10 +65,17 @@ const controller = {
               data: 1,
             });
           }
+        } else if (dayinhours > clockInEnd) {
+          res.status(200).send({
+            status: 200,
+            message: 'Berhasil Clock In dan Belum Clock Out',
+            validate_id: employee_id,
+            data: 1,
+          });
         } else {
           res.status(200).send({
             status: 200,
-            message: 'Belum melakukan clock in & clock out',
+            message: 'Belum melakukan clock in dan clock out',
             validate_id: employee_id,
             data: 0,
           });

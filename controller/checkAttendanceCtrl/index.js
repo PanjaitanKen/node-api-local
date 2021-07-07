@@ -10,6 +10,10 @@ const controller = {
 
     const { employee_id } = request.body;
 
+    const day = new Date();
+    const dayinhours = day.getHours();
+    const clockInEnd = 11;
+
     Helpers.logger(
       'SUCCESS',
       { employee_id },
@@ -99,8 +103,9 @@ const controller = {
                             if (
                               // eslint-disable-next-line operator-linebreak
                               // eslint-disable-next-line eqeqeq
-                              results.rows[0].time_in != '' &&
-                              results.rows[0].time_in != null
+                              (results.rows[0].time_in != '' &&
+                                results.rows[0].time_in != null) ||
+                              dayinhours > clockInEnd
                             ) {
                               if (
                                 // eslint-disable-next-line operator-linebreak
@@ -132,6 +137,13 @@ const controller = {
                                 data: 0,
                               });
                             }
+                          } else if (dayinhours > clockInEnd) {
+                            response.status(200).send({
+                              status: 200,
+                              message: 'Berhasil Clock In dan Belum Clock Out',
+                              validate_id: employee_id,
+                              data: 1,
+                            });
                           } else {
                             response.status(200).send({
                               status: 200,
