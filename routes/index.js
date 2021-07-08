@@ -69,6 +69,7 @@ const getURLLMSCtrl = require('../controller/getURLLMSCtrl');
 const getPICHRLearningCtrl = require('../controller/getPICHRLearningCtrl');
 const getDescAbsenceCtrl = require('../controller/getDescAbsenceCtrl');
 const getListCategoryRevAbsenceCtrl = require('../controller/getListCategoryRevAbsenceCtrl');
+const addRevAbsenceCtrl = require('../controller/addRevAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -946,9 +947,9 @@ module.exports = (app) => {
     .post(
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
-        check('dateInTimestamp')
+        check('date_in_timestamp')
           .notEmpty()
-          .withMessage('dateInTimestamp REQUIRED!'),
+          .withMessage('date_in_timestamp REQUIRED!'),
       ],
       getDescAbsenceCtrl.getDescAbsence
     );
@@ -957,4 +958,42 @@ module.exports = (app) => {
     .route('/hcm/api/getListCategoryRevAbsence')
     .all(authenticateApiKey)
     .post(getListCategoryRevAbsenceCtrl.getListCategoryRevAbsence);
+
+  app
+    .route('/mmf/api/addRevAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('clocking_date')
+          .notEmpty()
+          .withMessage('clocking_date REQUIRED!'),
+        check('employee_name')
+          .notEmpty()
+          .withMessage('employee_name REQUIRED!'),
+        check('id_category').notEmpty().withMessage('id_category REQUIRED!'),
+        check('schedule_type')
+          .notEmpty()
+          .withMessage('schedule_type REQUIRED!'),
+        check('days_to').notEmpty().withMessage('days_to REQUIRED!'),
+        check('day_type').notEmpty().withMessage('day_type REQUIRED!'),
+        check('default_clockin')
+          .notEmpty()
+          .withMessage('default_clockin REQUIRED!'),
+        check('default_clockout')
+          .notEmpty()
+          .withMessage('default_clockout REQUIRED!'),
+        check('reason').notEmpty().withMessage('reason REQUIRED!'),
+        check('spv_employee_id')
+          .notEmpty()
+          .withMessage('spv_employee_id REQUIRED!'),
+        check('spv_employee_name')
+          .notEmpty()
+          .withMessage('spv_employee_name REQUIRED!'),
+        check('spv_employee_position')
+          .notEmpty()
+          .withMessage('spv_employee_position REQUIRED!'),
+      ],
+      addRevAbsenceCtrl.addRevAbsence
+    );
 };
