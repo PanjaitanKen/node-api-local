@@ -67,6 +67,8 @@ const getCountCKCtrl = require('../controller/getCountCKCtrl');
 const checkScanQrCtrl = require('../controller/checkScanQrCtrl');
 const getURLLMSCtrl = require('../controller/getURLLMSCtrl');
 const getPICHRLearningCtrl = require('../controller/getPICHRLearningCtrl');
+const getDescAbsenceCtrl = require('../controller/getDescAbsenceCtrl');
+const getListCategoryRevAbsenceCtrl = require('../controller/getListCategoryRevAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -937,4 +939,22 @@ module.exports = (app) => {
       ],
       notificationManagementCtrl.deleteTrxPushNotif
     );
+
+  app
+    .route('/mmf/api/getDescAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('dateInTimestamp')
+          .notEmpty()
+          .withMessage('dateInTimestamp REQUIRED!'),
+      ],
+      getDescAbsenceCtrl.getDescAbsence
+    );
+
+  app
+    .route('/hcm/api/getListCategoryRevAbsence')
+    .all(authenticateApiKey)
+    .post(getListCategoryRevAbsenceCtrl.getListCategoryRevAbsence);
 };
