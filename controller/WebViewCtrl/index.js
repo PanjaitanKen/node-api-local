@@ -13,7 +13,7 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        'SELECT kategori_berita, tgl_input, ket_header, deskripsi, tgl_event_dr, tgl_event_sd, lokasi, images FROM trx_berita WHERE url_webview = $1',
+        'SELECT berita_id, kategori_berita, tgl_input, ket_header, deskripsi, tgl_event_dr, tgl_event_sd, lokasi, images FROM trx_berita WHERE url_webview = $1',
         [query],
         (_, results) => {
           if (results.rows.length > 0) {

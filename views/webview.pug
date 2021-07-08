@@ -65,6 +65,16 @@ block content
 
     <div style="text-align: justify; color: #4F4F4F; font-size: 12px; line-height: 21px; font-family: 'Circular Std Book', sans-serif;">
       != data.deskripsi
+
+      if data.berita_id == 46
+        - for (let i = 1; i <= 15; i++)
+            if i === 1
+              <div class="mt-3 mb-3">
+            else
+              <div class="mb-3">
+
+            <img src="/assets/07072021/#{i}.jpg" alt="#{id}-image" style="max-width: 100%; height: auto;">
+            </div>
     </div>
   </div>
 

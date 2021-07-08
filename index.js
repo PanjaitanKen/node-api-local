@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 require('dotenv').config();
 
 const express = require('express');
@@ -76,24 +77,37 @@ app.get('/', (_, response) => {
 
 routes(app);
 
-// Handling asynchronous error
-process.on('uncaughtException', (err) => {
-  // eslint-disable-next-line no-console
-  console.error('global exception:', err.message);
-});
-
 // Handling rejected promises
-process.on('unhandledRejection', (reason) => {
-  // eslint-disable-next-line no-console
-  console.error('unhandled promise rejection:', reason.message || reason);
+process.on('unhandledRejection', (reason, p) => {
+  console.error(reason, 'Unhandled Rejection at Promise', p);
 });
 
 // app listen for api serv or api test
 // for API
-app.listen(port, () => {
-  // eslint-disable-next-line no-console
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}.`);
 });
 
 // for unit testing
 // module.exports = app;
+
+// Graceful shutdown
+const startGracefulShutdown = () => {
+  console.log('Starting graceful shutdown');
+  if (!server.listening) process.exit(0);
+  console.log('closing');
+
+  server.close((error) => {
+    if (error) {
+      console.error('critical error', error);
+      return process.exit(1);
+    }
+
+    console.log('exiting');
+    process.exit(0);
+  });
+};
+
+process.on('SIGINT', startGracefulShutdown);
+process.on('SIGTERM', startGracefulShutdown);
+process.on('SIGHUP', startGracefulShutdown);
