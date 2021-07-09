@@ -180,7 +180,7 @@ const controller = {
 
                             // eslint-disable-next-line eqeqeq
                             response.status(200).send({
-                              status: 200,
+                              status: 202,
                               message: 'SUCCESS INSERT DATA',
                               validate_id: employee_id,
                               data: results.rows,
