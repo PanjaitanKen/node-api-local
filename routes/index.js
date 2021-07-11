@@ -70,6 +70,7 @@ const getPICHRLearningCtrl = require('../controller/getPICHRLearningCtrl');
 const getDescAbsenceCtrl = require('../controller/getDescAbsenceCtrl');
 const getListCategoryRevAbsenceCtrl = require('../controller/getListCategoryRevAbsenceCtrl');
 const addRevAbsenceCtrl = require('../controller/addRevAbsenceCtrl');
+const getHistDetailManageRevAbsenceCtrl = require('../controller/getHistDetailManageRevAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -995,5 +996,13 @@ module.exports = (app) => {
           .withMessage('spv_employee_position REQUIRED!'),
       ],
       addRevAbsenceCtrl.addRevAbsence
+    );
+
+  app
+    .route('/mmf/api/getHistDetailManageRevAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [check('rev_id').notEmpty().withMessage('rev_id REQUIRED!')],
+      getHistDetailManageRevAbsenceCtrl.getHistDetailManageRevAbsence
     );
 };
