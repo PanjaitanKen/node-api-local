@@ -71,6 +71,7 @@ const getDescAbsenceCtrl = require('../controller/getDescAbsenceCtrl');
 const getListCategoryRevAbsenceCtrl = require('../controller/getListCategoryRevAbsenceCtrl');
 const addRevAbsenceCtrl = require('../controller/addRevAbsenceCtrl');
 const getHistDetailManageRevAbsenceCtrl = require('../controller/getHistDetailManageRevAbsenceCtrl');
+const checkValidationRevAbsenceCtrl = require('../controller/checkValidationRevAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -948,9 +949,7 @@ module.exports = (app) => {
     .post(
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
-        check('date_in_timestamp')
-          .notEmpty()
-          .withMessage('date_in_timestamp REQUIRED!'),
+        check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
       ],
       getDescAbsenceCtrl.getDescAbsence
     );
@@ -1004,5 +1003,16 @@ module.exports = (app) => {
     .post(
       [check('rev_id').notEmpty().withMessage('rev_id REQUIRED!')],
       getHistDetailManageRevAbsenceCtrl.getHistDetailManageRevAbsence
+    );
+
+  app
+    .route('/mmf/api/checkValidationRevAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
+      ],
+      checkValidationRevAbsenceCtrl.checkValidationRevAbsence
     );
 };

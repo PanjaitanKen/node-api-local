@@ -8,21 +8,21 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { employee_id, date_in_timestamp } = request.body;
+    const { employee_id, date_filter } = request.body;
 
     Helpers.logger(
       'SUCCESS',
       {
         employee_id,
-        date_in_timestamp,
+        date_filter,
       },
       'getDescAbsenceCtrl.getDescAbsence'
     );
 
     try {
       pool.db_MMFPROD.query(
-        ` select a.employee_id, $2 as tanggal, a.schedule_type,
-        extract(isodow from $2::timestamp) as  hari_ke, b.day_type, 
+        ` select a.employee_id, $2::text as tanggal, a.schedule_type,
+        extract(isodow from $2::date) as  hari_ke, b.day_type, 
         c.time_in as default_time_in,c.time_out as default_time_out, 
         --to_char(c.time_in,'HH24:MI') as jam_masuk_default,
         --to_char(c.time_out,'HH24:MI') as jam_pulang_DefaulT,
@@ -32,7 +32,7 @@ const controller = {
         e.supervisor_id, g.display_name ,h.position_id, i.contact_value as hp_approver, j.contact_value as email_approver
         from emp_work_schedule_tbl a
         left join work_schedule_cycle_tbl b on b.schedule_type = a.schedule_type 
-                               and b.day_sequence=extract(isodow from $2::timestamp)
+                               and b.day_sequence=extract(isodow from $2::date)
         left join day_type_tbl c on b.day_type = c.day_type 
         left join emp_clocking_detail_tbl d on a.employee_id = d.employee_id and d.clocking_date = $2
         left join employee_supervisor_tbl e on a.employee_id = e.employee_id 
@@ -46,14 +46,14 @@ const controller = {
         left join person_contact_method_tbl j on g.person_id = j.person_id and j.default_address ='Y' and j.contact_type='4'        
         where a.employee_id = $1
         and $2 between a.valid_from and a.valid_to`,
-        [employee_id, date_in_timestamp],
+        [employee_id, date_filter],
         (error, results) => {
           if (error) {
             Helpers.logger(
               'ERROR',
               {
                 employee_id,
-                date_in_timestamp,
+                date_filter,
               },
               'getDescAbsenceCtrl.getDescAbsence',
               error
@@ -85,7 +85,7 @@ const controller = {
         'ERROR',
         {
           employee_id,
-          date_in_timestamp,
+          date_filter,
         },
         'getDescAbsenceCtrl.getDescAbsence',
         err
