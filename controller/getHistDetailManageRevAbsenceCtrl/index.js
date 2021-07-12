@@ -68,7 +68,7 @@ const controller = {
                   when a.state='Rejected' then 'Ditolak'
                   when a.state='Submitted' then 'Menunggu Persetujuan'
                   when a.state='Cancelled' then 'Batal'
-         end as Status
+         end as Status, category_rev_id as kategori_perbaikan_absen
                
          from rev_absence_hcm a
      left join approval_rev_absence_hcm  b on a.rev_absence_id=b.rev_absence_id  and a.employee_id = b.employee_id 
