@@ -72,6 +72,7 @@ const getListCategoryRevAbsenceCtrl = require('../controller/getListCategoryRevA
 const addRevAbsenceCtrl = require('../controller/addRevAbsenceCtrl');
 const getHistDetailManageRevAbsenceCtrl = require('../controller/getHistDetailManageRevAbsenceCtrl');
 const checkValidationRevAbsenceCtrl = require('../controller/checkValidationRevAbsenceCtrl');
+const RejectCancelRevAbsenceCtrl = require('../controller/RejectCancelRevAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1014,5 +1015,17 @@ module.exports = (app) => {
         check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
       ],
       checkValidationRevAbsenceCtrl.checkValidationRevAbsence
+    );
+
+  app
+    .route('/mmf/api/RejectCancelRevAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
+        check('rev_id').notEmpty().withMessage('rev_id REQUIRED!'),
+      ],
+      RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence
     );
 };
