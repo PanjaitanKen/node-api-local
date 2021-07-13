@@ -45,10 +45,9 @@ const controller = {
 
           // eslint-disable-next-line eqeqeq
           pool.db_MMFPROD.query(
-            `update approval_rev_absence_hcm  set status =$4, status_date = current_date 
-            where 
-            employee_id= $1 and to_char(status_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD')  and rev_absence_id = $3`,
-            [employee_id, date_filter, rev_id, status],
+            `update approval_rev_absence_hcm  set status =$3, status_date = current_date  where
+            employee_id= $1  and rev_absence_id = $2`,
+            [employee_id,  rev_id, status],
             (error, results) => {
               if (error) {
                 Helpers.logger(

@@ -92,8 +92,10 @@ const controller = {
                 );
               } else {
                 pool.db_MMFPROD.query(
-                  "select case when work_location='JAKARTA' then 'PUSAT' when work_location='MAKASSAR' then 'MAKASSAR 2' else work_location end as work_location " +
-                    ' from emp_work_location_tbl where employee_id=$1 and  current_date between valid_from and valid_to ',
+                  "select case when work_location='JAKARTA' then 'PUSAT' when work_location='MAKASSAR' then 'MAKASSAR 2' else work_location end as work_location, b.company_office " +
+                    ' from emp_work_location_tbl a '+
+                    ' left join emp_company_office_tbl b on a.employee_id = b.employee_id  and current_date between b.valid_from and b.valid_to '+
+                    ' where a.employee_id= $1 and  current_date between a.valid_from and a.valid_to ',
                   [employee_id],
                   (error, results) => {
                     if (error) {
@@ -109,10 +111,11 @@ const controller = {
 
                     // eslint-disable-next-line eqeqeq
                     if (results.rows != '') {
-                      const location_name = results.rows[0].work_location;
+                      // const location_name = results.rows[0].work_location;
+                      const company_office = results.rows[0].company_office;
                       pool.db_MMFPROD.query(
-                        'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where location_name=$1 order by location_no asc',
-                        [location_name, radius_tolerance],
+                        'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where company_office = $1 order by location_no asc',
+                        [company_office, radius_tolerance],
                         (error, results) => {
                           if (error) {
                             Helpers.logger(
@@ -221,19 +224,21 @@ const controller = {
                   );
                 } else {
                   await pool.db_MMFPROD.query(
-                    "select case when work_location='JAKARTA' then 'PUSAT' when work_location='MAKASSAR' then 'MAKASSAR 2' else work_location end as work_location " +
-                      ' from emp_work_location_tbl where employee_id=$1 and  current_date between valid_from and valid_to ',
+                    " select case when work_location='JAKARTA' then 'PUSAT' when work_location='MAKASSAR' then 'MAKASSAR 2' else work_location end as work_location, b.company_office " +
+                    ' from emp_work_location_tbl a '+
+                    ' left join emp_company_office_tbl b on a.employee_id = b.employee_id  and current_date between b.valid_from and b.valid_to '+
+                    ' where a.employee_id= $1 and  current_date between a.valid_from and a.valid_to ',
                     [employee_id],
                     async (error, results) => {
                       if (error) throw error;
 
                       // eslint-disable-next-line eqeqeq
                       if (results.rows != '') {
-                        const location_name = results.rows[0].work_location;
+                        const company_office = results.rows[0].company_office;
 
                         await pool.db_MMFPROD.query(
-                          'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where location_name=$1 order by location_no asc',
-                          [location_name, radius_tolerance],
+                          'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where company_office = $1 order by location_no asc',
+                          [company_office, radius_tolerance],
                           (error, results) => {
                             if (error) throw error;
 
