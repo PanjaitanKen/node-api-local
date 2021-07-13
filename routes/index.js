@@ -73,6 +73,7 @@ const addRevAbsenceCtrl = require('../controller/addRevAbsenceCtrl');
 const getHistDetailManageRevAbsenceCtrl = require('../controller/getHistDetailManageRevAbsenceCtrl');
 const checkValidationRevAbsenceCtrl = require('../controller/checkValidationRevAbsenceCtrl');
 const RejectCancelRevAbsenceCtrl = require('../controller/RejectCancelRevAbsenceCtrl');
+const AppRevAbsenceCtrl = require('../controller/AppRevAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -950,7 +951,9 @@ module.exports = (app) => {
     .post(
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
-        check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
+        check('date_filter')
+          .isISO8601()
+          .withMessage('date_filter TO REQUIRED!'),
       ],
       getDescAbsenceCtrl.getDescAbsence
     );
@@ -1012,7 +1015,9 @@ module.exports = (app) => {
     .post(
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
-        check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
+        check('date_filter')
+          .isISO8601()
+          .withMessage('date_filter TO REQUIRED!'),
       ],
       checkValidationRevAbsenceCtrl.checkValidationRevAbsence
     );
@@ -1023,9 +1028,26 @@ module.exports = (app) => {
     .post(
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
-        check('date_filter').notEmpty().withMessage('date_filter REQUIRED!'),
+        check('date_filter')
+          .isISO8601()
+          .withMessage('date_filter TO REQUIRED!'),
         check('rev_id').notEmpty().withMessage('rev_id REQUIRED!'),
+        check('status').notEmpty().withMessage('status REQUIRED!'),
       ],
       RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence
+    );
+
+  app
+    .route('/mmf/api/appRevAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('date_filter')
+          .isISO8601()
+          .withMessage('date_filter TO REQUIRED!'),
+        check('rev_id').notEmpty().withMessage('rev_id REQUIRED!'),
+      ],
+      AppRevAbsenceCtrl.AppRevAbsence
     );
 };
