@@ -970,7 +970,7 @@ module.exports = (app) => {
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
         check('clocking_date')
-          .notEmpty()
+          .isISO8601()
           .withMessage('clocking_date REQUIRED!'),
         check('employee_name')
           .notEmpty()

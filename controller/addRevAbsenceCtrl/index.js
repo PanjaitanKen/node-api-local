@@ -52,6 +52,9 @@ const controller = {
       'addRevAbsenceCtrl.addRevAbsence'
     );
 
+    const rev_time_in = clocking_date + ' ' + renew_time_in + ':' + '00';
+    const rev_time_out = clocking_date + ' ' + renew_time_out + ':' + '00';
+
     try {
       pool.db_MMFPROD.query(
         ` select count(*) ada_data from rev_absence_hcm
@@ -94,8 +97,8 @@ const controller = {
                   default_clockout,
                   register_time_in,
                   register_time_out,
-                  renew_time_in,
-                  renew_time_out,
+                  rev_time_in,
+                  rev_time_out,
                   reason,
                 ],
                 (error, results) => {
@@ -114,8 +117,8 @@ const controller = {
                         default_clockout,
                         register_time_in,
                         register_time_out,
-                        renew_time_in,
-                        renew_time_out,
+                        rev_time_in,
+                        rev_time_out,
                         reason,
                       },
                       'addRevAbsenceCtrl.addRevAbsence',
@@ -232,8 +235,8 @@ const controller = {
           default_clockout,
           register_time_in,
           register_time_out,
-          renew_time_in,
-          renew_time_out,
+          rev_time_in,
+          rev_time_out,
           reason,
           spv_employee_id,
           spv_employee_name,
