@@ -325,6 +325,11 @@ module.exports = (app) => {
     .post(pushNotificationCtrl.pushNotifBlastAll);
 
   app
+    .route('/hcm/api/pNRevAbsen')
+    .all(authenticateApiKey)
+    .post(pushNotificationCtrl.pNRevAbsen);
+
+  app
     .route('/mmf/api/getLeaveName')
     .all(authenticateApiKey)
     .post(getLeaveNameCtrl.get_Leave_Name);

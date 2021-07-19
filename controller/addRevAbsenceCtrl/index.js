@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const pool = require('../../db');
 const Helpers = require('../../helpers');
+const axios = require('axios');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
@@ -182,6 +183,34 @@ const controller = {
                             }
 
                             // eslint-disable-next-line eqeqeq
+                            // insert log activity user -- start
+                            const data = {
+                              employee_id,
+                              employee_name,
+                              submission_id: '1',
+                            };
+
+                            const options = {
+                              headers: {
+                                'Content-Type': 'application/json',
+                                API_KEY: process.env.API_KEY,
+                              },
+                            };
+
+                            axios
+                              .post(
+                                `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                data,
+                                options
+                              )
+                              .then((res) => {
+                                console.log('RESPONSE ==== : ', res.data);
+                              })
+                              .catch((err) => {
+                                console.log('ERROR: ====', err);
+                                throw err;
+                              });
+                            // insert log activity user -- end
                             response.status(200).send({
                               status: 202,
                               message: 'SUCCESS INSERT DATA',

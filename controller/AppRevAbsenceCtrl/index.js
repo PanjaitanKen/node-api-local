@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 const pool = require('../../db');
 const Helpers = require('../../helpers');
+const axios = require('axios');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {

@@ -245,6 +245,89 @@ const controller = {
       response.status(500).send(err);
     }
   },
+
+  pNRevAbsen(request, response) {
+    try {
+      const { employee_id, employee_name, submission_id } = request.body;
+
+      if (submission_id == '1') {
+        var msg_body = `telah mengajukan Perbaikan Absen`;
+      } else if (submission_id == '2') {
+        var msg_body = `pengajuan Perbaikan Absen kamu telah di 'Approved'`;
+      }
+
+      pool.db_MMFPROD.query(
+        'select supervisor_id from employee_supervisor_tbl where employee_id = $1 and current_date between valid_from  and valid_to ',
+        [employee_id],
+        (error, results) => {
+          if (error) {
+            throw error;
+          }
+          if (results.rowCount > 0) {
+            const employee_token =
+              submission_id == '1'
+                ? results.rows[0].supervisor_id
+                : employee_id;
+            pool.db_HCM.query(
+              'SELECT token_notification FROM trx_notification where employee_id =$1',
+              [employee_token],
+              (error, results) => {
+                if (error) {
+                  throw error;
+                }
+                if (results.rowCount > 0) {
+                  const token = results.rows[0].token_notification;
+                  const message = {
+                    data: {
+                      // This is only optional, you can send any data
+                      title: `Approval Pengajuan Perbaikan Absen`,
+                      // eslint-disable-next-line block-scoped-var
+                      body: `${_.startCase(employee_name)} ${msg_body} `,
+                    },
+                    notification: {
+                      title: `Approval Pengajuan Perbaikan Absen`,
+                      // eslint-disable-next-line block-scoped-var
+                      body: `${_.startCase(employee_name)} ${msg_body} `,
+                    },
+                    token,
+                  };
+                  FCM.send(message, (err, result) => {
+                    if (err) {
+                      response.status(200).send({
+                        status: 200,
+                        message: 'Token is not valid',
+                        data: err,
+                      });
+                    } else {
+                      response.status(200).send({
+                        status: 200,
+                        message: 'Load Data berhasil',
+                        data: result,
+                      });
+                    }
+                  });
+                } else {
+                  response.status(200).send({
+                    status: 200,
+                    message: 'Data Tidak Ditemukan',
+                    data: '',
+                  });
+                }
+              }
+            );
+          } else {
+            response.status(200).send({
+              status: 200,
+              message: 'Data Tidak Ditemukan',
+              data: '',
+            });
+          }
+        }
+      );
+    } catch (err) {
+      response.status(500).send(err);
+    }
+  },
 };
 
 module.exports = controller;
