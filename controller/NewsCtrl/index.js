@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 // Tabel : trx_berita
 const fs = require('fs');
 const dateFormat = require('dateformat');
@@ -133,10 +134,11 @@ const controller = {
         lokasi,
         tgl_expired,
       },
-      files: { images },
+      files: { images, pdfs },
     } = request;
 
     const url_images = [];
+    const url_pdfs = [];
 
     const url_webview = `${URL}/${kategori_berita}/${ket_header
       .toLowerCase()
@@ -182,13 +184,41 @@ const controller = {
         });
       }
 
+      if (isArray(pdfs)) {
+        pdfs.forEach((val, id) => {
+          const { data, mimetype } = val;
+          const fileExtension = mimetype.split('/')[1];
+
+          url_pdfs.push(
+            `${URL}/uploads/news/${fileName}-${id}.${fileExtension}`
+          );
+
+          fs.writeFile(
+            `${dir}/${fileName}-${id}.${fileExtension}`,
+            data,
+            (error) => {
+              if (error) throw error;
+            }
+          );
+        });
+      } else {
+        const { data, mimetype } = pdfs;
+        const fileExtension = mimetype.split('/')[1];
+
+        url_pdfs.push(`${URL}/uploads/news/${fileName}.${fileExtension}`);
+
+        fs.writeFile(`${dir}/${fileName}.${fileExtension}`, data, (error) => {
+          if (error) throw error;
+        });
+      }
+
       // Handling query
       pool.db_HCM.query(
         `
         INSERT INTO trx_berita (kategori_berita,
           tgl_input, ket_header, deskripsi, tgl_event_dr, tgl_event_sd,
-          lokasi, url_webview, tgl_expired, images)
-        VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          lokasi, url_webview, tgl_expired, images, deskripsi_pdf)
+        VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
         [
           kategori_berita,
           ket_header,
@@ -199,6 +229,7 @@ const controller = {
           url_webview,
           tgl_expired,
           JSON.stringify(url_images),
+          JSON.stringify(url_pdfs),
         ],
         (error) => {
           if (error) throw error;
@@ -233,8 +264,10 @@ const controller = {
     } = request;
 
     const images = files && files.images;
+    const pdfs = files && files.pdfs;
 
     const url_images = [];
+    const url_pdfs = [];
 
     const url_webview = `${URL}/${kategori_berita}/${ket_header
       .toLowerCase()
@@ -243,16 +276,16 @@ const controller = {
 
     try {
       // Handling upload file
+      const dir = './uploads/news';
+
+      const fileName = `mandala-${kategori_berita}-${dateFormat(
+        new Date(),
+        'ddmmyyyyhhMMss'
+      )}`;
+
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
       if (images) {
-        const dir = './uploads/news';
-
-        const fileName = `mandala-${kategori_berita}-${dateFormat(
-          new Date(),
-          'ddmmyyyyhhMMss'
-        )}`;
-
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-
         if (isArray(images)) {
           images.forEach((val, id) => {
             const { data, mimetype } = val;
@@ -282,9 +315,39 @@ const controller = {
         }
       }
 
+      if (pdfs) {
+        if (isArray(pdfs)) {
+          pdfs.forEach((val, id) => {
+            const { data, mimetype } = val;
+            const fileExtension = mimetype.split('/')[1];
+
+            url_pdfs.push(
+              `${URL}/uploads/news/${fileName}-${id}.${fileExtension}`
+            );
+
+            fs.writeFile(
+              `${dir}/${fileName}-${id}.${fileExtension}`,
+              data,
+              (error) => {
+                if (error) throw error;
+              }
+            );
+          });
+        } else {
+          const { data, mimetype } = pdfs;
+          const fileExtension = mimetype.split('/')[1];
+
+          url_pdfs.push(`${URL}/uploads/news/${fileName}.${fileExtension}`);
+
+          fs.writeFile(`${dir}/${fileName}.${fileExtension}`, data, (error) => {
+            if (error) throw error;
+          });
+        }
+      }
+
       // Handling query
       pool.db_HCM.query(
-        'SELECT images FROM trx_berita WHERE berita_id = $1',
+        'SELECT images, deskripsi_pdf FROM trx_berita WHERE berita_id = $1',
         [berita_id],
         (error, results) => {
           if (error) throw error;
@@ -292,19 +355,32 @@ const controller = {
           if (results.rowCount > 0) {
             if (images) {
               // Delete the previous file
-              results.rows[0].images.forEach((value) => {
-                const path = `./uploads/news/${
-                  value.split('/').reverse().join('/').split('/')[0]
-                }`;
+              results.rows[0].images &&
+                results.rows[0].images.forEach((value) => {
+                  const path = `./uploads/news/${
+                    value.split('/').reverse().join('/').split('/')[0]
+                  }`;
 
-                if (fs.existsSync(path)) fs.unlinkSync(path);
-              });
+                  if (fs.existsSync(path)) fs.unlinkSync(path);
+                });
+            }
+
+            if (pdfs) {
+              // Delete the previous file
+              results.rows[0].deskripsi_pdf &&
+                results.rows[0].deskripsi_pdf.forEach((value) => {
+                  const path = `./uploads/news/${
+                    value.split('/').reverse().join('/').split('/')[0]
+                  }`;
+
+                  if (fs.existsSync(path)) fs.unlinkSync(path);
+                });
             }
 
             pool.db_HCM.query(
               `UPDATE trx_berita SET kategori_berita = $2,
                 tgl_input = CURRENT_TIMESTAMP, ket_header = $3, deskripsi = $4, tgl_event_dr = $5,
-                tgl_event_sd = $6, lokasi = $7, url_webview = $8, tgl_expired = $9, images = $10
+                tgl_event_sd = $6, lokasi = $7, url_webview = $8, tgl_expired = $9, images = $10, deskripsi_pdf = $11
                 WHERE berita_id = $1`,
               [
                 berita_id,
@@ -319,6 +395,9 @@ const controller = {
                 images
                   ? JSON.stringify(url_images)
                   : JSON.stringify(results.rows[0].images),
+                pdfs
+                  ? JSON.stringify(url_pdfs)
+                  : JSON.stringify(results.rows[0].deskripsi_pdf),
               ],
               (error) => {
                 if (error) throw error;
@@ -351,19 +430,29 @@ const controller = {
 
     try {
       pool.db_HCM.query(
-        'SELECT berita_id, images FROM trx_berita WHERE berita_id = $1',
+        'SELECT berita_id, images, deskripsi_pdf FROM trx_berita WHERE berita_id = $1',
         [berita_id],
         (error, results) => {
           if (error) throw error;
 
           if (results.rowCount > 0) {
-            results.rows[0].images.forEach((value) => {
-              const path = `./uploads/news/${
-                value.split('/').reverse().join('/').split('/')[0]
-              }`;
+            results.rows[0].images &&
+              results.rows[0].images.forEach((value) => {
+                const path = `./uploads/news/${
+                  value.split('/').reverse().join('/').split('/')[0]
+                }`;
 
-              if (fs.existsSync(path)) fs.unlinkSync(path);
-            });
+                if (fs.existsSync(path)) fs.unlinkSync(path);
+              });
+
+            results.rows[0].deskripsi_pdf &&
+              results.rows[0].deskripsi_pdf.forEach((value) => {
+                const path = `./uploads/news/${
+                  value.split('/').reverse().join('/').split('/')[0]
+                }`;
+
+                if (fs.existsSync(path)) fs.unlinkSync(path);
+              });
 
             pool.db_HCM.query(
               'DELETE FROM trx_berita WHERE berita_id = $1',

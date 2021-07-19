@@ -44,7 +44,12 @@ const controller = {
         case when qq.employee_id is not null then '1' else '0' end as status_izin,
         case when rr.absence_wage is not null then '1' else '0' end as status_cuti,
         case when tt.employee_id is not null then '1' else '0' end as status_PD,
-        case when (uu.state in ('Approved','Transfered') or uu.result_revised = 'N') or vv.state in ('Approved','Submitted') then '1' else '0' end as status_perbaikan
+        case when (uu.state in ('Approved','Transfered') or uu.result_revised = 'N') or vv.state in ('Approved','Submitted') then '1' else '0' end as status_perbaikan,
+        case when vv.state='Submitted' then '1'
+             when vv.state='Approved' then '2'
+             when vv.state='Rejected' then '3'
+             when vv.state='Cancelled' then '4'
+        else '0' end as status_verifikasi_perbaikan
         from 
         (select to_char(dates_this_month, 'YYYY-MM-DD')  as Tgl_absen,
         case when trim(to_char(dates_this_month,'Day'))='Sunday' then 'Minggu'
