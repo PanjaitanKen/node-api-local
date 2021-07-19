@@ -9,7 +9,7 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { employee_id, date_filter, rev_id } = request.body;
+    const { employee_id, employee_name, date_filter, rev_id } = request.body;
 
     Helpers.logger(
       'SUCCESS',
@@ -655,6 +655,53 @@ const controller = {
                                                                                                   '',
                                                                                               }
                                                                                             );
+                                                                                          // insert notification perubahan absen -- start
+                                                                                          const data = {
+                                                                                            employee_id,
+                                                                                            employee_name,
+                                                                                            submission_id:
+                                                                                              '2',
+                                                                                          };
+
+                                                                                          const options = {
+                                                                                            headers: {
+                                                                                              'Content-Type':
+                                                                                                'application/json',
+                                                                                              API_KEY:
+                                                                                                process
+                                                                                                  .env
+                                                                                                  .API_KEY,
+                                                                                            },
+                                                                                          };
+
+                                                                                          axios
+                                                                                            .post(
+                                                                                              `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                              data,
+                                                                                              options
+                                                                                            )
+                                                                                            .then(
+                                                                                              (
+                                                                                                res
+                                                                                              ) => {
+                                                                                                console.log(
+                                                                                                  'RESPONSE ==== : ',
+                                                                                                  res.data
+                                                                                                );
+                                                                                              }
+                                                                                            )
+                                                                                            .catch(
+                                                                                              (
+                                                                                                err
+                                                                                              ) => {
+                                                                                                console.log(
+                                                                                                  'ERROR: ====',
+                                                                                                  err
+                                                                                                );
+                                                                                                throw err;
+                                                                                              }
+                                                                                            );
+                                                                                          // insert notification perubahan absen -- end
                                                                                         } else {
                                                                                           response
                                                                                             .status(
@@ -783,6 +830,53 @@ const controller = {
                                                                                                   '',
                                                                                               }
                                                                                             );
+                                                                                          // insert notification perubahan absen -- start
+                                                                                          const data = {
+                                                                                            employee_id,
+                                                                                            employee_name,
+                                                                                            submission_id:
+                                                                                              '2',
+                                                                                          };
+
+                                                                                          const options = {
+                                                                                            headers: {
+                                                                                              'Content-Type':
+                                                                                                'application/json',
+                                                                                              API_KEY:
+                                                                                                process
+                                                                                                  .env
+                                                                                                  .API_KEY,
+                                                                                            },
+                                                                                          };
+
+                                                                                          axios
+                                                                                            .post(
+                                                                                              `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                              data,
+                                                                                              options
+                                                                                            )
+                                                                                            .then(
+                                                                                              (
+                                                                                                res
+                                                                                              ) => {
+                                                                                                console.log(
+                                                                                                  'RESPONSE ==== : ',
+                                                                                                  res.data
+                                                                                                );
+                                                                                              }
+                                                                                            )
+                                                                                            .catch(
+                                                                                              (
+                                                                                                err
+                                                                                              ) => {
+                                                                                                console.log(
+                                                                                                  'ERROR: ====',
+                                                                                                  err
+                                                                                                );
+                                                                                                throw err;
+                                                                                              }
+                                                                                            );
+                                                                                          // insert notification perubahan absen -- end
                                                                                         } else {
                                                                                           response
                                                                                             .status(
@@ -913,6 +1007,53 @@ const controller = {
                                                                                                   '',
                                                                                               }
                                                                                             );
+                                                                                          // insert notification perubahan absen -- start
+                                                                                          const data = {
+                                                                                            employee_id,
+                                                                                            employee_name,
+                                                                                            submission_id:
+                                                                                              '2',
+                                                                                          };
+
+                                                                                          const options = {
+                                                                                            headers: {
+                                                                                              'Content-Type':
+                                                                                                'application/json',
+                                                                                              API_KEY:
+                                                                                                process
+                                                                                                  .env
+                                                                                                  .API_KEY,
+                                                                                            },
+                                                                                          };
+
+                                                                                          axios
+                                                                                            .post(
+                                                                                              `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                              data,
+                                                                                              options
+                                                                                            )
+                                                                                            .then(
+                                                                                              (
+                                                                                                res
+                                                                                              ) => {
+                                                                                                console.log(
+                                                                                                  'RESPONSE ==== : ',
+                                                                                                  res.data
+                                                                                                );
+                                                                                              }
+                                                                                            )
+                                                                                            .catch(
+                                                                                              (
+                                                                                                err
+                                                                                              ) => {
+                                                                                                console.log(
+                                                                                                  'ERROR: ====',
+                                                                                                  err
+                                                                                                );
+                                                                                                throw err;
+                                                                                              }
+                                                                                            );
+                                                                                          // insert notification perubahan absen -- end
                                                                                         } else {
                                                                                           response
                                                                                             .status(
@@ -1441,6 +1582,53 @@ const controller = {
                                                                                       '',
                                                                                   }
                                                                                 );
+                                                                              // insert notification perubahan absen -- start
+                                                                              const data = {
+                                                                                employee_id,
+                                                                                employee_name,
+                                                                                submission_id:
+                                                                                  '2',
+                                                                              };
+
+                                                                              const options = {
+                                                                                headers: {
+                                                                                  'Content-Type':
+                                                                                    'application/json',
+                                                                                  API_KEY:
+                                                                                    process
+                                                                                      .env
+                                                                                      .API_KEY,
+                                                                                },
+                                                                              };
+
+                                                                              axios
+                                                                                .post(
+                                                                                  `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                  data,
+                                                                                  options
+                                                                                )
+                                                                                .then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'RESPONSE ==== : ',
+                                                                                      res.data
+                                                                                    );
+                                                                                  }
+                                                                                )
+                                                                                .catch(
+                                                                                  (
+                                                                                    err
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'ERROR: ====',
+                                                                                      err
+                                                                                    );
+                                                                                    throw err;
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- end
                                                                             } else {
                                                                               response
                                                                                 .status(
@@ -1569,6 +1757,53 @@ const controller = {
                                                                                       '',
                                                                                   }
                                                                                 );
+                                                                              // insert notification perubahan absen -- start
+                                                                              const data = {
+                                                                                employee_id,
+                                                                                employee_name,
+                                                                                submission_id:
+                                                                                  '2',
+                                                                              };
+
+                                                                              const options = {
+                                                                                headers: {
+                                                                                  'Content-Type':
+                                                                                    'application/json',
+                                                                                  API_KEY:
+                                                                                    process
+                                                                                      .env
+                                                                                      .API_KEY,
+                                                                                },
+                                                                              };
+
+                                                                              axios
+                                                                                .post(
+                                                                                  `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                  data,
+                                                                                  options
+                                                                                )
+                                                                                .then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'RESPONSE ==== : ',
+                                                                                      res.data
+                                                                                    );
+                                                                                  }
+                                                                                )
+                                                                                .catch(
+                                                                                  (
+                                                                                    err
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'ERROR: ====',
+                                                                                      err
+                                                                                    );
+                                                                                    throw err;
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- end
                                                                             } else {
                                                                               response
                                                                                 .status(
@@ -1699,6 +1934,53 @@ const controller = {
                                                                                       '',
                                                                                   }
                                                                                 );
+                                                                              // insert notification perubahan absen -- start
+                                                                              const data = {
+                                                                                employee_id,
+                                                                                employee_name,
+                                                                                submission_id:
+                                                                                  '2',
+                                                                              };
+
+                                                                              const options = {
+                                                                                headers: {
+                                                                                  'Content-Type':
+                                                                                    'application/json',
+                                                                                  API_KEY:
+                                                                                    process
+                                                                                      .env
+                                                                                      .API_KEY,
+                                                                                },
+                                                                              };
+
+                                                                              axios
+                                                                                .post(
+                                                                                  `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                  data,
+                                                                                  options
+                                                                                )
+                                                                                .then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'RESPONSE ==== : ',
+                                                                                      res.data
+                                                                                    );
+                                                                                  }
+                                                                                )
+                                                                                .catch(
+                                                                                  (
+                                                                                    err
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'ERROR: ====',
+                                                                                      err
+                                                                                    );
+                                                                                    throw err;
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- end
                                                                             } else {
                                                                               response
                                                                                 .status(
@@ -2022,6 +2304,49 @@ const controller = {
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
+                                                                  // insert notification perubahan absen -- start
+                                                                  const data = {
+                                                                    employee_id,
+                                                                    employee_name,
+                                                                    submission_id:
+                                                                      '2',
+                                                                  };
+
+                                                                  const options = {
+                                                                    headers: {
+                                                                      'Content-Type':
+                                                                        'application/json',
+                                                                      API_KEY:
+                                                                        process
+                                                                          .env
+                                                                          .API_KEY,
+                                                                    },
+                                                                  };
+
+                                                                  axios
+                                                                    .post(
+                                                                      `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                      data,
+                                                                      options
+                                                                    )
+                                                                    .then(
+                                                                      (res) => {
+                                                                        console.log(
+                                                                          'RESPONSE ==== : ',
+                                                                          res.data
+                                                                        );
+                                                                      }
+                                                                    )
+                                                                    .catch(
+                                                                      (err) => {
+                                                                        console.log(
+                                                                          'ERROR: ====',
+                                                                          err
+                                                                        );
+                                                                        throw err;
+                                                                      }
+                                                                    );
+                                                                  // insert notification perubahan absen -- end
                                                                 } else {
                                                                   response
                                                                     .status(200)
@@ -2128,6 +2453,49 @@ const controller = {
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
+                                                                  // insert notification perubahan absen -- start
+                                                                  const data = {
+                                                                    employee_id,
+                                                                    employee_name,
+                                                                    submission_id:
+                                                                      '2',
+                                                                  };
+
+                                                                  const options = {
+                                                                    headers: {
+                                                                      'Content-Type':
+                                                                        'application/json',
+                                                                      API_KEY:
+                                                                        process
+                                                                          .env
+                                                                          .API_KEY,
+                                                                    },
+                                                                  };
+
+                                                                  axios
+                                                                    .post(
+                                                                      `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                      data,
+                                                                      options
+                                                                    )
+                                                                    .then(
+                                                                      (res) => {
+                                                                        console.log(
+                                                                          'RESPONSE ==== : ',
+                                                                          res.data
+                                                                        );
+                                                                      }
+                                                                    )
+                                                                    .catch(
+                                                                      (err) => {
+                                                                        console.log(
+                                                                          'ERROR: ====',
+                                                                          err
+                                                                        );
+                                                                        throw err;
+                                                                      }
+                                                                    );
+                                                                  // insert notification perubahan absen -- end
                                                                 } else {
                                                                   response
                                                                     .status(200)
@@ -2236,6 +2604,49 @@ const controller = {
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
+                                                                  // insert notification perubahan absen -- start
+                                                                  const data = {
+                                                                    employee_id,
+                                                                    employee_name,
+                                                                    submission_id:
+                                                                      '2',
+                                                                  };
+
+                                                                  const options = {
+                                                                    headers: {
+                                                                      'Content-Type':
+                                                                        'application/json',
+                                                                      API_KEY:
+                                                                        process
+                                                                          .env
+                                                                          .API_KEY,
+                                                                    },
+                                                                  };
+
+                                                                  axios
+                                                                    .post(
+                                                                      `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                      data,
+                                                                      options
+                                                                    )
+                                                                    .then(
+                                                                      (res) => {
+                                                                        console.log(
+                                                                          'RESPONSE ==== : ',
+                                                                          res.data
+                                                                        );
+                                                                      }
+                                                                    )
+                                                                    .catch(
+                                                                      (err) => {
+                                                                        console.log(
+                                                                          'ERROR: ====',
+                                                                          err
+                                                                        );
+                                                                        throw err;
+                                                                      }
+                                                                    );
+                                                                  // insert notification perubahan absen -- end
                                                                 } else {
                                                                   response
                                                                     .status(200)
@@ -2302,6 +2713,37 @@ const controller = {
                                           validate_id: employee_id,
                                           data: '',
                                         });
+                                        // insert notification perubahan absen -- start
+                                        const data = {
+                                          employee_id,
+                                          employee_name,
+                                          submission_id: '2',
+                                        };
+
+                                        const options = {
+                                          headers: {
+                                            'Content-Type': 'application/json',
+                                            API_KEY: process.env.API_KEY,
+                                          },
+                                        };
+
+                                        axios
+                                          .post(
+                                            `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                            data,
+                                            options
+                                          )
+                                          .then((res) => {
+                                            console.log(
+                                              'RESPONSE ==== : ',
+                                              res.data
+                                            );
+                                          })
+                                          .catch((err) => {
+                                            console.log('ERROR: ====', err);
+                                            throw err;
+                                          });
+                                        // insert notification perubahan absen -- end
                                       }
                                     }
                                   );

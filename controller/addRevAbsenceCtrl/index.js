@@ -2,6 +2,8 @@ const { validationResult } = require('express-validator');
 const pool = require('../../db');
 const Helpers = require('../../helpers');
 const axios = require('axios');
+const nodemailer = require('nodemailer');
+const _ = require('lodash');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
@@ -27,6 +29,8 @@ const controller = {
       spv_employee_id,
       spv_employee_name,
       spv_employee_position,
+      hp_approver,
+      email_approver,
     } = request.body;
 
     Helpers.logger(
@@ -49,6 +53,8 @@ const controller = {
         spv_employee_id,
         spv_employee_name,
         spv_employee_position,
+        hp_approver,
+        email_approver,
       },
       'addRevAbsenceCtrl.addRevAbsence'
     );
@@ -183,7 +189,7 @@ const controller = {
                             }
 
                             // eslint-disable-next-line eqeqeq
-                            // insert log activity user -- start
+                            // insert notification perubahan absen -- start
                             const data = {
                               employee_id,
                               employee_name,
@@ -210,13 +216,165 @@ const controller = {
                                 console.log('ERROR: ====', err);
                                 throw err;
                               });
-                            // insert log activity user -- end
-                            response.status(200).send({
-                              status: 202,
-                              message: 'SUCCESS INSERT DATA',
-                              validate_id: employee_id,
-                              data: results.rows,
-                            });
+                            // insert notification perubahan absen -- end
+                            const subject_email = 'Pengajuan Perbaikan Absen';
+                            const email_to = email_approver;
+
+                            pool.db_HCM.query(
+                              'select * from param_hcm ',
+                              (error, results) => {
+                                if (error) throw error;
+
+                                if (results.rowCount > 0) {
+                                  // map hostmail
+                                  const hostMailValue = _.filter(
+                                    results.rows,
+                                    (o) => o.setting_name == 'Host Feedback'
+                                  );
+
+                                  // map userMailValue
+                                  const userMailValue = _.filter(
+                                    results.rows,
+                                    (o) => o.setting_name == 'Email Feedback'
+                                  );
+
+                                  const passwordMailValue = _.filter(
+                                    results.rows,
+                                    (o) => o.setting_name == 'Password Feedback'
+                                  );
+
+                                  const hostMail =
+                                    hostMailValue[0].setting_value;
+
+                                  const userMail =
+                                    userMailValue[0].setting_value;
+
+                                  const passwordMail =
+                                    passwordMailValue[0].setting_value;
+
+                                  const transporter = nodemailer.createTransport(
+                                    {
+                                      host: hostMail,
+                                      port: 587,
+                                      secure: false, // use SSL
+                                      auth: {
+                                        user: userMail,
+                                        pass: passwordMail,
+                                      },
+                                      tls: {
+                                        rejectUnauthorized: false,
+                                      },
+                                    }
+                                  );
+
+                                  const mailOptions = {
+                                    from: userMail,
+                                    to: email_to,
+                                    subject: subject_email,
+                                    text:
+                                      `Dear ${spv_employee_name} \n` +
+                                      '\n' +
+                                      `No.Karyawan : ${employee_id} \n` +
+                                      `Tanggal Absen : ${clocking_date} \n` +
+                                      'Jenis Perbaikan : Perbaikan Absen Masuk dan Pulang \n' +
+                                      `Jam Masuk Perbaikan : ${rev_time_in}  \n` +
+                                      `Jam Pulang Perbaikan : ${rev_time_out}  \n` +
+                                      `Alasan : ${reason}  \n` +
+                                      '\n' +
+                                      'Demikian pengajuan yang disampaikan \n' +
+                                      '\n' +
+                                      'Salam Hormat \n' +
+                                      `${employee_name}`,
+                                  };
+
+                                  transporter.sendMail(mailOptions, (error) => {
+                                    if (error) {
+                                      console.error(
+                                        'ERROR (email tidak ada): ====',
+                                        error
+                                      );
+
+                                      response.status(500).send({
+                                        status: 500,
+                                        message:
+                                          'Kami mengetahui bahwa email ini di sistem tidak ada!',
+                                        validate_id: employee_id,
+                                        data: '',
+                                      });
+                                    }
+
+                                    // insert wa message -- start
+                                    const data = {
+                                      to: hp_approver,
+                                      header: 'Pengajuan Perbaikan Absen',
+                                      text:
+                                        `Dear ${spv_employee_name} \n` +
+                                        '\n' +
+                                        `No.Karyawan : ${employee_id} \n` +
+                                        `Tanggal Absen : ${clocking_date} \n` +
+                                        'Jenis Perbaikan : Perbaikan Absen Masuk dan Pulang \n' +
+                                        `Jam Masuk Perbaikan : ${rev_time_in}  \n` +
+                                        `Jam Pulang Perbaikan : ${rev_time_out}  \n` +
+                                        `Alasan : ${reason}  \n` +
+                                        '\n',
+                                      text2:
+                                        'Demikian pengajuan yang disampaikan \n' +
+                                        '\n' +
+                                        'Salam Hormat \n' +
+                                        `${employee_name}`,
+                                    };
+
+                                    const options = {
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                        API_KEY: process.env.API_KEY,
+                                      },
+                                    };
+
+                                    axios
+                                      .post(
+                                        process.env.WA_SERVICE,
+                                        data,
+                                        options
+                                      )
+                                      .then((res) => {
+                                        console.log(
+                                          'RESPONSE ==== : ',
+                                          res.data
+                                        );
+                                      })
+                                      .catch((err) => {
+                                        console.error(
+                                          'ERROR (nomor telepon tidak ada): ====',
+                                          err
+                                        );
+
+                                        response.status(500).send({
+                                          status: 500,
+                                          message:
+                                            'Kami mengetahui bahwa nomor telepon ini di sistem tidak ada!',
+                                          validate_id: employee_id,
+                                          data: '',
+                                        });
+                                      });
+                                    // insert wa message -- end
+
+                                    response.status(200).send({
+                                      status: 200,
+                                      message:
+                                        'Berhasil memperbaharui data serta mengirim email dan whatsapp',
+                                      data: '',
+                                    });
+                                  });
+                                } else {
+                                  response.status(200).send({
+                                    status: 200,
+                                    message: 'Data Tidak Ditemukan',
+                                    data: '',
+                                  });
+                                }
+                              }
+                            );
                           }
                         );
                       } else {

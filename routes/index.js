@@ -1052,6 +1052,9 @@ module.exports = (app) => {
           .isISO8601()
           .withMessage('date_filter TO REQUIRED!'),
         check('rev_id').notEmpty().withMessage('rev_id REQUIRED!'),
+        check('employee_name')
+          .notEmpty()
+          .withMessage('employee_name REQUIRED!'),
       ],
       AppRevAbsenceCtrl.AppRevAbsence
     );
