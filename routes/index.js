@@ -1002,6 +1002,10 @@ module.exports = (app) => {
         check('spv_employee_position')
           .notEmpty()
           .withMessage('spv_employee_position REQUIRED!'),
+        check('hp_approver').notEmpty().withMessage('hp_approver REQUIRED!'),
+        check('email_approver')
+          .notEmpty()
+          .withMessage('email_approver REQUIRED!'),
       ],
       addRevAbsenceCtrl.addRevAbsence
     );
