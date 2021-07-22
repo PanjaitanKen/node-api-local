@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
+const axios = require('axios');
 const pool = require('../../db');
 const Helpers = require('../../helpers');
-const axios = require('axios');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
@@ -205,7 +205,7 @@ const controller = {
                                 // eslint-disable-next-line eqeqeq
                                 if (results.rowCount != 0) {
                                   pool.db_MMFPROD.query(
-                                    `delete from emp_clocking_tbl where employee_id =$1 and clocking_date = $2`,
+                                    'delete from emp_clocking_tbl where employee_id =$1 and clocking_date = $2',
                                     [employee_id, date_filter],
                                     (error, results) => {
                                       if (error) {
@@ -334,7 +334,7 @@ const controller = {
                                                   );
                                                   if (results.rowCount != 0) {
                                                     pool.db_MMFPROD.query(
-                                                      `delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 `,
+                                                      'delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 ',
                                                       [
                                                         employee_id,
                                                         date_filter,
@@ -528,7 +528,7 @@ const controller = {
                                                                       0
                                                                     ) {
                                                                       pool.db_MMFPROD.query(
-                                                                        `delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') `,
+                                                                        "delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') ",
                                                                         [
                                                                           employee_id,
                                                                           date_filter,
@@ -649,7 +649,7 @@ const controller = {
                                                                                               {
                                                                                                 status: 201,
                                                                                                 message:
-                                                                                                  'Update Data Success',
+                                                                                                  'Update Data Success 1',
                                                                                                 validate_id: employee_id,
                                                                                                 data:
                                                                                                   '',
@@ -824,7 +824,7 @@ const controller = {
                                                                                               {
                                                                                                 status: 201,
                                                                                                 message:
-                                                                                                  'Update Data Success',
+                                                                                                  'Update Data Success 2',
                                                                                                 validate_id: employee_id,
                                                                                                 data:
                                                                                                   '',
@@ -1001,7 +1001,7 @@ const controller = {
                                                                                               {
                                                                                                 status: 201,
                                                                                                 message:
-                                                                                                  'Update Data Success',
+                                                                                                  'Update Data Success 3',
                                                                                                 validate_id: employee_id,
                                                                                                 data:
                                                                                                   '',
@@ -1140,13 +1140,528 @@ const controller = {
                                                                     }
                                                                   }
                                                                 );
+                                                              } else if (
+                                                                category_rev_id_data ==
+                                                                '1'
+                                                              ) {
+                                                                pool.db_MMFPROD.query(
+                                                                  `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                    off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                    url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                    values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                    null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                  [
+                                                                    employee_id,
+                                                                    rev_time_in_data,
+                                                                  ],
+                                                                  (
+                                                                    error,
+                                                                    results
+                                                                  ) => {
+                                                                    if (error) {
+                                                                      // Helpers.logger(
+                                                                      //   'ERROR',
+                                                                      //   {
+                                                                      //     employee_id,
+                                                                      //     date_filter,
+                                                                      //     rev_id,
+                                                                      //     status,
+                                                                      //   },
+                                                                      //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                      //   error
+                                                                      // );
+
+                                                                      throw error;
+                                                                    }
+
+                                                                    // eslint-disable-next-line eqeqeq
+                                                                    if (
+                                                                      results.rowCount !=
+                                                                      0
+                                                                    ) {
+                                                                      pool.db_MMFPROD.query(
+                                                                        `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                        off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                        url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                        values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                        null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                        [
+                                                                          employee_id,
+                                                                          reg_time_out_data,
+                                                                        ],
+                                                                        (
+                                                                          error,
+                                                                          results
+                                                                        ) => {
+                                                                          if (
+                                                                            error
+                                                                          ) {
+                                                                            // Helpers.logger(
+                                                                            //   'ERROR',
+                                                                            //   {
+                                                                            //     employee_id,
+                                                                            //     date_filter,
+                                                                            //     rev_id,
+                                                                            //     status,
+                                                                            //   },
+                                                                            //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                            //   error
+                                                                            // );
+
+                                                                            throw error;
+                                                                          }
+
+                                                                          // eslint-disable-next-line eqeqeq
+                                                                          if (
+                                                                            results.rowCount !=
+                                                                            0
+                                                                          ) {
+                                                                            response
+                                                                              .status(
+                                                                                200
+                                                                              )
+                                                                              .send(
+                                                                                {
+                                                                                  status: 201,
+                                                                                  message:
+                                                                                    'Update Data Success 4',
+                                                                                  validate_id: employee_id,
+                                                                                  data:
+                                                                                    '',
+                                                                                }
+                                                                              );
+                                                                            // insert notification perubahan absen -- start
+                                                                            const data = {
+                                                                              employee_id,
+                                                                              employee_name,
+                                                                              submission_id:
+                                                                                '1',
+                                                                            };
+
+                                                                            const options = {
+                                                                              headers: {
+                                                                                'Content-Type':
+                                                                                  'application/json',
+                                                                                API_KEY:
+                                                                                  process
+                                                                                    .env
+                                                                                    .API_KEY,
+                                                                              },
+                                                                            };
+
+                                                                            axios
+                                                                              .post(
+                                                                                `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                data,
+                                                                                options
+                                                                              )
+                                                                              .then(
+                                                                                (
+                                                                                  res
+                                                                                ) => {
+                                                                                  console.log(
+                                                                                    'RESPONSE ==== : ',
+                                                                                    res.data
+                                                                                  );
+                                                                                }
+                                                                              )
+                                                                              .catch(
+                                                                                (
+                                                                                  err
+                                                                                ) => {
+                                                                                  console.log(
+                                                                                    'ERROR: ====',
+                                                                                    err
+                                                                                  );
+                                                                                  throw err;
+                                                                                }
+                                                                              );
+                                                                            // insert notification perubahan absen -- end
+                                                                          } else {
+                                                                            response
+                                                                              .status(
+                                                                                200
+                                                                              )
+                                                                              .send(
+                                                                                {
+                                                                                  status: 200,
+                                                                                  message:
+                                                                                    'Data Tidak Ditemukan 6',
+                                                                                  validate_id: employee_id,
+                                                                                  data:
+                                                                                    '',
+                                                                                }
+                                                                              );
+                                                                          }
+                                                                        }
+                                                                      );
+                                                                    } else {
+                                                                      response
+                                                                        .status(
+                                                                          200
+                                                                        )
+                                                                        .send({
+                                                                          status: 200,
+                                                                          message:
+                                                                            'tidak berhasil bosku',
+                                                                          validate_id: employee_id,
+                                                                          data:
+                                                                            '',
+                                                                        });
+                                                                    }
+                                                                  }
+                                                                );
+                                                              } else if (
+                                                                category_rev_id_data ==
+                                                                '2'
+                                                              ) {
+                                                                pool.db_MMFPROD.query(
+                                                                  `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                    off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                    url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                    values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                    null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                  [
+                                                                    employee_id,
+                                                                    reg_time_in_data,
+                                                                  ],
+                                                                  (
+                                                                    error,
+                                                                    results
+                                                                  ) => {
+                                                                    if (error) {
+                                                                      // Helpers.logger(
+                                                                      //   'ERROR',
+                                                                      //   {
+                                                                      //     employee_id,
+                                                                      //     date_filter,
+                                                                      //     rev_id,
+                                                                      //     status,
+                                                                      //   },
+                                                                      //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                      //   error
+                                                                      // );
+
+                                                                      throw error;
+                                                                    }
+
+                                                                    // eslint-disable-next-line eqeqeq
+                                                                    if (
+                                                                      results.rowCount !=
+                                                                      0
+                                                                    ) {
+                                                                      pool.db_MMFPROD.query(
+                                                                        `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                        off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                        url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                        values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                        null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                        [
+                                                                          employee_id,
+                                                                          rev_time_out_data,
+                                                                        ],
+                                                                        (
+                                                                          error,
+                                                                          results
+                                                                        ) => {
+                                                                          if (
+                                                                            error
+                                                                          ) {
+                                                                            // Helpers.logger(
+                                                                            //   'ERROR',
+                                                                            //   {
+                                                                            //     employee_id,
+                                                                            //     date_filter,
+                                                                            //     rev_id,
+                                                                            //     status,
+                                                                            //   },
+                                                                            //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                            //   error
+                                                                            // );
+
+                                                                            throw error;
+                                                                          }
+
+                                                                          // eslint-disable-next-line eqeqeq
+                                                                          if (
+                                                                            results.rowCount !=
+                                                                            0
+                                                                          ) {
+                                                                            response
+                                                                              .status(
+                                                                                200
+                                                                              )
+                                                                              .send(
+                                                                                {
+                                                                                  status: 201,
+                                                                                  message:
+                                                                                    'Update Data Success 5',
+                                                                                  validate_id: employee_id,
+                                                                                  data:
+                                                                                    '',
+                                                                                }
+                                                                              );
+                                                                            // insert notification perubahan absen -- start
+                                                                            const data = {
+                                                                              employee_id,
+                                                                              employee_name,
+                                                                              submission_id:
+                                                                                '2',
+                                                                            };
+
+                                                                            const options = {
+                                                                              headers: {
+                                                                                'Content-Type':
+                                                                                  'application/json',
+                                                                                API_KEY:
+                                                                                  process
+                                                                                    .env
+                                                                                    .API_KEY,
+                                                                              },
+                                                                            };
+
+                                                                            axios
+                                                                              .post(
+                                                                                `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                data,
+                                                                                options
+                                                                              )
+                                                                              .then(
+                                                                                (
+                                                                                  res
+                                                                                ) => {
+                                                                                  console.log(
+                                                                                    'RESPONSE ==== : ',
+                                                                                    res.data
+                                                                                  );
+                                                                                }
+                                                                              )
+                                                                              .catch(
+                                                                                (
+                                                                                  err
+                                                                                ) => {
+                                                                                  console.log(
+                                                                                    'ERROR: ====',
+                                                                                    err
+                                                                                  );
+                                                                                  throw err;
+                                                                                }
+                                                                              );
+                                                                            // insert notification perubahan absen -- end
+                                                                          } else {
+                                                                            response
+                                                                              .status(
+                                                                                200
+                                                                              )
+                                                                              .send(
+                                                                                {
+                                                                                  status: 200,
+                                                                                  message:
+                                                                                    'Data Tidak Ditemukan 7',
+                                                                                  validate_id: employee_id,
+                                                                                  data:
+                                                                                    '',
+                                                                                }
+                                                                              );
+                                                                          }
+                                                                        }
+                                                                      );
+                                                                    } else {
+                                                                      response
+                                                                        .status(
+                                                                          200
+                                                                        )
+                                                                        .send({
+                                                                          status: 200,
+                                                                          message:
+                                                                            'tidak berhasil bosku',
+                                                                          validate_id: employee_id,
+                                                                          data:
+                                                                            '',
+                                                                        });
+                                                                    }
+                                                                  }
+                                                                );
+                                                              } else if (
+                                                                category_rev_id_data ==
+                                                                  '3' ||
+                                                                category_rev_id_data ==
+                                                                  '4'
+                                                              ) {
+                                                                pool.db_MMFPROD.query(
+                                                                  `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                    off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                    url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                    values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                    null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                  [
+                                                                    employee_id,
+                                                                    rev_time_in_data,
+                                                                  ],
+                                                                  (
+                                                                    error,
+                                                                    results
+                                                                  ) => {
+                                                                    if (error) {
+                                                                      // Helpers.logger(
+                                                                      //   'ERROR',
+                                                                      //   {
+                                                                      //     employee_id,
+                                                                      //     date_filter,
+                                                                      //     rev_id,
+                                                                      //     status,
+                                                                      //   },
+                                                                      //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                      //   error
+                                                                      // );
+
+                                                                      throw error;
+                                                                    }
+
+                                                                    // eslint-disable-next-line eqeqeq
+                                                                    if (
+                                                                      results.rowCount !=
+                                                                      0
+                                                                    ) {
+                                                                      pool.db_MMFPROD.query(
+                                                                        `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                        off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                        url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                        values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                        null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                        [
+                                                                          employee_id,
+                                                                          rev_time_out_data,
+                                                                        ],
+                                                                        (
+                                                                          error,
+                                                                          results
+                                                                        ) => {
+                                                                          if (
+                                                                            error
+                                                                          ) {
+                                                                            // Helpers.logger(
+                                                                            //   'ERROR',
+                                                                            //   {
+                                                                            //     employee_id,
+                                                                            //     date_filter,
+                                                                            //     rev_id,
+                                                                            //     status,
+                                                                            //   },
+                                                                            //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                            //   error
+                                                                            // );
+
+                                                                            throw error;
+                                                                          }
+
+                                                                          // eslint-disable-next-line eqeqeq
+                                                                          if (
+                                                                            results.rowCount !=
+                                                                            0
+                                                                          ) {
+                                                                            response
+                                                                              .status(
+                                                                                200
+                                                                              )
+                                                                              .send(
+                                                                                {
+                                                                                  status: 201,
+                                                                                  message:
+                                                                                    'Update Data Success 6',
+                                                                                  validate_id: employee_id,
+                                                                                  data:
+                                                                                    '',
+                                                                                }
+                                                                              );
+                                                                            // insert notification perubahan absen -- start
+                                                                            const data = {
+                                                                              employee_id,
+                                                                              employee_name,
+                                                                              submission_id:
+                                                                                '3',
+                                                                            };
+
+                                                                            const options = {
+                                                                              headers: {
+                                                                                'Content-Type':
+                                                                                  'application/json',
+                                                                                API_KEY:
+                                                                                  process
+                                                                                    .env
+                                                                                    .API_KEY,
+                                                                              },
+                                                                            };
+
+                                                                            axios
+                                                                              .post(
+                                                                                `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                data,
+                                                                                options
+                                                                              )
+                                                                              .then(
+                                                                                (
+                                                                                  res
+                                                                                ) => {
+                                                                                  console.log(
+                                                                                    'RESPONSE ==== : ',
+                                                                                    res.data
+                                                                                  );
+                                                                                }
+                                                                              )
+                                                                              .catch(
+                                                                                (
+                                                                                  err
+                                                                                ) => {
+                                                                                  console.log(
+                                                                                    'ERROR: ====',
+                                                                                    err
+                                                                                  );
+                                                                                  throw err;
+                                                                                }
+                                                                              );
+                                                                            // insert notification perubahan absen -- end
+                                                                          } else {
+                                                                            response
+                                                                              .status(
+                                                                                200
+                                                                              )
+                                                                              .send(
+                                                                                {
+                                                                                  status: 200,
+                                                                                  message:
+                                                                                    'Data Tidak Ditemukan 8',
+                                                                                  validate_id: employee_id,
+                                                                                  data:
+                                                                                    '',
+                                                                                }
+                                                                              );
+                                                                          }
+                                                                        }
+                                                                      );
+                                                                    } else {
+                                                                      response
+                                                                        .status(
+                                                                          200
+                                                                        )
+                                                                        .send({
+                                                                          status: 200,
+                                                                          message:
+                                                                            'tidak berhasil bosku',
+                                                                          validate_id: employee_id,
+                                                                          data:
+                                                                            '',
+                                                                        });
+                                                                    }
+                                                                  }
+                                                                );
                                                               } else {
                                                                 response
                                                                   .status(200)
                                                                   .send({
                                                                     status: 200,
                                                                     message:
-                                                                      'Data Tidak Ditemukan 6',
+                                                                      'category_rev_id_data tidak dikenal',
                                                                     validate_id: employee_id,
                                                                     data: '',
                                                                   });
@@ -1159,7 +1674,7 @@ const controller = {
                                                             .send({
                                                               status: 200,
                                                               message:
-                                                                'Data Tidak Ditemukan 7',
+                                                                'Data Tidak Ditemukan 9',
                                                               validate_id: employee_id,
                                                               data: '',
                                                             });
@@ -1170,7 +1685,7 @@ const controller = {
                                                     response.status(200).send({
                                                       status: 200,
                                                       message:
-                                                        'Data Tidak Ditemukan 8',
+                                                        'Data Tidak Ditemukan 10',
                                                       validate_id: employee_id,
                                                       data: '',
                                                     });
@@ -1178,162 +1693,6 @@ const controller = {
                                                 }
                                               );
                                             } else {
-                                              response.status(200).send({
-                                                status: 200,
-                                                message:
-                                                  'Data Tidak Ditemukan 9',
-                                                validate_id: employee_id,
-                                                data: '',
-                                              });
-                                            }
-                                          }
-                                        );
-                                      } else {
-                                        response.status(200).send({
-                                          status: 200,
-                                          message: 'Data Tidak Ditemukan 10',
-                                          validate_id: employee_id,
-                                          data: '',
-                                        });
-                                      }
-                                    }
-                                  );
-                                } else {
-                                  response.status(200).send({
-                                    status: 200,
-                                    message: 'Insert data gagal',
-                                    validate_id: employee_id,
-                                    data: '',
-                                  });
-                                }
-                              }
-                            );
-                          } else {
-                            pool.db_MMFPROD.query(
-                              `select company_id ,employee_id ,clocking_date ,time_in ,time_out ,off_site ,is_break ,note ,in_terminal,
-                              out_terminal ,in_reg_type ,out_reg_type, absence_wage ,in_location ,out_location ,golid ,golversion 
-                              from emp_clocking_detail_tbl ecdt 
-                              where employee_id =$1 and clocking_date = $2
-                              order by clocking_date desc`,
-                              [employee_id, date_filter],
-                              (error, results) => {
-                                if (error) {
-                                  // Helpers.logger(
-                                  //   'ERROR',
-                                  //   {
-                                  //     employee_id,
-                                  //     date_filter,
-                                  //     rev_id,
-                                  //     status,
-                                  //   },
-                                  //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
-                                  //   error
-                                  // );
-
-                                  throw error;
-                                }
-
-                                // eslint-disable-next-line eqeqeq
-                                if (results.rows != 0) {
-                                  const data1_company_id =
-                                    results.rows[0].company_id;
-                                  const data1_time_in = results.rows[0].time_in;
-                                  const data1_time_out =
-                                    results.rows[0].time_out;
-                                  const data1_off_site =
-                                    results.rows[0].off_site;
-                                  const data1_is_break =
-                                    results.rows[0].is_break;
-                                  const data1_note = results.rows[0].note;
-                                  const data1_in_terminal =
-                                    results.rows[0].in_terminal;
-                                  const data1_out_terminal =
-                                    results.rows[0].out_terminal;
-                                  const data1_in_reg_type =
-                                    results.rows[0].in_reg_type;
-                                  const data1_out_reg_type =
-                                    results.rows[0].out_reg_type;
-                                  const data1_absence_wage =
-                                    results.rows[0].absence_wage;
-                                  const data1_in_location =
-                                    results.rows[0].in_location;
-                                  const data1_out_location =
-                                    results.rows[0].out_location;
-                                  const data1_golid = results.rows[0].golid;
-                                  const data1_golversion =
-                                    results.rows[0].golversion;
-
-                                  pool.db_HCM.query(
-                                    `insert into temp_emp_clocking_detail_tbl (company_id ,employee_id ,clocking_date ,time_in ,time_out ,off_site ,is_break ,note ,in_terminal,
-                                      out_terminal ,in_reg_type ,out_reg_type, absence_wage ,in_location ,out_location ,golid ,golversion, rev_absence_id )
-                                      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
-                                    [
-                                      data1_company_id,
-                                      employee_id,
-                                      date_filter,
-                                      data1_time_in,
-                                      data1_time_out,
-                                      data1_off_site,
-                                      data1_is_break,
-                                      data1_note,
-                                      data1_in_terminal,
-                                      data1_out_terminal,
-                                      data1_in_reg_type,
-                                      data1_out_reg_type,
-                                      data1_absence_wage,
-                                      data1_in_location,
-                                      data1_out_location,
-                                      data1_golid,
-                                      data1_golversion,
-                                      rev_id,
-                                    ],
-                                    (error, results) => {
-                                      if (error) {
-                                        // Helpers.logger(
-                                        //   'ERROR',
-                                        //   {
-                                        //     employee_id,
-                                        //     date_filter,
-                                        //     rev_id,
-                                        //     status,
-                                        //   },
-                                        //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
-                                        //   error
-                                        // );
-
-                                        throw error;
-                                      }
-
-                                      // eslint-disable-next-line eqeqeq
-                                      console.log(
-                                        '>>>>>>>>>>>>>>>>>>>>>>>masuk insert 2<<<<<<<<<<<<<<<<'
-                                      );
-                                      if (results.rowCount != 0) {
-                                        pool.db_MMFPROD.query(
-                                          `delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 `,
-                                          [employee_id, date_filter],
-                                          (error, results) => {
-                                            if (error) {
-                                              // Helpers.logger(
-                                              //   'ERROR',
-                                              //   {
-                                              //     employee_id,
-                                              //     date_filter,
-                                              //     rev_id,
-                                              //     status,
-                                              //   },
-                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
-                                              //   error
-                                              // );
-
-                                              throw error;
-                                            }
-
-                                            // eslint-disable-next-line eqeqeq
-                                            console.log(
-                                              '>>>>>>>>>>>>>>>>>>>>>>>masuk delete 2<<<<<<<<<<<<<<<<'
-                                            );
-                                            if (results.rowCount != 0) {
                                               pool.db_MMFPROD.query(
                                                 `select company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note, transfer_message ,
                                                 state,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,
@@ -1457,7 +1816,7 @@ const controller = {
                                                           results.rowCount != 0
                                                         ) {
                                                           pool.db_MMFPROD.query(
-                                                            `delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') `,
+                                                            "delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') ",
                                                             [
                                                               employee_id,
                                                               date_filter,
@@ -1576,7 +1935,7 @@ const controller = {
                                                                                   {
                                                                                     status: 201,
                                                                                     message:
-                                                                                      'Update Data Success',
+                                                                                      'Update Data Success 7',
                                                                                     validate_id: employee_id,
                                                                                     data:
                                                                                       '',
@@ -1751,7 +2110,7 @@ const controller = {
                                                                                   {
                                                                                     status: 201,
                                                                                     message:
-                                                                                      'Update Data Success',
+                                                                                      'Update Data Success 8',
                                                                                     validate_id: employee_id,
                                                                                     data:
                                                                                       '',
@@ -1928,7 +2287,7 @@ const controller = {
                                                                                   {
                                                                                     status: 201,
                                                                                     message:
-                                                                                      'Update Data Success',
+                                                                                      'Update Data Success 9',
                                                                                     validate_id: employee_id,
                                                                                     data:
                                                                                       '',
@@ -2054,11 +2413,1335 @@ const controller = {
                                                         }
                                                       }
                                                     );
+                                                  } else if (
+                                                    category_rev_id_data == '1'
+                                                  ) {
+                                                    console.log('satuuuu');
+                                                    pool.db_MMFPROD.query(
+                                                      `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                        off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                        url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                        values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                        null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                      [
+                                                        employee_id,
+                                                        rev_time_in_data,
+                                                      ],
+                                                      (error, results) => {
+                                                        if (error) {
+                                                          // Helpers.logger(
+                                                          //   'ERROR',
+                                                          //   {
+                                                          //     employee_id,
+                                                          //     date_filter,
+                                                          //     rev_id,
+                                                          //     status,
+                                                          //   },
+                                                          //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                          //   error
+                                                          // );
+
+                                                          throw error;
+                                                        }
+
+                                                        // eslint-disable-next-line eqeqeq
+                                                        if (
+                                                          results.rowCount != 0
+                                                        ) {
+                                                          pool.db_MMFPROD.query(
+                                                            `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                            off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                            url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                            values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                            null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                            [
+                                                              employee_id,
+                                                              reg_time_out_data,
+                                                            ],
+                                                            (
+                                                              error,
+                                                              results
+                                                            ) => {
+                                                              if (error) {
+                                                                // Helpers.logger(
+                                                                //   'ERROR',
+                                                                //   {
+                                                                //     employee_id,
+                                                                //     date_filter,
+                                                                //     rev_id,
+                                                                //     status,
+                                                                //   },
+                                                                //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                //   error
+                                                                // );
+
+                                                                throw error;
+                                                              }
+
+                                                              // eslint-disable-next-line eqeqeq
+                                                              if (
+                                                                results.rowCount !=
+                                                                0
+                                                              ) {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 201,
+                                                                    message:
+                                                                      'Update Data Success 10',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                                // insert notification perubahan absen -- start
+                                                                const data = {
+                                                                  employee_id,
+                                                                  employee_name,
+                                                                  submission_id:
+                                                                    '1',
+                                                                };
+
+                                                                const options = {
+                                                                  headers: {
+                                                                    'Content-Type':
+                                                                      'application/json',
+                                                                    API_KEY:
+                                                                      process
+                                                                        .env
+                                                                        .API_KEY,
+                                                                  },
+                                                                };
+
+                                                                axios
+                                                                  .post(
+                                                                    `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                    data,
+                                                                    options
+                                                                  )
+                                                                  .then(
+                                                                    (res) => {
+                                                                      console.log(
+                                                                        'RESPONSE ==== : ',
+                                                                        res.data
+                                                                      );
+                                                                    }
+                                                                  )
+                                                                  .catch(
+                                                                    (err) => {
+                                                                      console.log(
+                                                                        'ERROR: ====',
+                                                                        err
+                                                                      );
+                                                                      throw err;
+                                                                    }
+                                                                  );
+                                                                // insert notification perubahan absen -- end
+                                                              } else {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 200,
+                                                                    message:
+                                                                      'Data Tidak Ditemukan 16',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                              }
+                                                            }
+                                                          );
+                                                        } else {
+                                                          response
+                                                            .status(200)
+                                                            .send({
+                                                              status: 200,
+                                                              message:
+                                                                'tidak berhasil bosku',
+                                                              validate_id: employee_id,
+                                                              data: '',
+                                                            });
+                                                        }
+                                                      }
+                                                    );
+                                                  } else if (
+                                                    category_rev_id_data == '2'
+                                                  ) {
+                                                    pool.db_MMFPROD.query(
+                                                      `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                        off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                        url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                        values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                        null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                      [
+                                                        employee_id,
+                                                        reg_time_in_data,
+                                                      ],
+                                                      (error, results) => {
+                                                        if (error) {
+                                                          // Helpers.logger(
+                                                          //   'ERROR',
+                                                          //   {
+                                                          //     employee_id,
+                                                          //     date_filter,
+                                                          //     rev_id,
+                                                          //     status,
+                                                          //   },
+                                                          //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                          //   error
+                                                          // );
+
+                                                          throw error;
+                                                        }
+
+                                                        // eslint-disable-next-line eqeqeq
+                                                        if (
+                                                          results.rowCount != 0
+                                                        ) {
+                                                          pool.db_MMFPROD.query(
+                                                            `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                            off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                            url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                            values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                            null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                            [
+                                                              employee_id,
+                                                              rev_time_out_data,
+                                                            ],
+                                                            (
+                                                              error,
+                                                              results
+                                                            ) => {
+                                                              if (error) {
+                                                                // Helpers.logger(
+                                                                //   'ERROR',
+                                                                //   {
+                                                                //     employee_id,
+                                                                //     date_filter,
+                                                                //     rev_id,
+                                                                //     status,
+                                                                //   },
+                                                                //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                //   error
+                                                                // );
+
+                                                                throw error;
+                                                              }
+
+                                                              // eslint-disable-next-line eqeqeq
+                                                              if (
+                                                                results.rowCount !=
+                                                                0
+                                                              ) {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 201,
+                                                                    message:
+                                                                      'Update Data Success 11',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                                // insert notification perubahan absen -- start
+                                                                const data = {
+                                                                  employee_id,
+                                                                  employee_name,
+                                                                  submission_id:
+                                                                    '2',
+                                                                };
+
+                                                                const options = {
+                                                                  headers: {
+                                                                    'Content-Type':
+                                                                      'application/json',
+                                                                    API_KEY:
+                                                                      process
+                                                                        .env
+                                                                        .API_KEY,
+                                                                  },
+                                                                };
+
+                                                                axios
+                                                                  .post(
+                                                                    `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                    data,
+                                                                    options
+                                                                  )
+                                                                  .then(
+                                                                    (res) => {
+                                                                      console.log(
+                                                                        'RESPONSE ==== : ',
+                                                                        res.data
+                                                                      );
+                                                                    }
+                                                                  )
+                                                                  .catch(
+                                                                    (err) => {
+                                                                      console.log(
+                                                                        'ERROR: ====',
+                                                                        err
+                                                                      );
+                                                                      throw err;
+                                                                    }
+                                                                  );
+                                                                // insert notification perubahan absen -- end
+                                                              } else {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 200,
+                                                                    message:
+                                                                      'Data Tidak Ditemukan 17',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                              }
+                                                            }
+                                                          );
+                                                        } else {
+                                                          response
+                                                            .status(200)
+                                                            .send({
+                                                              status: 200,
+                                                              message:
+                                                                'tidak berhasil bosku',
+                                                              validate_id: employee_id,
+                                                              data: '',
+                                                            });
+                                                        }
+                                                      }
+                                                    );
+                                                  } else if (
+                                                    category_rev_id_data ==
+                                                      '3' ||
+                                                    category_rev_id_data == '4'
+                                                  ) {
+                                                    pool.db_MMFPROD.query(
+                                                      `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                        off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                        url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                        values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                        null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                      [
+                                                        employee_id,
+                                                        rev_time_in_data,
+                                                      ],
+                                                      (error, results) => {
+                                                        if (error) {
+                                                          // Helpers.logger(
+                                                          //   'ERROR',
+                                                          //   {
+                                                          //     employee_id,
+                                                          //     date_filter,
+                                                          //     rev_id,
+                                                          //     status,
+                                                          //   },
+                                                          //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                          //   error
+                                                          // );
+
+                                                          throw error;
+                                                        }
+
+                                                        // eslint-disable-next-line eqeqeq
+                                                        if (
+                                                          results.rowCount != 0
+                                                        ) {
+                                                          pool.db_MMFPROD.query(
+                                                            `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                            off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                            url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                            values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                            null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                            [
+                                                              employee_id,
+                                                              rev_time_out_data,
+                                                            ],
+                                                            (
+                                                              error,
+                                                              results
+                                                            ) => {
+                                                              if (error) {
+                                                                // Helpers.logger(
+                                                                //   'ERROR',
+                                                                //   {
+                                                                //     employee_id,
+                                                                //     date_filter,
+                                                                //     rev_id,
+                                                                //     status,
+                                                                //   },
+                                                                //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                //   error
+                                                                // );
+
+                                                                throw error;
+                                                              }
+
+                                                              // eslint-disable-next-line eqeqeq
+                                                              if (
+                                                                results.rowCount !=
+                                                                0
+                                                              ) {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 201,
+                                                                    message:
+                                                                      'Update Data Success 12',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                                // insert notification perubahan absen -- start
+                                                                const data = {
+                                                                  employee_id,
+                                                                  employee_name,
+                                                                  submission_id:
+                                                                    '3',
+                                                                };
+
+                                                                const options = {
+                                                                  headers: {
+                                                                    'Content-Type':
+                                                                      'application/json',
+                                                                    API_KEY:
+                                                                      process
+                                                                        .env
+                                                                        .API_KEY,
+                                                                  },
+                                                                };
+
+                                                                axios
+                                                                  .post(
+                                                                    `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                    data,
+                                                                    options
+                                                                  )
+                                                                  .then(
+                                                                    (res) => {
+                                                                      console.log(
+                                                                        'RESPONSE ==== : ',
+                                                                        res.data
+                                                                      );
+                                                                    }
+                                                                  )
+                                                                  .catch(
+                                                                    (err) => {
+                                                                      console.log(
+                                                                        'ERROR: ====',
+                                                                        err
+                                                                      );
+                                                                      throw err;
+                                                                    }
+                                                                  );
+                                                                // insert notification perubahan absen -- end
+                                                              } else {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 200,
+                                                                    message:
+                                                                      'Data Tidak Ditemukan 18',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                              }
+                                                            }
+                                                          );
+                                                        } else {
+                                                          response
+                                                            .status(200)
+                                                            .send({
+                                                              status: 200,
+                                                              message:
+                                                                'tidak berhasil bosku',
+                                                              validate_id: employee_id,
+                                                              data: '',
+                                                            });
+                                                        }
+                                                      }
+                                                    );
                                                   } else {
                                                     response.status(200).send({
                                                       status: 200,
                                                       message:
-                                                        'Data Tidak Ditemukan 16',
+                                                        'category_rev_id_data tidak dikenal',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                  }
+                                                }
+                                              );
+                                            }
+                                          }
+                                        );
+                                      } else {
+                                        response.status(200).send({
+                                          status: 200,
+                                          message: 'Data Tidak Ditemukan 19',
+                                          validate_id: employee_id,
+                                          data: '',
+                                        });
+                                      }
+                                    }
+                                  );
+                                } else {
+                                  response.status(200).send({
+                                    status: 200,
+                                    message: 'Insert data gagal',
+                                    validate_id: employee_id,
+                                    data: '',
+                                  });
+                                }
+                              }
+                            );
+                          } else {
+                            pool.db_MMFPROD.query(
+                              `select company_id ,employee_id ,clocking_date ,time_in ,time_out ,off_site ,is_break ,note ,in_terminal,
+                              out_terminal ,in_reg_type ,out_reg_type, absence_wage ,in_location ,out_location ,golid ,golversion 
+                              from emp_clocking_detail_tbl ecdt 
+                              where employee_id =$1 and clocking_date = $2
+                              order by clocking_date desc`,
+                              [employee_id, date_filter],
+                              (error, results) => {
+                                if (error) {
+                                  // Helpers.logger(
+                                  //   'ERROR',
+                                  //   {
+                                  //     employee_id,
+                                  //     date_filter,
+                                  //     rev_id,
+                                  //     status,
+                                  //   },
+                                  //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                  //   error
+                                  // );
+
+                                  throw error;
+                                }
+
+                                // eslint-disable-next-line eqeqeq
+                                if (results.rows != 0) {
+                                  const data1_company_id =
+                                    results.rows[0].company_id;
+                                  const data1_time_in = results.rows[0].time_in;
+                                  const data1_time_out =
+                                    results.rows[0].time_out;
+                                  const data1_off_site =
+                                    results.rows[0].off_site;
+                                  const data1_is_break =
+                                    results.rows[0].is_break;
+                                  const data1_note = results.rows[0].note;
+                                  const data1_in_terminal =
+                                    results.rows[0].in_terminal;
+                                  const data1_out_terminal =
+                                    results.rows[0].out_terminal;
+                                  const data1_in_reg_type =
+                                    results.rows[0].in_reg_type;
+                                  const data1_out_reg_type =
+                                    results.rows[0].out_reg_type;
+                                  const data1_absence_wage =
+                                    results.rows[0].absence_wage;
+                                  const data1_in_location =
+                                    results.rows[0].in_location;
+                                  const data1_out_location =
+                                    results.rows[0].out_location;
+                                  const data1_golid = results.rows[0].golid;
+                                  const data1_golversion =
+                                    results.rows[0].golversion;
+
+                                  pool.db_HCM.query(
+                                    `insert into temp_emp_clocking_detail_tbl (company_id ,employee_id ,clocking_date ,time_in ,time_out ,off_site ,is_break ,note ,in_terminal,
+                                      out_terminal ,in_reg_type ,out_reg_type, absence_wage ,in_location ,out_location ,golid ,golversion, rev_absence_id )
+                                      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
+                                    [
+                                      data1_company_id,
+                                      employee_id,
+                                      date_filter,
+                                      data1_time_in,
+                                      data1_time_out,
+                                      data1_off_site,
+                                      data1_is_break,
+                                      data1_note,
+                                      data1_in_terminal,
+                                      data1_out_terminal,
+                                      data1_in_reg_type,
+                                      data1_out_reg_type,
+                                      data1_absence_wage,
+                                      data1_in_location,
+                                      data1_out_location,
+                                      data1_golid,
+                                      data1_golversion,
+                                      rev_id,
+                                    ],
+                                    (error, results) => {
+                                      if (error) {
+                                        // Helpers.logger(
+                                        //   'ERROR',
+                                        //   {
+                                        //     employee_id,
+                                        //     date_filter,
+                                        //     rev_id,
+                                        //     status,
+                                        //   },
+                                        //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                        //   error
+                                        // );
+
+                                        throw error;
+                                      }
+
+                                      // eslint-disable-next-line eqeqeq
+                                      console.log(
+                                        '>>>>>>>>>>>>>>>>>>>>>>>masuk insert 2<<<<<<<<<<<<<<<<'
+                                      );
+                                      if (results.rowCount != 0) {
+                                        pool.db_MMFPROD.query(
+                                          'delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 ',
+                                          [employee_id, date_filter],
+                                          (error, results) => {
+                                            if (error) {
+                                              // Helpers.logger(
+                                              //   'ERROR',
+                                              //   {
+                                              //     employee_id,
+                                              //     date_filter,
+                                              //     rev_id,
+                                              //     status,
+                                              //   },
+                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                              //   error
+                                              // );
+
+                                              throw error;
+                                            }
+
+                                            // eslint-disable-next-line eqeqeq
+                                            console.log(
+                                              '>>>>>>>>>>>>>>>>>>>>>>>masuk delete 2<<<<<<<<<<<<<<<<'
+                                            );
+                                            if (results.rowCount != 0) {
+                                              pool.db_MMFPROD.query(
+                                                `select company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note, transfer_message ,
+                                                state,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,
+                                                location_method ,golid ,golversion 
+                                                from emp_clocking_temp_tbl ectt 
+                                                where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_Char($2::date,'YYYY-MM-DD')`,
+                                                [employee_id, date_filter],
+                                                (error, results) => {
+                                                  if (error) {
+                                                    // Helpers.logger(
+                                                    //   'ERROR',
+                                                    //   {
+                                                    //     employee_id,
+                                                    //     date_filter,
+                                                    //     rev_id,
+                                                    //     status,
+                                                    //   },
+                                                    //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                    //   error
+                                                    // );
+
+                                                    throw error;
+                                                  }
+
+                                                  // eslint-disable-next-line eqeqeq
+                                                  if (results.rows != 0) {
+                                                    const data2_company_id =
+                                                      results.rows[0]
+                                                        .company_id;
+                                                    const data2_in_out =
+                                                      results.rows[0].in_out;
+                                                    const data2_terminal_id =
+                                                      results.rows[0]
+                                                        .terminal_id;
+                                                    const data2_off_site =
+                                                      results.rows[0].off_site;
+                                                    const data2_transfer_message =
+                                                      results.rows[0]
+                                                        .transfer_message;
+                                                    const data2_note =
+                                                      results.rows[0].note;
+                                                    const data2_state =
+                                                      results.rows[0].state;
+                                                    const data2_latitude =
+                                                      results.rows[0].latitude;
+                                                    const data2_altitude =
+                                                      results.rows[0].altitude;
+                                                    const data2_longitude =
+                                                      results.rows[0].longitude;
+                                                    const data2_accuracy =
+                                                      results.rows[0].accuracy;
+                                                    const data2_location_no =
+                                                      results.rows[0]
+                                                        .location_no;
+                                                    const data2_url_photo =
+                                                      results.rows[0].url_photo;
+                                                    const data2_url_remove =
+                                                      results.rows[0]
+                                                        .url_remove;
+                                                    const data2_golversion =
+                                                      results.rows[0]
+                                                        .golversion;
+                                                    const data2_file_name =
+                                                      results.rows[0].file_name;
+                                                    const data2_golid =
+                                                      results.rows[0].golid;
+                                                    const data2_location_method =
+                                                      results.rows[0]
+                                                        .location_method;
+
+                                                    pool.db_HCM.query(
+                                                      `insert into temp_emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,off_site ,note, transfer_message ,
+                                                        state,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,
+                                                        location_method ,golid ,golversion,  rev_absence_id)
+                                                        values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20, $21)`,
+                                                      [
+                                                        data2_company_id,
+                                                        employee_id,
+                                                        date_filter,
+                                                        data2_in_out,
+                                                        data2_terminal_id,
+                                                        data2_off_site,
+                                                        data2_note,
+                                                        data2_transfer_message,
+                                                        data2_state,
+                                                        data2_latitude,
+                                                        data2_altitude,
+                                                        data2_longitude,
+                                                        data2_accuracy,
+                                                        data2_location_no,
+                                                        data2_url_photo,
+                                                        data2_url_remove,
+                                                        data2_file_name,
+                                                        data2_location_method,
+                                                        data2_golid,
+                                                        data2_golversion,
+                                                        rev_id,
+                                                      ],
+                                                      (error, results) => {
+                                                        if (error) {
+                                                          // Helpers.logger(
+                                                          //   'ERROR',
+                                                          //   {
+                                                          //     employee_id,
+                                                          //     date_filter,
+                                                          //     rev_id,
+                                                          //     status,
+                                                          //   },
+                                                          //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                          //   error
+                                                          // );
+
+                                                          throw error;
+                                                        }
+
+                                                        // eslint-disable-next-line eqeqeq
+                                                        console.log(
+                                                          '>>>>>>>>>>>>>>>>>>>>>>>masuk insert 2<<<<<<<<<<<<<<<<'
+                                                        );
+                                                        if (
+                                                          results.rowCount != 0
+                                                        ) {
+                                                          pool.db_MMFPROD.query(
+                                                            "delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') ",
+                                                            [
+                                                              employee_id,
+                                                              date_filter,
+                                                            ],
+                                                            (
+                                                              error,
+                                                              results
+                                                            ) => {
+                                                              if (error) {
+                                                                // Helpers.logger(
+                                                                //   'ERROR',
+                                                                //   {
+                                                                //     employee_id,
+                                                                //     date_filter,
+                                                                //     rev_id,
+                                                                //     status,
+                                                                //   },
+                                                                //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                //   error
+                                                                // );
+
+                                                                throw error;
+                                                              }
+
+                                                              // eslint-disable-next-line eqeqeq
+                                                              console.log(
+                                                                '>>>>>>>>>>>>>>>>>>>>>>>masuk delete 2<<<<<<<<<<<<<<<<'
+                                                              );
+                                                              if (
+                                                                results.rowCount !=
+                                                                0
+                                                              ) {
+                                                                if (
+                                                                  category_rev_id_data ==
+                                                                  '1'
+                                                                ) {
+                                                                  pool.db_MMFPROD.query(
+                                                                    `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                      off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                      url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                      values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                      null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                    [
+                                                                      employee_id,
+                                                                      rev_time_in_data,
+                                                                    ],
+                                                                    (
+                                                                      error,
+                                                                      results
+                                                                    ) => {
+                                                                      if (
+                                                                        error
+                                                                      ) {
+                                                                        // Helpers.logger(
+                                                                        //   'ERROR',
+                                                                        //   {
+                                                                        //     employee_id,
+                                                                        //     date_filter,
+                                                                        //     rev_id,
+                                                                        //     status,
+                                                                        //   },
+                                                                        //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                        //   error
+                                                                        // );
+
+                                                                        throw error;
+                                                                      }
+
+                                                                      // eslint-disable-next-line eqeqeq
+                                                                      if (
+                                                                        results.rowCount !=
+                                                                        0
+                                                                      ) {
+                                                                        pool.db_MMFPROD.query(
+                                                                          `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                          off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                          url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                          values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                          null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                          [
+                                                                            employee_id,
+                                                                            reg_time_out_data,
+                                                                          ],
+                                                                          (
+                                                                            error,
+                                                                            results
+                                                                          ) => {
+                                                                            if (
+                                                                              error
+                                                                            ) {
+                                                                              // Helpers.logger(
+                                                                              //   'ERROR',
+                                                                              //   {
+                                                                              //     employee_id,
+                                                                              //     date_filter,
+                                                                              //     rev_id,
+                                                                              //     status,
+                                                                              //   },
+                                                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                              //   error
+                                                                              // );
+
+                                                                              throw error;
+                                                                            }
+
+                                                                            // eslint-disable-next-line eqeqeq
+                                                                            if (
+                                                                              results.rowCount !=
+                                                                              0
+                                                                            ) {
+                                                                              response
+                                                                                .status(
+                                                                                  200
+                                                                                )
+                                                                                .send(
+                                                                                  {
+                                                                                    status: 201,
+                                                                                    message:
+                                                                                      'Update Data Success 13',
+                                                                                    validate_id: employee_id,
+                                                                                    data:
+                                                                                      '',
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- start
+                                                                              const data = {
+                                                                                employee_id,
+                                                                                employee_name,
+                                                                                submission_id:
+                                                                                  '1',
+                                                                              };
+
+                                                                              const options = {
+                                                                                headers: {
+                                                                                  'Content-Type':
+                                                                                    'application/json',
+                                                                                  API_KEY:
+                                                                                    process
+                                                                                      .env
+                                                                                      .API_KEY,
+                                                                                },
+                                                                              };
+
+                                                                              axios
+                                                                                .post(
+                                                                                  `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                  data,
+                                                                                  options
+                                                                                )
+                                                                                .then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'RESPONSE ==== : ',
+                                                                                      res.data
+                                                                                    );
+                                                                                  }
+                                                                                )
+                                                                                .catch(
+                                                                                  (
+                                                                                    err
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'ERROR: ====',
+                                                                                      err
+                                                                                    );
+                                                                                    throw err;
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- end
+                                                                            } else {
+                                                                              response
+                                                                                .status(
+                                                                                  200
+                                                                                )
+                                                                                .send(
+                                                                                  {
+                                                                                    status: 200,
+                                                                                    message:
+                                                                                      'Data Tidak Ditemukan 20',
+                                                                                    validate_id: employee_id,
+                                                                                    data:
+                                                                                      '',
+                                                                                  }
+                                                                                );
+                                                                            }
+                                                                          }
+                                                                        );
+                                                                      } else {
+                                                                        response
+                                                                          .status(
+                                                                            200
+                                                                          )
+                                                                          .send(
+                                                                            {
+                                                                              status: 200,
+                                                                              message:
+                                                                                'tidak berhasil bosku',
+                                                                              validate_id: employee_id,
+                                                                              data:
+                                                                                '',
+                                                                            }
+                                                                          );
+                                                                      }
+                                                                    }
+                                                                  );
+                                                                } else if (
+                                                                  category_rev_id_data ==
+                                                                  '2'
+                                                                ) {
+                                                                  pool.db_MMFPROD.query(
+                                                                    `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                      off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                      url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                      values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                      null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                    [
+                                                                      employee_id,
+                                                                      reg_time_in_data,
+                                                                    ],
+                                                                    (
+                                                                      error,
+                                                                      results
+                                                                    ) => {
+                                                                      if (
+                                                                        error
+                                                                      ) {
+                                                                        // Helpers.logger(
+                                                                        //   'ERROR',
+                                                                        //   {
+                                                                        //     employee_id,
+                                                                        //     date_filter,
+                                                                        //     rev_id,
+                                                                        //     status,
+                                                                        //   },
+                                                                        //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                        //   error
+                                                                        // );
+
+                                                                        throw error;
+                                                                      }
+
+                                                                      // eslint-disable-next-line eqeqeq
+                                                                      if (
+                                                                        results.rowCount !=
+                                                                        0
+                                                                      ) {
+                                                                        pool.db_MMFPROD.query(
+                                                                          `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                          off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                          url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                          values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                          null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                          [
+                                                                            employee_id,
+                                                                            rev_time_out_data,
+                                                                          ],
+                                                                          (
+                                                                            error,
+                                                                            results
+                                                                          ) => {
+                                                                            if (
+                                                                              error
+                                                                            ) {
+                                                                              // Helpers.logger(
+                                                                              //   'ERROR',
+                                                                              //   {
+                                                                              //     employee_id,
+                                                                              //     date_filter,
+                                                                              //     rev_id,
+                                                                              //     status,
+                                                                              //   },
+                                                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                              //   error
+                                                                              // );
+
+                                                                              throw error;
+                                                                            }
+
+                                                                            // eslint-disable-next-line eqeqeq
+                                                                            if (
+                                                                              results.rowCount !=
+                                                                              0
+                                                                            ) {
+                                                                              response
+                                                                                .status(
+                                                                                  200
+                                                                                )
+                                                                                .send(
+                                                                                  {
+                                                                                    status: 201,
+                                                                                    message:
+                                                                                      'Update Data Success 14',
+                                                                                    validate_id: employee_id,
+                                                                                    data:
+                                                                                      '',
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- start
+                                                                              const data = {
+                                                                                employee_id,
+                                                                                employee_name,
+                                                                                submission_id:
+                                                                                  '2',
+                                                                              };
+
+                                                                              const options = {
+                                                                                headers: {
+                                                                                  'Content-Type':
+                                                                                    'application/json',
+                                                                                  API_KEY:
+                                                                                    process
+                                                                                      .env
+                                                                                      .API_KEY,
+                                                                                },
+                                                                              };
+
+                                                                              axios
+                                                                                .post(
+                                                                                  `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                  data,
+                                                                                  options
+                                                                                )
+                                                                                .then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'RESPONSE ==== : ',
+                                                                                      res.data
+                                                                                    );
+                                                                                  }
+                                                                                )
+                                                                                .catch(
+                                                                                  (
+                                                                                    err
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'ERROR: ====',
+                                                                                      err
+                                                                                    );
+                                                                                    throw err;
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- end
+                                                                            } else {
+                                                                              response
+                                                                                .status(
+                                                                                  200
+                                                                                )
+                                                                                .send(
+                                                                                  {
+                                                                                    status: 200,
+                                                                                    message:
+                                                                                      'Data Tidak Ditemukan 21',
+                                                                                    validate_id: employee_id,
+                                                                                    data:
+                                                                                      '',
+                                                                                  }
+                                                                                );
+                                                                            }
+                                                                          }
+                                                                        );
+                                                                      } else {
+                                                                        response
+                                                                          .status(
+                                                                            200
+                                                                          )
+                                                                          .send(
+                                                                            {
+                                                                              status: 200,
+                                                                              message:
+                                                                                'tidak berhasil bosku',
+                                                                              validate_id: employee_id,
+                                                                              data:
+                                                                                '',
+                                                                            }
+                                                                          );
+                                                                      }
+                                                                    }
+                                                                  );
+                                                                } else if (
+                                                                  category_rev_id_data ==
+                                                                    '3' ||
+                                                                  category_rev_id_data ==
+                                                                    '4'
+                                                                ) {
+                                                                  pool.db_MMFPROD.query(
+                                                                    `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                      off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                      url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                      values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                      null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                    [
+                                                                      employee_id,
+                                                                      rev_time_in_data,
+                                                                    ],
+                                                                    (
+                                                                      error,
+                                                                      results
+                                                                    ) => {
+                                                                      if (
+                                                                        error
+                                                                      ) {
+                                                                        // Helpers.logger(
+                                                                        //   'ERROR',
+                                                                        //   {
+                                                                        //     employee_id,
+                                                                        //     date_filter,
+                                                                        //     rev_id,
+                                                                        //     status,
+                                                                        //   },
+                                                                        //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                        //   error
+                                                                        // );
+
+                                                                        throw error;
+                                                                      }
+
+                                                                      // eslint-disable-next-line eqeqeq
+                                                                      if (
+                                                                        results.rowCount !=
+                                                                        0
+                                                                      ) {
+                                                                        pool.db_MMFPROD.query(
+                                                                          `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                          off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                          url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                          values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                          null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                          [
+                                                                            employee_id,
+                                                                            rev_time_out_data,
+                                                                          ],
+                                                                          (
+                                                                            error,
+                                                                            results
+                                                                          ) => {
+                                                                            if (
+                                                                              error
+                                                                            ) {
+                                                                              // Helpers.logger(
+                                                                              //   'ERROR',
+                                                                              //   {
+                                                                              //     employee_id,
+                                                                              //     date_filter,
+                                                                              //     rev_id,
+                                                                              //     status,
+                                                                              //   },
+                                                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                              //   error
+                                                                              // );
+
+                                                                              throw error;
+                                                                            }
+
+                                                                            // eslint-disable-next-line eqeqeq
+                                                                            if (
+                                                                              results.rowCount !=
+                                                                              0
+                                                                            ) {
+                                                                              response
+                                                                                .status(
+                                                                                  200
+                                                                                )
+                                                                                .send(
+                                                                                  {
+                                                                                    status: 201,
+                                                                                    message:
+                                                                                      'Update Data Success 15',
+                                                                                    validate_id: employee_id,
+                                                                                    data:
+                                                                                      '',
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- start
+                                                                              const data = {
+                                                                                employee_id,
+                                                                                employee_name,
+                                                                                submission_id:
+                                                                                  '3',
+                                                                              };
+
+                                                                              const options = {
+                                                                                headers: {
+                                                                                  'Content-Type':
+                                                                                    'application/json',
+                                                                                  API_KEY:
+                                                                                    process
+                                                                                      .env
+                                                                                      .API_KEY,
+                                                                                },
+                                                                              };
+
+                                                                              axios
+                                                                                .post(
+                                                                                  `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                                                  data,
+                                                                                  options
+                                                                                )
+                                                                                .then(
+                                                                                  (
+                                                                                    res
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'RESPONSE ==== : ',
+                                                                                      res.data
+                                                                                    );
+                                                                                  }
+                                                                                )
+                                                                                .catch(
+                                                                                  (
+                                                                                    err
+                                                                                  ) => {
+                                                                                    console.log(
+                                                                                      'ERROR: ====',
+                                                                                      err
+                                                                                    );
+                                                                                    throw err;
+                                                                                  }
+                                                                                );
+                                                                              // insert notification perubahan absen -- end
+                                                                            } else {
+                                                                              response
+                                                                                .status(
+                                                                                  200
+                                                                                )
+                                                                                .send(
+                                                                                  {
+                                                                                    status: 200,
+                                                                                    message:
+                                                                                      'Data Tidak Ditemukan 22',
+                                                                                    validate_id: employee_id,
+                                                                                    data:
+                                                                                      '',
+                                                                                  }
+                                                                                );
+                                                                            }
+                                                                          }
+                                                                        );
+                                                                      } else {
+                                                                        response
+                                                                          .status(
+                                                                            200
+                                                                          )
+                                                                          .send(
+                                                                            {
+                                                                              status: 200,
+                                                                              message:
+                                                                                'tidak berhasil bosku',
+                                                                              validate_id: employee_id,
+                                                                              data:
+                                                                                '',
+                                                                            }
+                                                                          );
+                                                                      }
+                                                                    }
+                                                                  );
+                                                                } else {
+                                                                  response
+                                                                    .status(200)
+                                                                    .send({
+                                                                      status: 200,
+                                                                      message:
+                                                                        'category_rev_id_data tidak dikenal',
+                                                                      validate_id: employee_id,
+                                                                      data: '',
+                                                                    });
+                                                                }
+                                                              } else {
+                                                                response
+                                                                  .status(200)
+                                                                  .send({
+                                                                    status: 200,
+                                                                    message:
+                                                                      'Data Tidak Ditemukan 23',
+                                                                    validate_id: employee_id,
+                                                                    data: '',
+                                                                  });
+                                                              }
+                                                            }
+                                                          );
+                                                        } else {
+                                                          response
+                                                            .status(200)
+                                                            .send({
+                                                              status: 200,
+                                                              message:
+                                                                'Data Tidak Ditemukan 24',
+                                                              validate_id: employee_id,
+                                                              data: '',
+                                                            });
+                                                        }
+                                                      }
+                                                    );
+                                                  } else {
+                                                    response.status(200).send({
+                                                      status: 200,
+                                                      message:
+                                                        'Data Tidak Ditemukan 25',
                                                       validate_id: employee_id,
                                                       data: '',
                                                     });
@@ -2069,7 +3752,7 @@ const controller = {
                                               response.status(200).send({
                                                 status: 200,
                                                 message:
-                                                  'Data Tidak Ditemukan 17',
+                                                  'Data Tidak Ditemukan 26',
                                                 validate_id: employee_id,
                                                 data: '',
                                               });
@@ -2079,7 +3762,7 @@ const controller = {
                                       } else {
                                         response.status(200).send({
                                           status: 200,
-                                          message: 'Data Tidak Ditemukan 18',
+                                          message: 'Data Tidak Ditemukan 27',
                                           validate_id: employee_id,
                                           data: '',
                                         });
@@ -2112,6 +3795,7 @@ const controller = {
                                       }
 
                                       // eslint-disable-next-line eqeqeq
+                                      console.log(results.rows != 0);
                                       if (results.rows != 0) {
                                         const data2_company_id =
                                           results.rows[0].company_id;
@@ -2200,7 +3884,7 @@ const controller = {
                                             );
                                             if (results.rowCount != 0) {
                                               pool.db_MMFPROD.query(
-                                                `delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') `,
+                                                "delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') ",
                                                 [employee_id, date_filter],
                                                 (error, results) => {
                                                   if (error) {
@@ -2300,7 +3984,7 @@ const controller = {
                                                                     .send({
                                                                       status: 201,
                                                                       message:
-                                                                        'Update Data Success',
+                                                                        'Update Data Success 16',
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
@@ -2353,7 +4037,7 @@ const controller = {
                                                                     .send({
                                                                       status: 200,
                                                                       message:
-                                                                        'Data Tidak Ditemukan 19',
+                                                                        'Data Tidak Ditemukan 28',
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
@@ -2449,7 +4133,7 @@ const controller = {
                                                                     .send({
                                                                       status: 201,
                                                                       message:
-                                                                        'Update Data Success',
+                                                                        'Update Data Success 17',
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
@@ -2502,7 +4186,7 @@ const controller = {
                                                                     .send({
                                                                       status: 200,
                                                                       message:
-                                                                        'Data Tidak Ditemukan 20',
+                                                                        'Data Tidak Ditemukan 29',
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
@@ -2600,7 +4284,7 @@ const controller = {
                                                                     .send({
                                                                       status: 201,
                                                                       message:
-                                                                        'Update Data Success',
+                                                                        'Update Data Success 18',
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
@@ -2653,7 +4337,7 @@ const controller = {
                                                                     .send({
                                                                       status: 200,
                                                                       message:
-                                                                        'Data Tidak Ditemukan 21',
+                                                                        'Data Tidak Ditemukan 30',
                                                                       validate_id: employee_id,
                                                                       data: '',
                                                                     });
@@ -2688,7 +4372,7 @@ const controller = {
                                                     response.status(200).send({
                                                       status: 200,
                                                       message:
-                                                        'Data Tidak Ditemukan 22',
+                                                        'Data Tidak Ditemukan 31',
                                                       validate_id: employee_id,
                                                       data: '',
                                                     });
@@ -2699,7 +4383,371 @@ const controller = {
                                               response.status(200).send({
                                                 status: 200,
                                                 message:
-                                                  'Data Tidak Ditemukan 23',
+                                                  'Data Tidak Ditemukan 32',
+                                                validate_id: employee_id,
+                                                data: '',
+                                              });
+                                            }
+                                          }
+                                        );
+                                      } else if (category_rev_id_data == '1') {
+                                        console.log('duaaaaa');
+                                        pool.db_MMFPROD.query(
+                                          `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                            off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                            url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                            values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                            null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                          [employee_id, rev_time_in_data],
+                                          (error, results) => {
+                                            if (error) {
+                                              // Helpers.logger(
+                                              //   'ERROR',
+                                              //   {
+                                              //     employee_id,
+                                              //     date_filter,
+                                              //     rev_id,
+                                              //     status,
+                                              //   },
+                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                              //   error
+                                              // );
+
+                                              throw error;
+                                            }
+
+                                            // eslint-disable-next-line eqeqeq
+                                            if (results.rowCount != 0) {
+                                              pool.db_MMFPROD.query(
+                                                `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                [
+                                                  employee_id,
+                                                  reg_time_out_data,
+                                                ],
+                                                (error, results) => {
+                                                  if (error) {
+                                                    // Helpers.logger(
+                                                    //   'ERROR',
+                                                    //   {
+                                                    //     employee_id,
+                                                    //     date_filter,
+                                                    //     rev_id,
+                                                    //     status,
+                                                    //   },
+                                                    //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                    //   error
+                                                    // );
+
+                                                    throw error;
+                                                  }
+
+                                                  // eslint-disable-next-line eqeqeq
+                                                  if (results.rowCount != 0) {
+                                                    response.status(200).send({
+                                                      status: 201,
+                                                      message:
+                                                        'Update Data Success 19',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                    // insert notification perubahan absen -- start
+                                                    const data = {
+                                                      employee_id,
+                                                      employee_name,
+                                                      submission_id: '1',
+                                                    };
+
+                                                    const options = {
+                                                      headers: {
+                                                        'Content-Type':
+                                                          'application/json',
+                                                        API_KEY:
+                                                          process.env.API_KEY,
+                                                      },
+                                                    };
+
+                                                    axios
+                                                      .post(
+                                                        `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                        data,
+                                                        options
+                                                      )
+                                                      .then((res) => {
+                                                        console.log(
+                                                          'RESPONSE ==== : ',
+                                                          res.data
+                                                        );
+                                                      })
+                                                      .catch((err) => {
+                                                        console.log(
+                                                          'ERROR: ====',
+                                                          err
+                                                        );
+                                                        throw err;
+                                                      });
+                                                    // insert notification perubahan absen -- end
+                                                  } else {
+                                                    response.status(200).send({
+                                                      status: 200,
+                                                      message:
+                                                        'Data Tidak Ditemukan 33',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                  }
+                                                }
+                                              );
+                                            } else {
+                                              response.status(200).send({
+                                                status: 200,
+                                                message: 'tidak berhasil bosku',
+                                                validate_id: employee_id,
+                                                data: '',
+                                              });
+                                            }
+                                          }
+                                        );
+                                      } else if (category_rev_id_data == '2') {
+                                        pool.db_MMFPROD.query(
+                                          `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                            off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                            url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                            values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                            null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                          [employee_id, reg_time_in_data],
+                                          (error, results) => {
+                                            if (error) {
+                                              // Helpers.logger(
+                                              //   'ERROR',
+                                              //   {
+                                              //     employee_id,
+                                              //     date_filter,
+                                              //     rev_id,
+                                              //     status,
+                                              //   },
+                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                              //   error
+                                              // );
+
+                                              throw error;
+                                            }
+
+                                            // eslint-disable-next-line eqeqeq
+                                            if (results.rowCount != 0) {
+                                              pool.db_MMFPROD.query(
+                                                `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                [
+                                                  employee_id,
+                                                  rev_time_out_data,
+                                                ],
+                                                (error, results) => {
+                                                  if (error) {
+                                                    // Helpers.logger(
+                                                    //   'ERROR',
+                                                    //   {
+                                                    //     employee_id,
+                                                    //     date_filter,
+                                                    //     rev_id,
+                                                    //     status,
+                                                    //   },
+                                                    //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                    //   error
+                                                    // );
+
+                                                    throw error;
+                                                  }
+
+                                                  // eslint-disable-next-line eqeqeq
+                                                  if (results.rowCount != 0) {
+                                                    response.status(200).send({
+                                                      status: 201,
+                                                      message:
+                                                        'Update Data Success 20',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                    // insert notification perubahan absen -- start
+                                                    const data = {
+                                                      employee_id,
+                                                      employee_name,
+                                                      submission_id: '2',
+                                                    };
+
+                                                    const options = {
+                                                      headers: {
+                                                        'Content-Type':
+                                                          'application/json',
+                                                        API_KEY:
+                                                          process.env.API_KEY,
+                                                      },
+                                                    };
+
+                                                    axios
+                                                      .post(
+                                                        `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                        data,
+                                                        options
+                                                      )
+                                                      .then((res) => {
+                                                        console.log(
+                                                          'RESPONSE ==== : ',
+                                                          res.data
+                                                        );
+                                                      })
+                                                      .catch((err) => {
+                                                        console.log(
+                                                          'ERROR: ====',
+                                                          err
+                                                        );
+                                                        throw err;
+                                                      });
+                                                    // insert notification perubahan absen -- end
+                                                  } else {
+                                                    response.status(200).send({
+                                                      status: 200,
+                                                      message:
+                                                        'Data Tidak Ditemukan 34',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                  }
+                                                }
+                                              );
+                                            } else {
+                                              response.status(200).send({
+                                                status: 200,
+                                                message: 'tidak berhasil bosku',
+                                                validate_id: employee_id,
+                                                data: '',
+                                              });
+                                            }
+                                          }
+                                        );
+                                      } else if (
+                                        category_rev_id_data == '3' ||
+                                        category_rev_id_data == '4'
+                                      ) {
+                                        pool.db_MMFPROD.query(
+                                          `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                            off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                            url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                            values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                            null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                          [employee_id, rev_time_in_data],
+                                          (error, results) => {
+                                            if (error) {
+                                              // Helpers.logger(
+                                              //   'ERROR',
+                                              //   {
+                                              //     employee_id,
+                                              //     date_filter,
+                                              //     rev_id,
+                                              //     status,
+                                              //   },
+                                              //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                              //   error
+                                              // );
+
+                                              throw error;
+                                            }
+
+                                            // eslint-disable-next-line eqeqeq
+                                            if (results.rowCount != 0) {
+                                              pool.db_MMFPROD.query(
+                                                `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                [
+                                                  employee_id,
+                                                  rev_time_out_data,
+                                                ],
+                                                (error, results) => {
+                                                  if (error) {
+                                                    // Helpers.logger(
+                                                    //   'ERROR',
+                                                    //   {
+                                                    //     employee_id,
+                                                    //     date_filter,
+                                                    //     rev_id,
+                                                    //     status,
+                                                    //   },
+                                                    //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                    //   error
+                                                    // );
+
+                                                    throw error;
+                                                  }
+
+                                                  // eslint-disable-next-line eqeqeq
+                                                  if (results.rowCount != 0) {
+                                                    response.status(200).send({
+                                                      status: 201,
+                                                      message:
+                                                        'Update Data Success 21',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                    // insert notification perubahan absen -- start
+                                                    const data = {
+                                                      employee_id,
+                                                      employee_name,
+                                                      submission_id: '3',
+                                                    };
+
+                                                    const options = {
+                                                      headers: {
+                                                        'Content-Type':
+                                                          'application/json',
+                                                        API_KEY:
+                                                          process.env.API_KEY,
+                                                      },
+                                                    };
+
+                                                    axios
+                                                      .post(
+                                                        `${process.env.URL}/hcm/api/pNRevAbsen`,
+                                                        data,
+                                                        options
+                                                      )
+                                                      .then((res) => {
+                                                        console.log(
+                                                          'RESPONSE ==== : ',
+                                                          res.data
+                                                        );
+                                                      })
+                                                      .catch((err) => {
+                                                        console.log(
+                                                          'ERROR: ====',
+                                                          err
+                                                        );
+                                                        throw err;
+                                                      });
+                                                    // insert notification perubahan absen -- end
+                                                  } else {
+                                                    response.status(200).send({
+                                                      status: 200,
+                                                      message:
+                                                        'Data Tidak Ditemukan 35',
+                                                      validate_id: employee_id,
+                                                      data: '',
+                                                    });
+                                                  }
+                                                }
+                                              );
+                                            } else {
+                                              response.status(200).send({
+                                                status: 200,
+                                                message: 'tidak berhasil bosku',
                                                 validate_id: employee_id,
                                                 data: '',
                                               });
@@ -2708,42 +4756,12 @@ const controller = {
                                         );
                                       } else {
                                         response.status(200).send({
-                                          status: 201,
-                                          message: 'Update Data Success',
+                                          status: 200,
+                                          message:
+                                            'category_rev_id_data tidak dikenal',
                                           validate_id: employee_id,
                                           data: '',
                                         });
-                                        // insert notification perubahan absen -- start
-                                        const data = {
-                                          employee_id,
-                                          employee_name,
-                                          submission_id: '2',
-                                        };
-
-                                        const options = {
-                                          headers: {
-                                            'Content-Type': 'application/json',
-                                            API_KEY: process.env.API_KEY,
-                                          },
-                                        };
-
-                                        axios
-                                          .post(
-                                            `${process.env.URL}/hcm/api/pNRevAbsen`,
-                                            data,
-                                            options
-                                          )
-                                          .then((res) => {
-                                            console.log(
-                                              'RESPONSE ==== : ',
-                                              res.data
-                                            );
-                                          })
-                                          .catch((err) => {
-                                            console.log('ERROR: ====', err);
-                                            throw err;
-                                          });
-                                        // insert notification perubahan absen -- end
                                       }
                                     }
                                   );
@@ -2768,7 +4786,7 @@ const controller = {
           } else {
             response.status(200).send({
               status: 200,
-              message: 'Data Tidak Ditemukan 26',
+              message: 'Data Tidak Ditemukan 36',
               validate_id: employee_id,
               data: '',
             });
