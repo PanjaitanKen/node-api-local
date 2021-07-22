@@ -254,6 +254,8 @@ const controller = {
         var msg_body = `telah mengajukan Perbaikan Absen`;
       } else if (submission_id == '2') {
         var msg_body = `pengajuan Perbaikan Absen kamu telah di 'Approved'`;
+      } else if (submission_id == '3') {
+        var msg_body = `pengajuan Perbaikan Absen kamu telah di 'Reject'`;
       }
 
       pool.db_MMFPROD.query(
