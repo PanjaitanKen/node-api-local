@@ -8,7 +8,7 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { employee_id, date_filter, rev_id, status } = request.body;
+    const { employee_id } = request.body;
 
     Helpers.logger(
       'SUCCESS',
