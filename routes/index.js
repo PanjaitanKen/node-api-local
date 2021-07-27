@@ -74,6 +74,9 @@ const getHistDetailManageRevAbsenceCtrl = require('../controller/getHistDetailMa
 const checkValidationRevAbsenceCtrl = require('../controller/checkValidationRevAbsenceCtrl');
 const RejectCancelRevAbsenceCtrl = require('../controller/RejectCancelRevAbsenceCtrl');
 const AppRevAbsenceCtrl = require('../controller/AppRevAbsenceCtrl');
+const getParamHCMCtrl = require('../controller/getParamHCMCtrl');
+const getStatusVaccineCtrl = require('../controller/getStatusVaccineCtrl');
+const addStatusVaccineCtrl = require('../controller/addStatusVaccineCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1061,5 +1064,40 @@ module.exports = (app) => {
           .withMessage('employee_name REQUIRED!'),
       ],
       AppRevAbsenceCtrl.AppRevAbsence
+    );
+
+  app
+    .route('/hcm/api/getParamHCM')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getParamHCMCtrl.getParamHCM
+    );
+
+  app
+    .route('/hcm/api/getStatusVaccine')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getStatusVaccineCtrl.getStatusVaccine
+    );
+
+  app
+    .route('/hcm/api/addStatusVaccine')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('emp_vaccine_status')
+          .notEmpty()
+          .withMessage('emp_vaccine_status REQUIRED!'),
+        check('emp_jumlah_anggota')
+          .notEmpty()
+          .withMessage('emp_jumlah_anggota REQUIRED!'),
+        check('emp_jumlah_anggota_vaccine')
+          .notEmpty()
+          .withMessage('emp_jumlah_anggota_vaccine REQUIRED!'),
+      ],
+      addStatusVaccineCtrl.addStatusVaccine
     );
 };
