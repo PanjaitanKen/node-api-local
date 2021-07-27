@@ -138,7 +138,7 @@ const controller = {
     } = request;
 
     const url_images = [];
-    const url_pdfs = [];
+    let url_pdfs = '';
 
     const url_webview = `${URL}/${kategori_berita}/${ket_header
       .toLowerCase()
@@ -184,28 +184,11 @@ const controller = {
         });
       }
 
-      if (isArray(pdfs)) {
-        pdfs.forEach((val, id) => {
-          const { data, mimetype } = val;
-          const fileExtension = mimetype.split('/')[1];
-
-          url_pdfs.push(
-            `${URL}/uploads/news/${fileName}-${id}.${fileExtension}`
-          );
-
-          fs.writeFile(
-            `${dir}/${fileName}-${id}.${fileExtension}`,
-            data,
-            (error) => {
-              if (error) throw error;
-            }
-          );
-        });
-      } else {
+      if (pdfs) {
         const { data, mimetype } = pdfs;
         const fileExtension = mimetype.split('/')[1];
 
-        url_pdfs.push(`${URL}/uploads/news/${fileName}.${fileExtension}`);
+        url_pdfs = `${URL}/uploads/news/${fileName}.${fileExtension}`;
 
         fs.writeFile(`${dir}/${fileName}.${fileExtension}`, data, (error) => {
           if (error) throw error;
@@ -229,7 +212,7 @@ const controller = {
           url_webview,
           tgl_expired,
           JSON.stringify(url_images),
-          JSON.stringify(url_pdfs),
+          url_pdfs || null,
         ],
         (error) => {
           if (error) throw error;
@@ -267,7 +250,7 @@ const controller = {
     const pdfs = files && files.pdfs;
 
     const url_images = [];
-    const url_pdfs = [];
+    let url_pdfs = '';
 
     const url_webview = `${URL}/${kategori_berita}/${ket_header
       .toLowerCase()
@@ -316,33 +299,14 @@ const controller = {
       }
 
       if (pdfs) {
-        if (isArray(pdfs)) {
-          pdfs.forEach((val, id) => {
-            const { data, mimetype } = val;
-            const fileExtension = mimetype.split('/')[1];
+        const { data, mimetype } = pdfs;
+        const fileExtension = mimetype.split('/')[1];
 
-            url_pdfs.push(
-              `${URL}/uploads/news/${fileName}-${id}.${fileExtension}`
-            );
+        url_pdfs = `${URL}/uploads/news/${fileName}.${fileExtension}`;
 
-            fs.writeFile(
-              `${dir}/${fileName}-${id}.${fileExtension}`,
-              data,
-              (error) => {
-                if (error) throw error;
-              }
-            );
-          });
-        } else {
-          const { data, mimetype } = pdfs;
-          const fileExtension = mimetype.split('/')[1];
-
-          url_pdfs.push(`${URL}/uploads/news/${fileName}.${fileExtension}`);
-
-          fs.writeFile(`${dir}/${fileName}.${fileExtension}`, data, (error) => {
-            if (error) throw error;
-          });
-        }
+        fs.writeFile(`${dir}/${fileName}.${fileExtension}`, data, (error) => {
+          if (error) throw error;
+        });
       }
 
       // Handling query
@@ -365,16 +329,17 @@ const controller = {
                 });
             }
 
-            if (pdfs) {
+            if (pdfs && results.rows[0].deskripsi_pdf) {
               // Delete the previous file
-              results.rows[0].deskripsi_pdf &&
-                results.rows[0].deskripsi_pdf.forEach((value) => {
-                  const path = `./uploads/news/${
-                    value.split('/').reverse().join('/').split('/')[0]
-                  }`;
+              const path = `./uploads/news/${
+                results.rows[0].deskripsi_pdf
+                  .split('/')
+                  .reverse()
+                  .join('/')
+                  .split('/')[0]
+              }`;
 
-                  if (fs.existsSync(path)) fs.unlinkSync(path);
-                });
+              if (fs.existsSync(path)) fs.unlinkSync(path);
             }
 
             pool.db_HCM.query(
@@ -395,9 +360,7 @@ const controller = {
                 images
                   ? JSON.stringify(url_images)
                   : JSON.stringify(results.rows[0].images),
-                pdfs
-                  ? JSON.stringify(url_pdfs)
-                  : JSON.stringify(results.rows[0].deskripsi_pdf),
+                url_pdfs || results.rows[0].deskripsi_pdf,
               ],
               (error) => {
                 if (error) throw error;
@@ -445,14 +408,15 @@ const controller = {
                 if (fs.existsSync(path)) fs.unlinkSync(path);
               });
 
-            results.rows[0].deskripsi_pdf &&
-              results.rows[0].deskripsi_pdf.forEach((value) => {
-                const path = `./uploads/news/${
-                  value.split('/').reverse().join('/').split('/')[0]
-                }`;
+            const path = `./uploads/news/${
+              results.rows[0].deskripsi_pdf
+                .split('/')
+                .reverse()
+                .join('/')
+                .split('/')[0]
+            }`;
 
-                if (fs.existsSync(path)) fs.unlinkSync(path);
-              });
+            if (fs.existsSync(path)) fs.unlinkSync(path);
 
             pool.db_HCM.query(
               'DELETE FROM trx_berita WHERE berita_id = $1',

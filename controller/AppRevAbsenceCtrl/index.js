@@ -25,7 +25,7 @@ const controller = {
       pool.db_MMFPROD.query(
         `select rev_absence_id ,request_date ,clocking_date ,category_rev_id,reg_time_in ,reg_time_out ,rev_time_in ,rev_time_out 
         from rev_absence_hcm
-        where employee_id= $1 and rev_absence_id = $2`,
+        where employee_id= $1 and rev_absence_id = $2 and state= 'Submitted' `,
         [employee_id, rev_id],
         (error, results) => {
           if (error) {
@@ -205,7 +205,9 @@ const controller = {
                                 // eslint-disable-next-line eqeqeq
                                 if (results.rowCount != 0) {
                                   pool.db_MMFPROD.query(
-                                    'delete from emp_clocking_tbl where employee_id =$1 and clocking_date = $2',
+                                    `delete from emp_clocking_tbl where company_office='MMF' 
+                                     and employee_id =$1 and clocking_date = $2 `,
+
                                     [employee_id, date_filter],
                                     (error, results) => {
                                       if (error) {
@@ -234,7 +236,7 @@ const controller = {
                                           `select company_id ,employee_id ,clocking_date ,time_in ,time_out ,off_site ,is_break ,note ,in_terminal,
                                           out_terminal ,in_reg_type ,out_reg_type, absence_wage ,in_location ,out_location ,golid ,golversion 
                                           from emp_clocking_detail_tbl ecdt 
-                                          where employee_id =$1 and clocking_date = $2
+                                          where company_office='MMF' and employee_id =$1 and clocking_date = $2
                                           order by clocking_date desc`,
                                           [employee_id, date_filter],
                                           (error, results) => {
@@ -334,7 +336,8 @@ const controller = {
                                                   );
                                                   if (results.rowCount != 0) {
                                                     pool.db_MMFPROD.query(
-                                                      'delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 ',
+                                                      `delete from emp_clocking_detail_tbl where company_office='MMF' 
+                                                      and employee_id =$1 and clocking_date = $2 `,
                                                       [
                                                         employee_id,
                                                         date_filter,
@@ -368,7 +371,7 @@ const controller = {
                                                             state,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,
                                                             location_method ,golid ,golversion 
                                                             from emp_clocking_temp_tbl ectt 
-                                                            where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_Char($2::date,'YYYY-MM-DD')`,
+                                                            where company_office='MMF' and employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_Char($2::date,'YYYY-MM-DD')`,
                                                             [
                                                               employee_id,
                                                               date_filter,
@@ -528,7 +531,8 @@ const controller = {
                                                                       0
                                                                     ) {
                                                                       pool.db_MMFPROD.query(
-                                                                        "delete from emp_clocking_temp_tbl where employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') ",
+                                                                        `delete from emp_clocking_temp_tbl where company_id='MMF' 
+                                                                        and employee_id =$1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD') `,
                                                                         [
                                                                           employee_id,
                                                                           date_filter,

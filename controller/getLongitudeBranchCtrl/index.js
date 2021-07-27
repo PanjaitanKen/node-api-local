@@ -111,11 +111,11 @@ const controller = {
 
                     // eslint-disable-next-line eqeqeq
                     if (results.rows != '') {
-                      // const location_name = results.rows[0].work_location;
+                      const location_name = results.rows[0].work_location;
                       const company_office = results.rows[0].company_office;
                       pool.db_MMFPROD.query(
-                        'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where company_office = $1 order by location_no asc',
-                        [company_office, radius_tolerance],
+                        'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $3) as radius_tolerance from mark_location_tbl where  trim(location_name)= $1 or trim(company_office) = $2 order by location_no asc',
+                        [location_name, company_office, radius_tolerance],
                         (error, results) => {
                           if (error) {
                             Helpers.logger(
@@ -234,11 +234,12 @@ const controller = {
 
                       // eslint-disable-next-line eqeqeq
                       if (results.rows != '') {
-                        const company_office = results.rows[0].company_office;
+                        const location_name = results.rows[0].work_location;
+                        //const company_office = results.rows[0].company_office;
 
                         await pool.db_MMFPROD.query(
-                          'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where company_office = $1 order by location_no asc',
-                          [company_office, radius_tolerance],
+                          'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $2) as radius_tolerance from mark_location_tbl where  trim(location_name) = $1 order by location_no asc',
+                          [location_name, radius_tolerance],
                           (error, results) => {
                             if (error) throw error;
 

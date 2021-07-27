@@ -81,7 +81,7 @@ to_char(a.sequence_no,'9999999999999999') as no_urut, initcap(b.display_name) na
               when current_date-a.status_date=7 then '7 Hari yang lalu'
               when current_date-a.status_date>7 then to_char(a.status_date,'DD Mon YYYY') 
           end Durasi_Waktu ,a.status_date status_date, a.rev_absence_id, 'Perbaikan Absen'  as tipe_cuti, 'Perbaikan Absen' as tipe_filter,	               	
-          a.employee_id||'/'||to_char(a.status_date,'YYYYMMDD')||'/'||trim(to_char(a.sequence_no,'9999999999999999')) as nobukti 
+          a.employee_id||'/'||to_char(b.request_date,'YYYYMMDD')||'/'||trim(to_char(a.sequence_no,'9999999999999999')) as nobukti 
           from approval_rev_absence_hcm a
   left join rev_absence_hcm b on a.rev_absence_id = b.rev_absence_id and a.employee_id=b.employee_id
           where status <>'Submitted'

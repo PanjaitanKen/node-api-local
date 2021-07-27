@@ -115,7 +115,14 @@ const controller = {
         where a.employee_id = $1 
         and state in ('Approved','Partially Approved')) tt on tt.employee_id=  $1  and tt.tgl_pd = xx.Tgl_absen
         left join emp_clocking_tbl uu on uu.employee_id =  $1 and xx.tgl_absen3 = uu.clocking_date
-        left join rev_absence_hcm vv on vv.employee_id = $1 and xx.tgl_absen3 = vv.clocking_date
+        left join (
+                    with x as (select max(rev_absence_id) max_rev_Absence_id,clocking_date 
+                          from rev_absence_hcm 
+                          where employee_id = $1
+                          group by clocking_date 
+                      ) select y.* from x
+                  left join rev_absence_hcm y on x.max_rev_Absence_id = y.rev_absence_id 
+         ) vv on vv.employee_id = $1 and xx.tgl_absen3 = vv.clocking_date
         group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2, rr.absence_wage,ss.absen_masuk,ss.absen_pulang, tt.employee_id , 
                   sss.transfer_message_masuk ,uu.state ,uu.result_revised ,vv.state
         order by xx.tgl_absen desc`,
