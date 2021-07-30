@@ -54,7 +54,7 @@ const controller = {
             if (results.rows[0].input_status_vaksin != 0) {
               pool.db_MMFPROD.query(
                 `select a.employee_id ,b.display_name, d.pcx_kd_cabang,d.company_office,
-              d.pcx_wilayah, d.pcx_regional, e.jumlah_anggota_tercatat
+              d.pcx_wilayah, d.pcx_regional, e.jumlah_anggota_tercatat, g.internal_title as nama_posisi
               from  employee_tbl a
               left join person_tbl b on a.person_id = b.person_id
               left join emp_company_office_tbl c on a.employee_id=c.employee_id and current_date between valid_from and valid_to
@@ -66,6 +66,8 @@ const controller = {
                     where b.employee_id = $1
                     group by employee_id
               ) e on a.employee_id = e.employee_id
+              left join employee_position_tbl f on a.employee_id = f.employee_id and current_Date between f.valid_from and f.valid_to
+              left join position_tbl g on f.position_id =g.position_id 
               where a.employee_id =  $1`,
                 [employee_id],
                 (error, results) => {
@@ -94,23 +96,27 @@ const controller = {
                     const data_pcx_regional = results.rows[0].pcx_regional;
                     const data_jumlah_anggota_tercatat =
                       results.rows[0].jumlah_anggota_tercatat;
+                    const nama_posisi = results.rows[0].nama_posisi;
+                      
                     pool.db_HCM.query(
                       `update mas_data_vaksin
                       set 
                       display_name = $2,
-                      pcx_kd_cabang = $3,
-                      company_office = $4,
-                      pcx_wilayah = $5,
-                      pcx_regional= $6,
-                      sudah_vaksin = $7,
-                      jumlah_anggota_keluarga = $8,
-                      jumlah_vaksin_anggota = $9,
-                      jumlah_anggota_tercatat = $10,
+                      nama_posisi = $3,
+                      pcx_kd_cabang = $4,
+                      company_office = $5,
+                      pcx_wilayah = $6,
+                      pcx_regional= $7,
+                      sudah_vaksin = $8,
+                      jumlah_anggota_keluarga = $9,
+                      jumlah_vaksin_anggota = $10,
+                      jumlah_anggota_tercatat = $11,
                       tgl_update = current_date
                       where employee_id = $1`,
                       [
                         employee_id,
                         data_display_name,
+                        nama_posisi,
                         data_pcx_kd_cabang,
                         data_company_office,
                         data_pcx_wilayah,
@@ -169,7 +175,7 @@ const controller = {
             } else {
               pool.db_MMFPROD.query(
                 `select a.employee_id ,b.display_name, d.pcx_kd_cabang,d.company_office,
-              d.pcx_wilayah, d.pcx_regional, e.jumlah_anggota_tercatat
+              d.pcx_wilayah, d.pcx_regional, e.jumlah_anggota_tercatat,g.internal_title as nama_posisi
               from  employee_tbl a
               left join person_tbl b on a.person_id = b.person_id
               left join emp_company_office_tbl c on a.employee_id=c.employee_id and current_date between valid_from and valid_to
@@ -181,6 +187,8 @@ const controller = {
                     where b.employee_id = $1
                     group by employee_id
               ) e on a.employee_id = e.employee_id
+              left join employee_position_tbl f on a.employee_id = f.employee_id and current_Date between f.valid_from and f.valid_to
+              left join position_tbl g on f.position_id =g.position_id 
               where a.employee_id =  $1`,
                 [employee_id],
                 (error, results) => {
@@ -209,13 +217,15 @@ const controller = {
                     const data_pcx_regional = results.rows[0].pcx_regional;
                     const data_jumlah_anggota_tercatat =
                       results.rows[0].jumlah_anggota_tercatat;
+                    const nama_posisi = results.rows[0].nama_posisi;
                     pool.db_HCM.query(
-                      `insert into mas_data_vaksin (tgl_input,employee_id,display_name,pcx_kd_cabang,company_office,
+                      `insert into mas_data_vaksin (tgl_input,employee_id,display_name,nama_posisi,pcx_kd_cabang,company_office,
                         pcx_wilayah,pcx_regional,sudah_vaksin,jumlah_anggota_keluarga,jumlah_vaksin_anggota,jumlah_anggota_tercatat,
-                        tgl_update) values (current_date, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, current_date)`,
+                        tgl_update) values (current_date, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, current_date)`,
                       [
                         employee_id,
                         data_display_name,
+                        nama_posisi,
                         data_pcx_kd_cabang,
                         data_company_office,
                         data_pcx_wilayah,

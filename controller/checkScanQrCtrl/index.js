@@ -77,11 +77,14 @@ const controller = {
                         pool.db_MMFPROD.query(
                           `select a.employee_id, b.display_name as nama, 
                           case when gender='1' then 'Laki-laki' when gender='2' then 'Wanita' end as gender ,
-                          c.contact_value as no_hp, d.contact_value as email, e.company_office 
+                          coalesce(c.contact_value,cc.contact_value) as no_hp, coalesce(d.contact_value,dd.contact_value) as email, e.company_office 
                           from employee_tbl a
                           left join person_tbl b on a.person_id = b.person_id 
+                          left join candidate_appointment_tbl bb on a.employee_id =bb.new_assign_employee 
+                          left join applicant_contact_info_tbl cc on bb.candidate_id = cc.applicant_id and cc.default_address ='Y' and cc.contact_type='3' 
+                          left join applicant_contact_info_tbl dd on bb.candidate_id = dd.applicant_id and dd.default_address ='Y' and dd.contact_type='4' 
                           left join person_contact_method_tbl c on b.person_id = c.person_id and c.default_address ='Y' and c.contact_type='3' 
-                          left join person_contact_method_tbl d on b.person_id = d.person_id and d.default_address ='Y' and d.contact_type='4' 
+                          left join person_contact_method_tbl d on b.person_id = d.person_id and d.default_address ='Y' and d.contact_type='4'
                           left join emp_company_office_tbl e on a.employee_id = e.employee_id 
                           where a.employee_id =$1`,
                           [employee_id],

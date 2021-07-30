@@ -51,7 +51,10 @@ const controller = {
               status: 200,
               message: 'Data Not Found',
               validate_id: employee_id,
-              data: '',
+              data: {
+                value_status_vaksin: '1',
+                input_status_vaksin: '0',
+              },
             });
           }
         }

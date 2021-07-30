@@ -47,7 +47,7 @@ const controller = {
             console.log(results.rows[0].flag);
             if (results.rows[0].flag >= 1) {
               pool.db_MMFPROD.query(
-                `select a.applicant_id,   a.state ,a.first_name as nama_depan,a.last_name as nama_belakang,
+                `select a.applicant_id,   a.state ,coalesce(a.first_name,' ') as nama_depan,coalesce(a.last_name,' ') as nama_belakang,
                 date_applied as tgl_input, b.appointment_date tgl_penunjukan, b.starting_date tgl_kerja,
                 point_of_hire tempat_rekrut,  
                 a.place_of_birth as tempat_lahir, a.date_of_birth as tgl_lahir, have_child punya_anak, 
@@ -98,7 +98,7 @@ const controller = {
                 left join applicant_contact_info_tbl n on a.applicant_id = n.applicant_id and n.default_address ='Y' and n.contact_type='3' 
                 left join applicant_contact_info_tbl o on a.applicant_id = o.applicant_id and o.default_address ='Y' and o.contact_type='4'
                 
-                left join employee_position_tbl p on b.new_assign_employee = p.employee_id  and current_Date between p.valid_from and p.valid_to
+                left join employee_position_tbl p on b.new_assign_employee = p.employee_id  and p.valid_from between p.valid_from and p.valid_to
 
                 left join applicant_family_tbl q on a.applicant_id = q.applicant_id and q.relationship_type ='1'
                 left join applicant_family_tbl r on a.applicant_id = r.applicant_id and r.relationship_type ='2' and r.gender='1'
@@ -138,7 +138,7 @@ const controller = {
               );
             } else {
               pool.db_MMFPROD.query(
-                `select b.employee_id as applicant_id, 'Employed' as state, a.first_name as nama_depan, a.last_name as nama_belakang, 
+                `select b.employee_id as applicant_id, 'Employed' as state, coalesce(a.first_name,' ') as nama_depan, coalesce(a.last_name,' ') as nama_belakang, 
                 b.entry_date as tgl_input,b.entry_date as tgl_penunjukan, b.first_join_date as tgl_kerja,
                 c.company_office as tempat_rekrut, a.place_birth as tempat_lahir,a.birth_date  as tgl_lahir,
                 ' ' punya_anak,d.address as alamat, d.state prop_alamat,d.postal_code kodepos_alamat,
@@ -199,7 +199,7 @@ const controller = {
                 left join person_contact_method_tbl s on a.person_id = s.person_id and s.default_address ='Y' and s.contact_type='3' 
                 left join person_contact_method_tbl t on a.person_id = t.person_id and t.default_address ='Y' and t.contact_type='4'
                 
-                left join employee_position_tbl u on b.employee_id = u.employee_id  and current_Date between u.valid_from and u.valid_to
+                left join employee_position_tbl u on b.employee_id = u.employee_id  and u.valid_from between u.valid_from and u.valid_to
 
                 left join person_family_tbl v on a.person_id = v.person_id and v.relationship_type ='1'
                 left join person_family_tbl w on a.person_id = w.person_id and w.relationship_type ='2' and w.gender='1'

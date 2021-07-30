@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+/* eslint-disable object-curly-newline */
+/* eslint-disable no-plusplus */
 const fcm = require('fcm-notification');
 const _ = require('lodash');
 const { token } = require('morgan');
@@ -110,36 +113,33 @@ const controller = {
         (error, results) => {
           if (error) throw error;
 
-          // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
-            let arr = [];
-            let employee_tokens = [];
-            const employee_id = results.rows;
+          if (results.rowCount > 0) {
+            const employee_tokens = [];
 
-            arr = employee_id.map(function (a) {
-              const employee_id = a.employee_id;
+            for (let i = 0; i < results.rowCount; i++) {
+              employee_tokens.push(results.rows[i].token_notification);
+
               pool.db_HCM.query(
-                `insert into temp_notif (employee_id ,jenis , ket1 ,ket2 ,nobukti , golid , approved_date ,sudah_baca )
-                values ($1 ,$2,$3,$4,$5,$6,$7,null)`,
-                [employee_id, jenis, ket1, ket2, nobukti, golid, approved_date],
-                (error, results) => {
-                  if (error) throw error;
+                `insert into temp_notif (employee_id, jenis, ket1, ket2, nobukti, golid, approved_date, sudah_baca)
+                values ($1, $2, $3, $4, $5, $6, $7, null)`,
+                [
+                  results.rows[i].employee_id,
+                  jenis,
+                  ket1,
+                  ket2,
+                  nobukti,
+                  golid,
+                  approved_date,
+                ],
+                (error) => {
+                  if (error) {
+                    console.error('INSERT TEMP_NOTIF:', error);
+                    throw error;
+                  }
                 }
               );
-              return {
-                employee_id: a.employee_id,
-                jenis: jenis,
-                ket1: ket1,
-                ket2: ket2,
-                nobukti: nobukti,
-                golid: golid,
-                approved_date: approved_date,
-              };
-            });
-            employee_tokens = employee_id.map(function (a) {
-              const bb = a.token_notification;
-              return bb;
-            });
+            }
+
             const message = {
               data: {
                 score: '850',
@@ -147,10 +147,10 @@ const controller = {
               },
               notification: {
                 title: `${ket1}`,
-                // eslint-disable-next-line block-scoped-var
                 body: `${ket2}`,
               },
             };
+
             FCM.sendToMultipleToken(
               message,
               employee_tokens,
