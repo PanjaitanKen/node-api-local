@@ -61,6 +61,7 @@ const controller = {
                when to_char(b.status_Date ,'MM')='10' then 'Okt'
                when to_char(b.status_Date ,'MM')='11' then 'Nov'
                when to_char(b.status_Date ,'MM')='12' then 'Des' end ||' '||to_char(b.status_Date ,'YYYY') tgl_status, 
+               to_char(a.clocking_Date,'yyyy-mm-dd') as tgl_perbaikan_absen,
                TO_CHAR(reg_time_in,'YYYY-MM-DD HH24:MI:SS') as jam_masuk_terdaftar ,TO_CHAR(reg_time_out,'YYYY-MM-DD HH24:MI:SS') as jam_keluar_terdaftar,  
                TO_CHAR(rev_time_in,'YYYY-MM-DD HH24:MI:SS') as jam_masuk_diperbaiki, TO_CHAR(rev_time_out,'YYYY-MM-DD HH24:MI:SS') as jam_keluar_diperbaiki,
                a.reason as alasan,  a.rev_absence_id  as golid,

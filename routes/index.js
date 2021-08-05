@@ -77,6 +77,9 @@ const AppRevAbsenceCtrl = require('../controller/AppRevAbsenceCtrl');
 const getParamHCMCtrl = require('../controller/getParamHCMCtrl');
 const getStatusVaccineCtrl = require('../controller/getStatusVaccineCtrl');
 const addStatusVaccineCtrl = require('../controller/addStatusVaccineCtrl');
+const StatusVaksinCtrl = require('../controller/StatusVaksinCtrl');
+const addClockInWithoutPhotoCtrl = require('../controller/addClockInWithoutPhotoCtrl');
+const addClockOutWithoutPhotoCtrl = require('../controller/addClockOutWithoutPhotoCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1099,5 +1102,31 @@ module.exports = (app) => {
           .withMessage('emp_jumlah_anggota_vaccine REQUIRED!'),
       ],
       addStatusVaccineCtrl.addStatusVaccine
+    );
+
+  app
+    .route('/hcm/api/status-vaksins/export')
+    .all(authenticateApiKey)
+    .post(StatusVaksinCtrl.export);
+
+  app
+    .route('/mmf/api/addClockInWithoutPhoto')
+    .all(authenticateApiKey)
+    .post(addClockInWithoutPhotoCtrl.addClockInWithoutPhoto);
+
+  app
+    .route('/mmf/api/addClockOutWithoutPhoto')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('latitude').notEmpty().withMessage('latitude REQUIRED!'),
+        check('altitude').notEmpty().withMessage('altitude REQUIRED!'),
+        check('longitude').notEmpty().withMessage('longitude REQUIRED!'),
+        check('accuracy').notEmpty().withMessage('accuracy REQUIRED!'),
+        check('location_no').notEmpty().withMessage('location_no REQUIRED!'),
+        check('timeZoneAsia').notEmpty().withMessage('timeZoneAsia REQUIRED!'),
+      ],
+      addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto
     );
 };

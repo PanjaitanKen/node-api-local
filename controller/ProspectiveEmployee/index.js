@@ -523,6 +523,72 @@ const controller = {
         body: { category, applicant_id, no_hp_ck, email_ck },
       } = request;
 
+      if (category === 'WA_NEW_EMPLOYEE') {
+        if (!no_hp_ck) {
+          response.status(400).send({
+            status: 'FAILED',
+            message: 'NO_HP_CK REQUIRED!',
+            data: {},
+          });
+        } else {
+          pool.db_HCM.query(
+            'SELECT employee_id FROM trx_calon_karyawan WHERE employee_id = $1',
+            [applicant_id],
+            (error, results) => {
+              if (error) {
+                return response.status(500).send(error);
+              }
+
+              if (results.rowCount > 0) {
+                const lms_password = 'Mandala-123';
+
+                axios
+                  .post(
+                    process.env.WA_SERVICE,
+                    {
+                      to: no_hp_ck,
+                      header: 'Informasi Karyawan Baru di PT Mandala Finance',
+                      text:
+                        'Hallo sobat Mandala, selamat bergabung di PT Mandala Finance, Sobat Mandala sudah dapat melakukan login di\n\n' +
+                        '*Apps MPower/Web Orange*\n' +
+                        `Nomor Karyawan : ${applicant_id} \n` +
+                        `Password : ${applicant_id}\n\n` +
+                        '*Akses Learning Management System (LMS)*\n' +
+                        'di link http://lms.mandalafinance.com/ \n' +
+                        `Userid : ${applicant_id} \n` +
+                        `Password : ${lms_password}`,
+                      text2: null,
+                    },
+                    {
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                    }
+                  )
+                  .then(() => {
+                    response.status(200).send({
+                      status: 'SUCCESS',
+                      message: 'RESEND WA SUCCESS',
+                      data: { category, applicant_id, no_hp_ck },
+                    });
+                  })
+                  .catch((error) => {
+                    response.status(500).send(error);
+                  });
+              } else {
+                response.status(404).send({
+                  status: 'FAILED',
+                  message: 'EMPLOYEE_ID NOT FOUND!',
+                  data: {},
+                });
+              }
+            }
+          );
+        }
+
+        return;
+      }
+
       if (category !== 'WA' && category !== 'EMAIL') {
         response.status(400).send({
           status: 'FAILED',
@@ -545,11 +611,11 @@ const controller = {
                     process.env.WA_SERVICE,
                     {
                       to: no_hp_ck,
-                      header: 'Calon Karyawan PT Mandala Finance',
-                      text: `Selamat bergabung di PT Mandala Finance, Tbk.\n\nSaat ini status anda adalah calon karyawan.\nSilahkan untuk mendownload aplikasi MPower by PT. Mandala Finance di playstore.\n\nCari dengan nama MPower - MFIN atau melalui link tautan ini https://play.google.com/store/apps/details?id=com.hcm.mandala\n\nAkses login MPower\nUser ID: ${applicant_id}\nPassword: ${Helpers.decrypt(
+                      header: 'Calon Karyawan PT. Mandala Multifinance, Tbk',
+                      text: `Hai Sobat Mandala, Selamat bergabung di PT. Mandala Multifinance, Tbk.\n\nMandala Finance menyediakan aplikasi layanan HR yang dapat Anda akses sebagai karyawan melalui Apps MPower - MFIN.\n\nAplikasi ini dapat di download melalui Google Play dengan link tautan:\nhttps://play.google.com/store/apps/details?id=com.hcm.mandala\n\nUntuk memastikan data diri Anda sebagai karyawan Mandala Finance sudah benar, silahkan login di menu Calon Karyawan dengan\n\nUser ID: ${applicant_id}\nPassword: ${Helpers.decrypt(
                         password
-                      )}\n`,
-                      text2: '*Human Resource PT Mandala Finance*',
+                      )}\n\nAnda juga dapat mengakses panduan lengkap untuk kegiatan hari pertama bekerja di menu yang telah disediakan MPower – MFIN, jika ada pertanyaan lebih lanjut silahkan menghubungi Recruiter anda. Terima Kasih.`,
+                      text2: null,
                     },
                     {
                       headers: {
@@ -570,10 +636,10 @@ const controller = {
                   });
               } else if (category === 'EMAIL') {
                 await Helpers.sendEmail(
-                  'Calon Karyawan PT Mandala Finance',
-                  `Selamat bergabung di PT Mandala Finance, Tbk.\n\nSaat ini status anda adalah calon karyawan.\nSilahkan untuk mendownload aplikasi MPower by PT. Mandala Finance di playstore.\n\nCari dengan nama MPower - MFIN atau melalui link tautan ini https://play.google.com/store/apps/details?id=com.hcm.mandala\n\nAkses login MPower\nUser ID: ${applicant_id}\nPassword: ${Helpers.decrypt(
+                  'Calon Karyawan PT. Mandala Multifinance, Tbk',
+                  `Hai Sobat Mandala, Selamat bergabung di PT. Mandala Multifinance, Tbk.\n\nMandala Finance menyediakan aplikasi layanan HR yang dapat Anda akses sebagai karyawan melalui Apps MPower - MFIN.\n\nAplikasi ini dapat di download melalui Google Play dengan link tautan:\nhttps://play.google.com/store/apps/details?id=com.hcm.mandala\n\nUntuk memastikan data diri Anda sebagai karyawan Mandala Finance sudah benar, silahkan login di menu Calon Karyawan dengan\n\nUser ID: ${applicant_id}\nPassword: ${Helpers.decrypt(
                     password
-                  )}\n\n*Human Resource PT Mandala Finance*`,
+                  )}\n\nAnda juga dapat mengakses panduan lengkap untuk kegiatan hari pertama bekerja di menu yang telah disediakan MPower – MFIN, jika ada pertanyaan lebih lanjut silahkan menghubungi Recruiter anda. Terima Kasih.\n\n---Human Capital Managemen PT. Mandala Finance---`,
                   email_ck
                 )
                   .then(() => {

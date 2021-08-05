@@ -44,7 +44,7 @@ const controller = {
         case when qq.employee_id is not null then '1' else '0' end as status_izin,
         case when rr.absence_wage is not null then '1' else '0' end as status_cuti,
         case when tt.employee_id is not null then '1' else '0' end as status_PD,
-        case when (uu.state in ('Approved','Transfered') or uu.result_revised = 'N') or vv.state in ('Approved','Submitted') then '1' else '0' end as status_perbaikan,
+        case when (uu.state in ('Approved','Transfered') or uu.result_revised = 'N') or vv.state in ('Approved','Submitted') or xx.tgl_absen3<ww.first_join_date then '1' else '0' end as status_perbaikan,
         case when vv.state='Submitted' then '1'
              when vv.state='Approved' then '2'
              when vv.state='Rejected' then '3'
@@ -123,8 +123,9 @@ const controller = {
                       ) select y.* from x
                   left join rev_absence_hcm y on x.max_rev_Absence_id = y.rev_absence_id 
          ) vv on vv.employee_id = $1 and xx.tgl_absen3 = vv.clocking_date
-        group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2, rr.absence_wage,ss.absen_masuk,ss.absen_pulang, tt.employee_id , 
-                  sss.transfer_message_masuk ,uu.state ,uu.result_revised ,vv.state
+         left join employee_tbl  ww on ww.employee_id = $1
+        group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2,xx.tgl_absen3, rr.absence_wage,ss.absen_masuk,ss.absen_pulang, tt.employee_id , 
+                  sss.transfer_message_masuk ,uu.state ,uu.result_revised ,vv.state, ww.first_join_date 
         order by xx.tgl_absen desc`,
         [employee_id, filter_date],
         (error, results) => {
