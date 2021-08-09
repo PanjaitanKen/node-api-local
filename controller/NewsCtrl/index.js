@@ -37,7 +37,7 @@ const controller = {
             " when to_char(tgl_input,'MM')='12' then 'Des' end ||' '||to_char(tgl_input,'YYYY')||', '||to_char(tgl_input,'HH24:MI')||' WIB' as tgl_input,  " +
             ' ket_header, deskripsi, tgl_event_dr ,tgl_event_sd , ' +
             ' lokasi, url_webview, tgl_expired,images ' +
-            ' FROM trx_berita ORDER BY tgl_input DESC ' +
+            ' FROM trx_berita ORDER BY berita_id DESC ' +
             ' LIMIT $1 ',
           [limit],
           (error, results) => {
@@ -408,15 +408,17 @@ const controller = {
                 if (fs.existsSync(path)) fs.unlinkSync(path);
               });
 
-            const path = `./uploads/news/${
-              results.rows[0].deskripsi_pdf
-                .split('/')
-                .reverse()
-                .join('/')
-                .split('/')[0]
-            }`;
+            if (results.rows[0].deskripsi_pdf) {
+              const path = `./uploads/news/${
+                results.rows[0].deskripsi_pdf
+                  .split('/')
+                  .reverse()
+                  .join('/')
+                  .split('/')[0]
+              }`;
 
-            if (fs.existsSync(path)) fs.unlinkSync(path);
+              if (fs.existsSync(path)) fs.unlinkSync(path);
+            }
 
             pool.db_HCM.query(
               'DELETE FROM trx_berita WHERE berita_id = $1',

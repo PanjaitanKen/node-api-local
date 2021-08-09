@@ -36,7 +36,7 @@ const controller = {
 	         union all
 	        select employee_id from rev_absence_hcm 
 	         where employee_id =$1 and clocking_date = $2
-	          and state in ('Approved','Submitted')
+	          and state in ('Approved')
 	        ) a`,
         [employee_id, date_filter],
         (error, results) => {
