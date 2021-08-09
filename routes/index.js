@@ -80,6 +80,7 @@ const addStatusVaccineCtrl = require('../controller/addStatusVaccineCtrl');
 const StatusVaksinCtrl = require('../controller/StatusVaksinCtrl');
 const addClockInWithoutPhotoCtrl = require('../controller/addClockInWithoutPhotoCtrl');
 const addClockOutWithoutPhotoCtrl = require('../controller/addClockOutWithoutPhotoCtrl');
+const profilePhotoCtrl = require('../controller/profilePhotoCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1128,5 +1129,13 @@ module.exports = (app) => {
         check('timeZoneAsia').notEmpty().withMessage('timeZoneAsia REQUIRED!'),
       ],
       addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto
+    );
+
+  app
+    .route('/hcm/api/profilePhoto')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      profilePhotoCtrl.profilePhoto
     );
 };
