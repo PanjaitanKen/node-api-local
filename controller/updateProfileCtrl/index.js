@@ -1,36 +1,31 @@
-const fs = require('fs');
 const pool = require('../../db');
-
-const serve = process.env.URL;
 
 // Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
 const controller = {
-  profilePhoto(request, response) {
+  updateProfile(request, response) {
     try {
-      const { employee_id, photo } = request.body;
+      const { employee_id, phone_number } = request.body;
 
-      // get image from base64
-      const base64Data = photo.replace(/^data:image\/png;base64,/, '');
-
-      const dir = `./uploads/profile/${employee_id}/`;
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-      const fileName = `mportal-mandala-profile.jpg`;
-
-      // eslint-disable-next-line global-require
-      require('fs').writeFile(dir + fileName, base64Data, 'base64', () => {});
-      const url_path = `${serve}/uploads/profile/${employee_id}/${fileName}`;
-
-      pool.db_HCM.query(
-        'select * from mas_photo_profile mpp where nokar =$1 ',
+      pool.db_MMFPROD.query(
+        `select b.person_id ,a.employee_id ,
+        max(case when c.contact_type ='3' and default_address ='Y' then contact_value else ' ' end) as no_hp,
+        max(case when c.contact_type ='4' and default_address ='Y' then contact_value else ' ' end) as email
+        from employee_tbl a
+        left join person_tbl b on a.person_id =b.person_id 
+        left join person_contact_method_tbl c on b.person_id = c.person_id 
+        where employee_id = $1
+        group by b.person_id ,a.employee_id`,
         [employee_id],
         (error, results) => {
           if (error) throw error;
 
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
-            pool.db_HCM.query(
-              'update mas_photo_profile set url_photo =$2 WHERE nokar = $1',
-              [employee_id, url_path],
+            pool.db_MMFPROD.query(
+              `update person_contact_method_tbl set contact_value = coalesce($2,' ')
+              where contact_type = '3' and default_address ='Y'
+              and person_id in (select person_id from employee_tbl where employee_id = $1)`,
+              [employee_id, phone_number],
               (error, results) => {
                 if (error) throw error;
 
@@ -53,9 +48,12 @@ const controller = {
               }
             );
           } else {
-            pool.db_HCM.query(
-              'insert into mas_photo_profile (nokar, url_photo) values ($1, $2)',
-              [employee_id, url_path],
+            pool.db_MMFPROD.query(
+              `insert into person_contact_method_tbl (person_id ,contact_no ,contact_value ,default_address ,contact_type ,
+                validate_code, golversion ) values
+                ((select person_id  from employee_tbl where employee_id = $1), (SELECT max(contact_no)+1 FROM person_contact_method_tbl),
+                $2,'Y','3',null, '100')`,
+              [employee_id, phone_number],
               (error, results) => {
                 if (error) throw error;
 

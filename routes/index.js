@@ -81,6 +81,12 @@ const StatusVaksinCtrl = require('../controller/StatusVaksinCtrl');
 const addClockInWithoutPhotoCtrl = require('../controller/addClockInWithoutPhotoCtrl');
 const addClockOutWithoutPhotoCtrl = require('../controller/addClockOutWithoutPhotoCtrl');
 const profilePhotoCtrl = require('../controller/profilePhotoCtrl');
+const updateProfileCtrl = require('../controller/updateProfileCtrl');
+const updateHPNoCKCtrl = require('../controller/updateHPNoCKCtrl');
+const updateDateBirthCKCtrl = require('../controller/updateDateBirthCKCtrl');
+const updateMotherNameCKCtrl = require('../controller/updateMotherNameCKCtrl');
+const updateCoupleNameCKCtrl = require('../controller/updateCoupleNameCKCtrl');
+const updateNameCKCtrl = require('../controller/updateNameCKCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1137,5 +1143,80 @@ module.exports = (app) => {
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
       profilePhotoCtrl.profilePhoto
+    );
+
+  app
+    .route('/mmf/api/updateProfile')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('phone_number').notEmpty().withMessage('phone_number REQUIRED!'),
+      ],
+      updateProfileCtrl.updateProfile
+    );
+
+  app
+    .route('/mmf/api/updateHPNoCK')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('useridCK').notEmpty().withMessage('useridCK REQUIRED!'),
+        check('phone_number').notEmpty().withMessage('phone_number REQUIRED!'),
+      ],
+      updateHPNoCKCtrl.updateHPNoCK
+    );
+
+  app
+    .route('/mmf/api/updateDateBirthCK')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('useridCK').notEmpty().withMessage('useridCK REQUIRED!'),
+        check('date_birth').isISO8601().withMessage('date_birth REQUIRED!'),
+      ],
+      updateDateBirthCKCtrl.updateDateBirthCK
+    );
+
+  app
+    .route('/mmf/api/updateMotherNameCK')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('useridCK').notEmpty().withMessage('useridCK REQUIRED!'),
+        check('upd_mother_name')
+          .notEmpty()
+          .withMessage('upd_mother_name REQUIRED!'),
+      ],
+      updateMotherNameCKCtrl.updateMotherNameCK
+    );
+
+  app
+    .route('/mmf/api/updateCoupleNameCK')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('useridCK').notEmpty().withMessage('useridCK REQUIRED!'),
+        check('upd_mother_name')
+          .notEmpty()
+          .withMessage('upd_mother_name REQUIRED!'),
+      ],
+      updateCoupleNameCKCtrl.updateCoupleNameCK
+    );
+
+  app
+    .route('/mmf/api/updateNameCK')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('useridCK').notEmpty().withMessage('useridCK REQUIRED!'),
+        check('upd_ck_first_name')
+          .notEmpty()
+          .withMessage('upd_ck_first_name REQUIRED!'),
+        check('upd_ck_last_name')
+          .notEmpty()
+          .withMessage('upd_ck_last_name REQUIRED!'),
+      ],
+      updateNameCKCtrl.updateNameCK
     );
 };
