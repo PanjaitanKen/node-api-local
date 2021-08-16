@@ -87,6 +87,7 @@ const updateDateBirthCKCtrl = require('../controller/updateDateBirthCKCtrl');
 const updateMotherNameCKCtrl = require('../controller/updateMotherNameCKCtrl');
 const updateCoupleNameCKCtrl = require('../controller/updateCoupleNameCKCtrl');
 const updateNameCKCtrl = require('../controller/updateNameCKCtrl');
+const getURLPhotoProfileCtrl = require('../controller/getURLPhotoProfileCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1090,6 +1091,15 @@ module.exports = (app) => {
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
       getStatusVaccineCtrl.getStatusVaccine
+    );
+
+
+  app
+    .route('/hcm/api/getURLPhotoProfile')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getURLPhotoProfileCtrl.getURLPhotoProfile
     );
 
   app

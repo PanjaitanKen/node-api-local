@@ -21,7 +21,7 @@ const controller = {
       const url_path = `${serve}/uploads/profile/${employee_id}/${fileName}`;
 
       pool.db_HCM.query(
-        'select * from mas_photo_profile mpp where nokar =$1 ',
+        'select * from mas_photo_profile mpp where employee_id =$1 ',
         [employee_id],
         (error, results) => {
           if (error) throw error;
@@ -29,7 +29,7 @@ const controller = {
           // eslint-disable-next-line eqeqeq
           if (results.rows != '') {
             pool.db_HCM.query(
-              'update mas_photo_profile set url_photo =$2 WHERE nokar = $1',
+              'update mas_photo_profile set url_photo =$2 WHERE employee_id = $1',
               [employee_id, url_path],
               (error, results) => {
                 if (error) throw error;
@@ -54,7 +54,7 @@ const controller = {
             );
           } else {
             pool.db_HCM.query(
-              'insert into mas_photo_profile (nokar, url_photo) values ($1, $2)',
+              'insert into mas_photo_profile (employee_id, url_photo) values ($1, $2)',
               [employee_id, url_path],
               (error, results) => {
                 if (error) throw error;

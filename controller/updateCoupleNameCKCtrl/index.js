@@ -9,7 +9,7 @@ const controller = {
       pool.db_MMFPROD.query(
         `select count(*) ada_pasangan 
         from applicant_family_tbl aft  where applicant_id = $1
-        and gender ='1' and relationship_type ='2'`,
+        and gender ='1' and relationship_type ='1'`,
         [useridCK],
         (error, results) => {
           if (error) throw error;
