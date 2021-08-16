@@ -3,7 +3,7 @@ const axios = require('axios');
 
 // Tabel : employeeworkofftbl, leaverequest_tbl
 const controller = {
-  getListJobTask(request, response) {
+  async getListJobTask(request, response) {
     try {
       const { employee_id } = request.body;
 
@@ -30,8 +30,7 @@ const controller = {
         });
       //insert log activity user -- end
 
-      pool.db_MMFPROD.query(
-        `with x as ( select 'Persetujuan Izin' Keterangan,initcap(c.display_name) nama , 
+      const query = `with x as ( select 'Persetujuan Izin' Keterangan,initcap(c.display_name) nama , 
         case  when current_date-d.status_date=0 then 'Hari ini' 
         when current_date-d.status_date=1 then 'Kemarin'  
         when current_date-d.status_date=2 then '2 Hari yang lalu'  
@@ -123,29 +122,30 @@ const controller = {
          )  
          select keterangan, nama, durasi_waktu,golid,keterangan2 
         from x 
-        order by tanggal desc `,
-        [employee_id],
-        (error, results) => {
-          if (error) throw error;
-
+        order by tanggal desc `;
+      await pool.db_MMFPROD
+        .query(query, [employee_id])
+        .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows,
+              data: rows,
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }
