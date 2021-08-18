@@ -2,12 +2,11 @@ const pool = require('../../db');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  getHist_Detail_Absence(request, response) {
+  async getHist_Detail_Absence(request, response) {
     try {
       const { employee_id, clocking_date } = request.body;
 
-      pool.db_MMFPROD.query(
-        `select $1 employee_id, to_char(xx.dates_this_month,'YYYY-MM-DD')  as tgl_absen,
+      const query = `select $1 employee_id, to_char(xx.dates_this_month,'YYYY-MM-DD')  as tgl_absen,
         case when trim(to_char(xx.dates_this_month,'Day'))='Sunday' then 'Minggu'
         when trim(to_char(xx.dates_this_month,'Day'))='Monday' then 'Senin'
         when trim(to_char(xx.dates_this_month,'Day'))='Tuesday' then 'Selasa'
@@ -49,29 +48,31 @@ const controller = {
         where
         to_char(xx.dates_this_month,'YYYY-MM-DD') = $2
         order by yy.clocking_date desc
-        `,
-        [employee_id, clocking_date],
-        (error, results) => {
-          if (error) throw error;
+        `;
 
+      await pool.db_MMFPROD
+        .query(query, [employee_id, clocking_date])
+        .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows,
+              data: rows,
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

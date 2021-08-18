@@ -4,7 +4,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  getHist_Absence(request, response) {
+  async getHist_Absence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -20,8 +20,7 @@ const controller = {
     );
 
     try {
-      pool.db_MMFPROD.query(
-        `select  $1::text employee_id , xx.tgl_absen, xx.tgl_absen2, 
+      const query = `select  $1::text employee_id , xx.tgl_absen, xx.tgl_absen2, 
         coalesce(ss.absen_masuk,' ') absen_masuk, coalesce(ss.absen_pulang,' ') absen_pulang,
         max(case when in_out='0' then
         (case when sss.state='Transfered' then 'Tercatat'
@@ -126,41 +125,40 @@ const controller = {
          left join employee_tbl  ww on ww.employee_id = $1
         group by zz.employee_id, qq.employee_id, xx.tgl_absen, xx.tgl_absen2,xx.tgl_absen3, rr.absence_wage,ss.absen_masuk,ss.absen_pulang, tt.employee_id , 
                   sss.transfer_message_masuk ,uu.state ,uu.result_revised ,vv.state, ww.first_join_date 
-        order by xx.tgl_absen desc`,
-        [employee_id, filter_date],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                employee_id,
-                filter_date,
-              },
-              'getHistAbsenceCtrl.getHist_Absence',
-              error
-            );
-
-            throw error;
-          }
-
+        order by xx.tgl_absen desc`;
+      await pool.db_MMFPROD
+        .query(query, [employee_id, filter_date])
+        .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows,
+              data: rows,
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          Helpers.logger(
+            'ERROR',
+            {
+              employee_id,
+              filter_date,
+            },
+            'getHistAbsenceCtrl.getHist_Absence',
+            error
+          );
+
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',

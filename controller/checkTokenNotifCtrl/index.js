@@ -3,18 +3,17 @@ const pool = require('../../db');
 // Tabel : trx_notification
 
 const controller = {
-  checkToken_Notif(request, response) {
+  async checkToken_Notif(request, response) {
     const { employee_id, token_notif } = request.body;
 
-    pool.db_HCM.query(
-      'SELECT token_notification FROM trx_notification where employee_id =$1',
-      [employee_id],
-      (error, results) => {
-        if (error) throw error;
-
-        if (results.rowCount > 0) {
+    const query =
+      'SELECT token_notification FROM trx_notification where employee_id =$1';
+    await pool.db_HCM
+      .query(query, [employee_id])
+      .then(({ rowCount, rows }) => {
+        if (rowCount > 0) {
           // eslint-disable-next-line eqeqeq
-          if (results.rows[0].token_notification != token_notif) {
+          if (rows[0].token_notification != token_notif) {
             pool.db_HCM.query(
               'update trx_notification set token_notification=$2 where employee_id=$1 ',
               [employee_id, token_notif],
@@ -47,8 +46,10 @@ const controller = {
             }
           );
         }
-      }
-    );
+      })
+      .catch((error) => {
+        throw error;
+      });
   },
 };
 

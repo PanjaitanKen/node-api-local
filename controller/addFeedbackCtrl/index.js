@@ -1,13 +1,13 @@
 const nodemailer = require('nodemailer');
 const dateFormat = require('dateformat');
-const pool = require('../../db');
 const _ = require('lodash');
 const { validationResult } = require('express-validator');
 const axios = require('axios');
+const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  addFeedback(request, response) {
+  async addFeedback(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -51,30 +51,27 @@ const controller = {
         !isNaN(id_kategori_komplain) &&
         id_kategori_komplain != null
       ) {
-        pool.db_MMFPROD.query(
+        const query =
           'select b.employee_id ,e.display_name,d.company_office cabang, ' +
-            "case when left(coalesce(coalesce(c.email_value1,c.email_value2),a.contact_value),1)<>'0' then " +
-            "coalesce(coalesce(c.email_value1,c.email_value2),a.contact_value) else ' ' end " +
-            'as email ' +
-            'from person_contact_method_tbl a ' +
-            'left join employee_tbl b on  a.person_id =b.person_id  ' +
-            'left join my_contact_method_tbl c on a.person_id = c.person_id  ' +
-            'left join emp_company_office_tbl d on b.employee_id =d.employee_id  and current_date between valid_from and valid_to ' +
-            'left join person_tbl e on a.person_id =e.person_id ' +
-            "where b.employee_id =$1 and  a.contact_type ='4' " +
-            'limit 1 ',
-          [employee_id],
-          (error, results) => {
-            if (error) {
-              throw error;
-            }
+          "case when left(coalesce(coalesce(c.email_value1,c.email_value2),a.contact_value),1)<>'0' then " +
+          "coalesce(coalesce(c.email_value1,c.email_value2),a.contact_value) else ' ' end " +
+          'as email ' +
+          'from person_contact_method_tbl a ' +
+          'left join employee_tbl b on  a.person_id =b.person_id  ' +
+          'left join my_contact_method_tbl c on a.person_id = c.person_id  ' +
+          'left join emp_company_office_tbl d on b.employee_id =d.employee_id  and current_date between valid_from and valid_to ' +
+          'left join person_tbl e on a.person_id =e.person_id ' +
+          "where b.employee_id =$1 and  a.contact_type ='4' " +
+          'limit 1 ';
+
+        await pool.db_MMFPROD
+          .query(query, [employee_id])
+          .then(({ rows }) => {
             // eslint-disable-next-line eqeqeq
-            if (results.rows != '') {
-              const emp_cabang = results.rows[0].cabang;
-              const emp_displayName = results.rows[0].display_name;
-              const emp_email = results.rows[0].email
-                ? results.rows[0].email
-                : '-';
+            if (rows != '') {
+              const emp_cabang = rows[0].cabang;
+              const emp_displayName = rows[0].display_name;
+              const emp_email = rows[0].email ? rows[0].email : '-';
               pool.db_HCM.query(
                 'select * from mas_kategori_komplain where id_kategori_komplain =$1 ',
                 [id_kategori_komplain],
@@ -251,7 +248,7 @@ const controller = {
                                             response.status(200).send({
                                               status: 200,
                                               message: 'Data Tidak Ditemukan',
-                                              data: results.rows,
+                                              data: '',
                                             });
                                           }
                                         }
@@ -260,7 +257,7 @@ const controller = {
                                       response.status(200).send({
                                         status: 200,
                                         message: 'Data Tidak Ditemukan',
-                                        data: results.rows,
+                                        data: '',
                                       });
                                     }
                                   }
@@ -272,7 +269,7 @@ const controller = {
                           response.status(200).send({
                             status: 200,
                             message: 'Data Tidak Ditemukan',
-                            data: results.rows,
+                            data: '',
                           });
                         }
                       }
@@ -281,7 +278,7 @@ const controller = {
                     response.status(200).send({
                       status: 200,
                       message: 'Data Tidak Ditemukan',
-                      data: results.rows,
+                      data: '',
                     });
                   }
                 }
@@ -290,11 +287,13 @@ const controller = {
               response.status(200).send({
                 status: 200,
                 message: 'Data Tidak Ditemukan',
-                data: results.rows,
+                data: '',
               });
             }
-          }
-        );
+          })
+          .catch((error) => {
+            throw error;
+          });
       } else {
         response.status(200).send({
           status: 200,

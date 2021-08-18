@@ -4,7 +4,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : employeeworkofftbl, leaverequest_tbl
 const controller = {
-  checkAttendance(request, response) {
+  async checkAttendance(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -21,24 +21,15 @@ const controller = {
     );
 
     try {
-      pool.db_HCM.query(
-        "select setting_value from param_hcm where setting_name = 'AKTIF JENIS ABSEN'",
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              { employee_id },
-              'checkAttendanceCtrl.checkAttendance',
-              error
-            );
-
-            throw error;
-          }
-
+      const query =
+        "select setting_value from param_hcm where setting_name = 'AKTIF JENIS ABSEN'";
+      await pool.db_HCM
+        .query(query)
+        .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             // eslint-disable-next-line eqeqeq
-            if (results.rows[0].setting_value == 0) {
+            if (rows[0].setting_value == 0) {
               pool.db_MMFPROD.query(
                 `SELECT count(*) FROM emp_clocking_detail_tbl 
                 where employee_id = $1 and (absence_wage in 
@@ -166,7 +157,7 @@ const controller = {
                 }
               );
               // eslint-disable-next-line eqeqeq
-            } else if (results.rows[0].setting_value == 1) {
+            } else if (rows[0].setting_value == 1) {
               response.status(200).send({
                 status: 200,
                 message: 'Belum melakukan clock in dan clock out',
@@ -174,7 +165,7 @@ const controller = {
                 data: 0,
               });
               // eslint-disable-next-line eqeqeq
-            } else if (results.rows[0].setting_value == 2) {
+            } else if (rows[0].setting_value == 2) {
               response.status(200).send({
                 status: 200,
                 message: 'Berhasil Clock In dan Belum Clock Out',
@@ -187,11 +178,19 @@ const controller = {
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          Helpers.logger(
+            'ERROR',
+            { employee_id },
+            'checkAttendanceCtrl.checkAttendance',
+            error
+          );
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',
