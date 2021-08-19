@@ -2,12 +2,11 @@ const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  getHistManage(request, response) {
+  async getHistManage(request, response) {
     try {
       const { employee_id, jumlah_hari, tipe_filter } = request.body;
 
-      pool.db_MMFPROD.query(
-        `with x as (
+      const query = `with x as (
           select 'Persetujuan Cuti' as Jenis, 'Riwayat Persetujuan Cuti' as jenis2, aa.employee_id, 
           to_char(aa.sequence_no,'9999999999999999') as no_urut,  initcap(d.display_name) nama,
           case  when current_date-a.approved_date =0 then 'Hari ini'
@@ -90,29 +89,31 @@ to_char(a.sequence_no,'9999999999999999') as no_urut, initcap(b.display_name) na
           )
           select * from x
              where tipe_filter = ANY($3) 
-            order by status_Date desc , no_urut desc`,
-        [employee_id, jumlah_hari, tipe_filter],
-        (error, results) => {
-          if (error) throw error;
+            order by status_Date desc , no_urut desc`;
 
+      await pool.db_MMFPROD
+        .query(query, [employee_id, jumlah_hari, tipe_filter])
+        .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows,
+              data: rows,
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

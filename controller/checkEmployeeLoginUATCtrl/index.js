@@ -2,18 +2,17 @@ const pool = require('../../db');
 
 // Tabel : session_tracking_tbl
 const controller = {
-  checkEmployeeLogin(request, response) {
+  async checkEmployeeLogin(request, response) {
     try {
       const { employee_id } = request.body;
 
-      pool.db_HCM.query(
-        ' select count(*) jumlah from mas_karyawan_uat',
-        (error, results) => {
-          if (error) {
-            throw error;
-          }
+      const query = ' select count(*) jumlah from mas_karyawan_uat';
+
+      await pool.db_HCM
+        .query(query)
+        .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows[0].jumlah != 0) {
+          if (rows[0].jumlah != 0) {
             pool.db_HCM.query(
               ' select count(*) jumlah from mas_karyawan_uat where employee_code = $1',
               [employee_id],
@@ -47,8 +46,10 @@ const controller = {
               data: { jumlah: '1' },
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

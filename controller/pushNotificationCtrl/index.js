@@ -14,7 +14,7 @@ const Helpers = require('../../helpers');
 const FCM = new fcm('./privateKey.json');
 
 const controller = {
-  pushNotification(request, response) {
+  async pushNotification(request, response) {
     try {
       const {
         employee_id,
@@ -31,18 +31,15 @@ const controller = {
         msg_body = `pengajuan ${submission_type} kamu telah ${submission_status}`;
       }
 
-      pool.db_MMFPROD.query(
-        'select supervisor_id from employee_supervisor_tbl where employee_id = $1 and current_date between valid_from  and valid_to ',
-        [employee_id],
-        (error, results) => {
-          if (error) {
-            throw error;
-          }
-          if (results.rowCount > 0) {
+      const query =
+        'select supervisor_id from employee_supervisor_tbl where employee_id = $1 and current_date between valid_from  and valid_to ';
+
+      await pool.db_MMFPROD
+        .query(query, [employee_id])
+        .then(({ rowCount, rows }) => {
+          if (rowCount > 0) {
             const employee_token =
-              submission_id == '1'
-                ? results.rows[0].supervisor_id
-                : employee_id;
+              submission_id == '1' ? rows[0].supervisor_id : employee_id;
             pool.db_HCM.query(
               'SELECT token_notification FROM trx_notification WHERE employee_id = $1 AND token_notification IS NOT NULL',
               [employee_token],
@@ -135,8 +132,10 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }
