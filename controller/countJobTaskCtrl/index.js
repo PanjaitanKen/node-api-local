@@ -36,8 +36,8 @@ const controller = {
         " left join (select * from approval_structure_tbl where  template_name='APPROVAL LEAVE') b on a.golid = b.ref_id  " +
         " where a.state='Submitted'  and b.approver_id = $1  " +
         ' union all ' +
-        ' select count(*) jumlahJobTask  from approval_rev_absence_hcm a  ' +
-        " where a.status='Submitted'  and a.approved_by = $1  " +
+        ' select count(*) jumlahJobTask  from correction_absence_hcm_h a  ' +
+        " where a.state_approval = 'Submitted'  and a.approved_by = $1  " +
         ' union all   ' +
         ' select count(*) jumlahJobTask from travel_request_tbl  a   ' +
         ' left join employee_tbl  b on a.employee_id = b.employee_id    ' +

@@ -114,11 +114,10 @@ const controller = {
         when current_date-request_date=5 then '5 Hari yang lalu'  
         when current_date-request_date=6 then '6 Hari yang lalu'  
         when current_date-request_date=7 then '7 Hari yang lalu'  
-        when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end durasi_Waktu, a.rev_absence_id as golid,
+        when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end durasi_Waktu, a.cor_absence_id as golid,
         'Pengajuan Perbaikan Absen' as keterangan2,request_date as tanggal
-        from rev_absence_hcm a
-        left join approval_rev_absence_hcm b on a.rev_absence_id = b.rev_absence_id and a.employee_id=b.employee_id
-        where a.state='Submitted'  and b.approved_by= $1
+        from correction_absence_hcm_h a
+        where a.state_approval='Submitted'  and a.approved_by= $1
          )  
          select keterangan, nama, durasi_waktu,golid,keterangan2 
         from x 
