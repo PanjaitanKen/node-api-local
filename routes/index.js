@@ -89,6 +89,8 @@ const updateCoupleNameCKCtrl = require('../controller/updateCoupleNameCKCtrl');
 const updateNameCKCtrl = require('../controller/updateNameCKCtrl');
 const getURLPhotoProfileCtrl = require('../controller/getURLPhotoProfileCtrl');
 const getHistAbsenceNewCtrl = require('../controller/getHistAbsenceNewCtrl');
+const addCorrectionAbsenceCtrl = require('../controller/addCorrectionAbsenceCtrl');
+const getHistDetailManageCorrectionAbsenceCtrl = require('../controller/getHistDetailManageCorrectionAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1236,5 +1238,21 @@ module.exports = (app) => {
     .post(
       [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
       getHistAbsenceNewCtrl.getHistAbsenceNew
+    );
+
+  app
+    .route('/mmf/api/addCorrectionAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      addCorrectionAbsenceCtrl.addCorrectionAbsence
+    );
+
+  app
+    .route('/mmf/api/getHistDetailManageCorrectionAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [check('golid').notEmpty().withMessage('golid REQUIRED!')],
+      getHistDetailManageCorrectionAbsenceCtrl.getHistDetailManageCorrectionAbsence
     );
 };
