@@ -72,41 +72,13 @@ const controller = {
           if (rows != '') {
             const data1 = rows[0];
             pool.db_MMFPROD.query(
-              `select a.employee_id, a.employee_id||'/'||to_char(a.request_date,'YYYYMMDD')||'/'||trim(to_char(a.cor_absence_id,'9999999999999999')) as no_pengajuan,
-              b.cor_id_Detail as id_detail, initcap(a.display_name) nama,
-               to_char(a.request_date ,'DD') ||' '||
-               case when to_char(a.request_date  ,'MM')='01' then 'Jan'
-                   when to_char(a.request_date ,'MM')='02' then 'Feb'
-                   when to_char(a.request_date ,'MM')='03' then 'Mar'
-                   when to_char(a.request_date ,'MM')='04' then 'Apr'
-                   when to_char(a.request_date ,'MM')='05' then 'Mei'
-                   when to_char(a.request_date ,'MM')='06' then 'Jun'
-                   when to_char(a.request_date ,'MM')='07' then 'Jul'
-                   when to_char(a.request_date ,'MM')='08' then 'Ags'
-                   when to_char(a.request_date ,'MM')='09' then 'Sep'
-                   when to_char(a.request_date ,'MM')='10' then 'Okt'
-                   when to_char(a.request_date ,'MM')='11' then 'Nov'
-                   when to_char(a.request_date ,'MM')='12' then 'Des' end ||' '||to_char(a.request_date ,'YYYY') as tgl_pengajuan,            
-                   to_char(b.clocking_date ,'DD')||' '||
-                   case when to_char(b.clocking_date ,'MM')='01' then 'Jan'
-                     when to_char(b.clocking_date ,'MM')='02' then 'Feb'
-                     when to_char(b.clocking_date ,'MM')='03' then 'Mar'
-                     when to_char(b.clocking_date ,'MM')='04' then 'Apr'
-                     when to_char(b.clocking_date ,'MM')='05' then 'Mei'
-                     when to_char(b.clocking_date ,'MM')='06' then 'Jun'
-                     when to_char(b.clocking_date ,'MM')='07' then 'Jul'
-                     when to_char(b.clocking_date ,'MM')='08' then 'Ags'
-                     when to_char(b.clocking_date ,'MM')='09' then 'Sep'
-                     when to_char(b.clocking_date ,'MM')='10' then 'Okt'
-                     when to_char(b.clocking_date ,'MM')='11' then 'Nov'
-                     when to_char(b.clocking_date ,'MM')='12' then 'Des' end ||' '||to_char(b.clocking_date ,'YYYY') tgl_absen_diperbaiki ,
+              `select b.cor_id_Detail as id_detail,
                      b.correction_time_in as jam_masuk_diperbaiki , b.correction_time_in as jam_keluar_diperbaiki,
                      to_char(b.correction_time_in,'HH24:MI') jam_masuk_diperbaiki_string,
                      to_char(b.correction_time_out,'HH24:MI') jam_keluar_diperbaiki_string,
                      case when c.absence_wage is not null then 'Pengajuan di tolak karena ada Cuti'
                    when d.employee_id is not null then 'Pengajuan di tolak karena ada Izin' 
-                   when e.employee_id is not null then 'Pengajuan di tolak karena ada PD' else a.note end as alasan,  
-               a.cor_absence_id  as golid, b.state,
+                   when e.employee_id is not null then 'Pengajuan di tolak karena ada PD' else a.note end as alasan,  b.state,
                      case when c.absence_wage is not null then '1' else '0' end as status_cuti,
                case when d.employee_id is not null then '1' else '0' end as status_izin,
                case when e.employee_id is not null then '1' else '0' end as status_PD,
@@ -137,7 +109,7 @@ const controller = {
                 // eslint-disable-next-line eqeqeq
                 if (results.rows != 0) {
                   const data2 = results.rows;
-                  data1.detail = data2;
+                  data1.data_detail = data2;
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
