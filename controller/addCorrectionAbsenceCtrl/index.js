@@ -103,6 +103,20 @@ const controller = {
                           data_perbaikan[i].time_out +
                           ':' +
                           '00';
+                    console.log(counter, 'counter');
+                    console.log(data_register_time_in, 'data_register_time_in');
+                    console.log(
+                      data_register_time_out,
+                      'data_register_time_out'
+                    );
+                    console.log(
+                      data_correction_time_in,
+                      'data_correction_time_in'
+                    );
+                    console.log(
+                      data_correction_time_out,
+                      'data_correction_time_out'
+                    );
                     pool.db_MMFPROD.query(
                       `insert into correction_absence_hcm_d (cor_absence_id,cor_id_detail, clocking_date,schedule_type,days_to,
                       day_type,default_time_in,default_time_out,
@@ -116,10 +130,10 @@ const controller = {
                         data_day_type,
                         data_default_time_in,
                         data_default_time_out,
-                        data_original[i].time_in,
-                        data_original[i].time_out,
-                        data_perbaikan[i].time_in,
-                        data_perbaikan[i].time_out,
+                        data_register_time_in,
+                        data_register_time_out,
+                        data_correction_time_in,
+                        data_correction_time_out,
                         counter,
                       ],
                       (error, results) => {

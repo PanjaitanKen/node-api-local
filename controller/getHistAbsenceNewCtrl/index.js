@@ -8,7 +8,8 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { employee_id } = request.body;
+    const { employee_id, filter_date } = request.body;
+    const data_filter_date = filter_date === 0 ? 30 : 30;
 
     Helpers.logger(
       'SUCCESS',
@@ -121,11 +122,11 @@ const controller = {
         left join emp_work_schedule_tbl l on l.employee_id = $1 and current_date between l.valid_from and l.valid_to
         left join work_schedule_cycle_tbl m on l.schedule_type = m.schedule_type   and m.day_sequence='1'
         left join day_type_tbl n on m.day_type = n.day_type 
-        where tgl_bulan_ini  between (current_date -interval '1 days' * 30) and now()
+        where tgl_bulan_ini  between (current_date -interval '1 days' * $2) and now()
         order by tgl_bulan_ini desc`;
 
       await pool.db_MMFPROD
-        .query(query, [employee_id])
+        .query(query, [employee_id, data_filter_date])
         .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
