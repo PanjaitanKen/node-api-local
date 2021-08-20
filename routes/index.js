@@ -88,6 +88,7 @@ const updateMotherNameCKCtrl = require('../controller/updateMotherNameCKCtrl');
 const updateCoupleNameCKCtrl = require('../controller/updateCoupleNameCKCtrl');
 const updateNameCKCtrl = require('../controller/updateNameCKCtrl');
 const getURLPhotoProfileCtrl = require('../controller/getURLPhotoProfileCtrl');
+const getHistAbsenceNewCtrl = require('../controller/getHistAbsenceNewCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1093,7 +1094,6 @@ module.exports = (app) => {
       getStatusVaccineCtrl.getStatusVaccine
     );
 
-
   app
     .route('/hcm/api/getURLPhotoProfile')
     .all(authenticateApiKey)
@@ -1228,5 +1228,13 @@ module.exports = (app) => {
           .withMessage('upd_ck_last_name REQUIRED!'),
       ],
       updateNameCKCtrl.updateNameCK
+    );
+
+  app
+    .route('/mmf/api/getHistAbsenceNew')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      getHistAbsenceNewCtrl.getHistAbsenceNew
     );
 };
