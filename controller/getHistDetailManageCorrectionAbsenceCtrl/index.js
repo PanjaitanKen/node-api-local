@@ -45,7 +45,8 @@ const controller = {
              when to_char(b.clocking_date ,'MM')='10' then 'Okt'
              when to_char(b.clocking_date ,'MM')='11' then 'Nov'
              when to_char(b.clocking_date ,'MM')='12' then 'Des' end ||' '||to_char(b.clocking_date ,'YYYY') tgl_absen_diperbaiki,  
-       a.cor_absence_id  as golid
+       a.cor_absence_id  as golid,
+       case when a.state_approval ='Approved' then 'Sudah Proses Persetujuan' else 'Menunggu Persetujuan' end as Status
        from correction_absence_hcm_h a
        left join correction_absence_hcm_d  b on a.cor_absence_id = b.cor_absence_id  
        left join 

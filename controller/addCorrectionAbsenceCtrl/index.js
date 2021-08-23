@@ -122,7 +122,7 @@ const controller = {
                       day_type,default_time_in,default_time_out,
                       register_time_in,register_time_out,correction_time_in,correction_time_out,note,state)
                       values ((currval('cor_absence_hcm_id_seq')), $11, $1, $2 , $3, $4 , $5, $6, $7, $8, $9, $10,
-                      'Perbaikan Absen Tanggal Absen '||to_char($1,'YYYY-MM-DD') ,'Submitted')`,
+                      'Perbaikan Absen Tanggal Absen '||'2021-08-19' ,'Submitted')`,
                       [
                         data_perbaikan[i].date,
                         data_schedule_type,
@@ -140,24 +140,25 @@ const controller = {
                         if (error) {
                           throw error;
                         }
-                        // eslint-disable-next-line eqeqeq
-                        if (results.rowCount != 0) {
-                          response.status(200).send({
-                            status: 201,
-                            message: 'Insert Data Success',
-                            validate_id: employee_id,
-                            data: '',
-                          });
-                        } else {
-                          response.status(200).send({
-                            status: 200,
-                            message: 'Data already Exist',
-                            validate_id: employee_id,
-                            data: '',
-                          });
-                        }
                       }
                     );
+                  }
+                  console.log(results.rowCount, 'tessssssssssssssssssssss');
+                  // eslint-disable-next-line eqeqeq
+                  if (results.rowCount != 0) {
+                    response.status(200).send({
+                      status: 201,
+                      message: 'Insert Data Success',
+                      validate_id: employee_id,
+                      data: '',
+                    });
+                  } else {
+                    response.status(200).send({
+                      status: 200,
+                      message: 'Data already Exist',
+                      validate_id: employee_id,
+                      data: '',
+                    });
                   }
                 } else {
                   response.status(200).send({

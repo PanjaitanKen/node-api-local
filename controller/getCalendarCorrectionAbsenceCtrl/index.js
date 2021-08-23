@@ -4,49 +4,23 @@ const Helpers = require('../../helpers');
 
 // Tabel : person_tbl, employee_tbl
 const controller = {
-  async getHistAbsenceNew(request, response) {
+  async getCalendarCorrectionAbsence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { employee_id, filter_date } = request.body;
+    const { employee_id} = request.body;
     // const data_filter_date = filter_date === 0 ? 30 : 30;
 
     Helpers.logger(
       'SUCCESS',
       { employee_id },
-      'getHistAbsenceNewCtrl.getHistAbsenceNew'
+      'getCalendarCorrectionAbsenceCtrl.getCalendarCorrectionAbsence'
     );
 
     try {
-      const query = `select to_char(a.tgl_bulan_ini,'YYYY-MM-DD') as tgl_absen,
-      to_char(a.tgl_bulan_ini,'DD') Tanggal, 
-      case when trim(to_char(a.tgl_bulan_ini,'Day'))='Sunday' then 'Min'
-              when trim(to_char(a.tgl_bulan_ini,'Day'))='Monday' then 'Sen'
-              when trim(to_char(a.tgl_bulan_ini,'Day'))='Tuesday' then 'Sel'
-              when trim(to_char(a.tgl_bulan_ini,'Day'))='Wednesday' then 'Rab'
-              when trim(to_char(a.tgl_bulan_ini,'Day'))='Thursday' then 'Kam'
-              when trim(to_char(a.tgl_bulan_ini,'Day'))='Friday' then 'Jum'
-              when trim(to_char(a.tgl_bulan_ini,'Day'))='Saturday' then 'Sab' else ' ' end as hari,
-      case when to_char(a.tgl_bulan_ini,'MM')='01' then 'Januari'
-              when to_char(a.tgl_bulan_ini,'MM')='02' then 'Februari'
-              when to_char(a.tgl_bulan_ini,'MM')='03' then 'Maret'
-              when to_char(a.tgl_bulan_ini,'MM')='04' then 'April'
-              when to_char(a.tgl_bulan_ini,'MM')='05' then 'Mei'
-              when to_char(a.tgl_bulan_ini,'MM')='06' then 'Juni'
-              when to_char(a.tgl_bulan_ini,'MM')='07' then 'Juli'
-              when to_char(a.tgl_bulan_ini,'MM')='08' then 'Agustus'
-              when to_char(a.tgl_bulan_ini,'MM')='09' then 'September'
-              when to_char(a.tgl_bulan_ini,'MM')='10' then 'Oktober'
-              when to_char(a.tgl_bulan_ini,'MM')='11' then 'November'
-              when to_char(a.tgl_bulan_ini,'MM')='12' then 'Desember' end as Bulan,
-       $1::text employee_id , tgl_jam_masuk, tgl_jam_pulang, 
-      b.jam_masuk, c.jam_pulang, d.state,
-      case when d.status_error_masuk is null then '0'
-           when d.status_error_masuk='0' then '0'
-       else '1' end as status_error_masuk, e.state,
-      case when e.status_error_pulang is null then '0'
-           when e.status_error_pulang='0' then '0'
-      else '1' end as status_error_pulang,
+      const query = `with x as (select to_char(a.tgl_bulan_ini,'YYYY-MM-DD') as tgl_absen,
+      $1::text employee_id , tgl_jam_masuk, tgl_jam_pulang, 
+      b.jam_masuk, c.jam_pulang,
       m.schedule_type ,m.day_type ,to_Char(n.time_in,'HH24:MI') as default_jam_masuk, 
       to_Char(n.time_out,'HH24:MI') as default_jam_pulang, 
       case when f.absence_wage is not null then '1' else '0' end as status_cuti,
@@ -58,9 +32,10 @@ const controller = {
                    when j.state='Approved' then '2'
                    when j.state='Rejected' then '3'
                    when j.state='Cancelled' then '4'
-      else '0' end as status_verifikasi_perbaikan
+      else '0' end as status_verifikasi_perbaikan,
+      case when (status_libur=true or m.day_type='OFFHOLIDAY') then 1 else 0 end as hari_libur
       from 	
-      (select * from 
+      (select *,EXTRACT(ISODOW FROM tgl_bulan_ini) as hari_ke from 
         generate_series(date_trunc('month',CURRENT_DATE - interval '1 months'),
         date_trunc('month',now()) + '1 month' - '1 day'::interval,'1 day') as tgl_bulan_ini
       ) a
@@ -68,7 +43,7 @@ const controller = {
         (select a.employee_id,to_Char(a.clocking_date,'YYYY-MM-DD') as tanggal_absen, 
          min(a.clocking_date) as tgl_jam_masuk ,min(to_char(a.clocking_date ,'HH24:MI')) jam_masuk
          from emp_clocking_temp_tbl a
-         where in_out ='0' and employee_id = $1  
+         where in_out ='0' and employee_id = $1
          group by a.employee_id, a.in_out, to_Char(a.clocking_date,'YYYY-MM-DD')
         ) b on to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = b.tanggal_absen
       left join 
@@ -76,35 +51,35 @@ const controller = {
          max(a.clocking_date) as tgl_jam_pulang ,max(to_char(a.clocking_date ,'HH24:MI')) jam_pulang
          from emp_clocking_temp_tbl a
          where in_out ='1' and employee_id = $1
-         group by a.employee_id, a.in_out, to_Char(a.clocking_date,'YYYY-MM-DD')
+         group by a.employee_id, a.in_out, to_Char(a.clocking_date,'YYYY-MM-DD') 
         ) c on to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = c.tanggal_absen
       left join 
         (select employee_id ,to_char(clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(clocking_date ,'HH24:MI') jam_masuk,state,
         case when state in ('Error') then '1' else '0' end status_error_masuk,
            transfer_message  as transfer_message_masuk 
            from emp_clocking_temp_tbl where in_out='0' 
-           and employee_id= $1 ) d on b.tanggal_absen = d.tanggal_absen and b.jam_masuk= d.jam_masuk
+           and employee_id = $1 ) d on b.tanggal_absen = d.tanggal_absen and b.jam_masuk= d.jam_masuk
       left join 
         (select employee_id ,to_char(clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(clocking_date ,'HH24:MI') jam_pulang,state,
          case when state in ('Error') then '1' else '0' end status_error_pulang,
            transfer_message  as transfer_message_masuk 
            from emp_clocking_temp_tbl where in_out='1' 
-           and employee_id= $1 ) e on c.tanggal_absen = e.tanggal_absen and c.jam_pulang= e.jam_pulang 
+           and employee_id = $1 ) e on c.tanggal_absen = e.tanggal_absen and c.jam_pulang= e.jam_pulang 
       left join 
         (select employee_id, clocking_date, absence_wage from  
            emp_clocking_detail_tbl where absence_wage like 'CT_%'
-          ) f on f.employee_id= $1  and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = to_char(f.clocking_date,'YYYY-MM-DD')
+          ) f on f.employee_id= $1and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = to_char(f.clocking_date,'YYYY-MM-DD')
       left join 
           (select employee_id,clocking_date, state  
            from employee_work_off_tbl where  
            employee_id = $1
-           order by clocking_date desc) g on g.employee_id=$1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD')=to_char(g.clocking_date,'YYYY-MM-DD') and g.state='Approved'
+           order by clocking_date desc) g on g.employee_id = $1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD')=to_char(g.clocking_date,'YYYY-MM-DD') and g.state='Approved'
       left join 
               (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd
               from travel_request_tbl a 
               left join travel_request_destination_tbl b on a.request_no =b.request_no 
               where a.employee_id = $1 
-              and state in ('Approved','Partially Approved')) h on h.employee_id= $1  and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = h.tgl_pd
+              and state in ('Approved','Partially Approved')) h on h.employee_id= $1and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = h.tgl_pd
       left join emp_clocking_tbl i on i.employee_id = $1 and a.tgl_bulan_ini = i.clocking_date
       left join 
           (
@@ -114,14 +89,31 @@ const controller = {
                                 where b.employee_id = $1
                                 group by a.clocking_date ,b.employee_id
                             ) select y.*,x.employee_id from x
-                        left join correction_absence_hcm_d y on x.max_cor_absence_id = y.cor_absence_id  and x.clocking_date = y.clocking_date 
+                        left join correction_absence_hcm_d y on x.max_cor_absence_id = y.cor_absence_id 
                ) j on j.employee_id = $1 and a.tgl_bulan_ini = j.clocking_date
-      left join employee_tbl  k on k.employee_id = $1   
-      left join emp_work_schedule_tbl l on l.employee_id = $1 and current_date between l.valid_from and l.valid_to
-      left join work_schedule_cycle_tbl m on l.schedule_type = m.schedule_type   and m.day_sequence='1'
+      left join employee_tbl  k on k.company_id='MMF' and k.employee_id = $1 
+      left join emp_work_schedule_tbl l on l.company_id='MMF' and l.employee_id = $1 and current_date between l.valid_from and l.valid_to
+      left join work_schedule_cycle_tbl m on l.schedule_type = m.schedule_type   and m.day_sequence=a.hari_ke
       left join day_type_tbl n on m.day_type = n.day_type 
-      where tgl_bulan_ini  between (current_date -interval '1 days' * 30) and now()
-      order by tgl_bulan_ini desc`;
+      left join 
+          (select substitute_date as tgl_libur, 
+          true as status_libur 
+          from day_sub_detail_tbl where company_id='MMF' and substitute_type like 'LIBUR NASIONAL%'
+          union all 
+          SELECT  mydate as sunday, true as status_libur FROM 
+          generate_series(to_date((select min(to_char(substitute_date,'YYYY')) min_thn from day_sub_detail_tbl) ||'-01-01','YYYY-MM-DD'),  
+          to_date((select max(to_char(substitute_date,'YYYY')) max_thn from day_sub_detail_tbl)||'-12-31','YYYY-MM-DD'), '1 day') AS g(mydate) 
+          WHERE EXTRACT(DOW FROM mydate) = 0 
+          
+          ) o on a.tgl_bulan_ini = o.tgl_libur
+      where tgl_bulan_ini  between date_trunc('month', current_date- interval '0 months') and now() 
+      order by tgl_bulan_ini desc
+      ) select tgl_absen,jam_masuk,jam_pulang,schedule_type, day_type, 
+      status_cuti,status_izin, status_pd,status_perbaikan,status_verifikasi_perbaikan,hari_libur ,
+      case when status_cuti='0' and status_izin='0' and status_pd='0' and status_perbaikan='0'
+      and status_verifikasi_perbaikan='0' and (jam_masuk is null or jam_pulang is null) then 1 else 0 end as bisa_dipilih
+      from x
+      order by tgl_absen desc`;
 
       await pool.db_MMFPROD
         .query(query, [employee_id])
@@ -147,7 +139,7 @@ const controller = {
           Helpers.logger(
             'ERROR',
             { employee_id },
-            'getHistAbsenceNewCtrl.getHistAbsenceNew',
+            'getCalendarCorrectionAbsenceCtrl.getCalendarCorrectionAbsence',
             error
           );
           throw error;
@@ -156,7 +148,7 @@ const controller = {
       Helpers.logger(
         'ERROR',
         { employee_id },
-        'getHistAbsenceNewCtrl.getHistAbsenceNew',
+        'getCalendarCorrectionAbsenceCtrl.getCalendarCorrectionAbsence',
         err
       );
       response.status(500).send(err);
