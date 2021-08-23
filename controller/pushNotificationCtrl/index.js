@@ -421,11 +421,11 @@ const controller = {
                   const message = {
                     data: {
                       // This is only optional, you can send any data
-                      title: 'Approval Pengajuan Perbaikan Absen',
+                      title: 'Pengajuan Perbaikan Absen',
                       body: `${_.startCase(employee_name)} ${msg_body} `,
                     },
                     notification: {
-                      title: 'Approval Pengajuan Perbaikan Absen',
+                      title: 'Pengajuan Perbaikan Absen',
                       body: `${_.startCase(employee_name)} ${msg_body} `,
                     },
                     token,

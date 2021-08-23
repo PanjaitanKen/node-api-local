@@ -92,6 +92,7 @@ const getHistAbsenceNewCtrl = require('../controller/getHistAbsenceNewCtrl');
 const getCalendarCorrectionAbsenceCtrl = require('../controller/getCalendarCorrectionAbsenceCtrl');
 const addCorrectionAbsenceCtrl = require('../controller/addCorrectionAbsenceCtrl');
 const getHistDetailManageCorrectionAbsenceCtrl = require('../controller/getHistDetailManageCorrectionAbsenceCtrl');
+const AppCorrectAbsenceCtrl = require('../controller/AppCorrectAbsenceCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1241,7 +1242,6 @@ module.exports = (app) => {
       getHistAbsenceNewCtrl.getHistAbsenceNew
     );
 
-
   app
     .route('/mmf/api/getCalendarCorrectionAbsence')
     .all(authenticateApiKey)
@@ -1264,5 +1264,13 @@ module.exports = (app) => {
     .post(
       [check('golid').notEmpty().withMessage('golid REQUIRED!')],
       getHistDetailManageCorrectionAbsenceCtrl.getHistDetailManageCorrectionAbsence
+    );
+
+  app
+    .route('/mmf/api/AppCorrectAbsence')
+    .all(authenticateApiKey)
+    .post(
+      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      AppCorrectAbsenceCtrl.AppCorrectAbsence
     );
 };
