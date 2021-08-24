@@ -1849,7 +1849,7 @@ const controller = {
 
                   //email + wa feature
                   const subject_email = `Pengajuan Perbaikan Absen 'Approved/Rejected'`;
-                  const email_to = 'kenbagas@gmail.com';
+                  const email_to = data_email_pengaju;
                   pool.db_HCM.query(
                     'select * from param_hcm ',
                     (error, results) => {
@@ -1928,10 +1928,10 @@ const controller = {
                             });
                           }
 
-                          const data_no_hp_supervisor = '085156249767';
+                          // const data_no_hp_supervisor = data;
                           // insert wa message -- start
                           const data = {
-                            to: data_no_hp_supervisor,
+                            to: data_no_hp_pengaju,
                             header: 'Pengajuan Perbaikan Absen',
                             text:
                               `Dear ${data_nama_pengaju} \n` +
