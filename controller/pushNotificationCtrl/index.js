@@ -395,6 +395,8 @@ const controller = {
         msg_body = "pengajuan Perbaikan Absen kamu telah di 'Approved'";
       } else if (submission_id == '3') {
         msg_body = "pengajuan Perbaikan Absen kamu telah di 'Reject'";
+      } else if (submission_id == '4') {
+        msg_body = "Pengajuan Perbaikan Absen 'Approved/Rejected'";
       }
 
       pool.db_MMFPROD.query(

@@ -21,12 +21,14 @@ const controller = {
 
     try {
       const query = `select a.employee_id,b.display_name as nama_pengaju,c.contact_value as no_hp_pengaju,
-      d.contact_value as email_pengaju
+      d.contact_value as email_pengaju,e.supervisor_id , f.display_name as nama_atasan
       from employee_tbl a
       left join person_tbl b on a.person_id =b.person_id 
       left join person_contact_method_tbl c on b.person_id = c.person_id and c.contact_type ='3' and c.default_address ='Y'
       left join person_contact_method_tbl d on b.person_id = d.person_id and d.contact_type ='4' and d.default_address ='Y'
-      where employee_id=$1`;
+      left join employee_supervisor_tbl e on a.employee_id = e.employee_id and current_Date between e.valid_from and e.valid_to 
+      left join person_tbl f on e.supervisor_id = f. person_id 
+      where a.employee_id=$1`;
 
       await pool.db_MMFPROD
         .query(query, [employee_id])
@@ -36,6 +38,7 @@ const controller = {
             const data_nama_pengaju = rows[0].nama_pengaju;
             const data_no_hp_pengaju = rows[0].no_hp_pengaju;
             const data_email_pengaju = rows[0].email_pengaju;
+            const data_nama_atasan = rows[0].nama_atasan;
             pool.db_MMFPROD.query(
               `update correction_absence_hcm_h cahh  
               set state_approval = 'Approved' , approval_date = current_date
@@ -1909,7 +1912,7 @@ const controller = {
                             'Demikian pengajuan yang disampaikan \n' +
                             '\n' +
                             'Salam Hormat \n' +
-                            'kengkeng',
+                            `${data_nama_atasan}`,
                         };
 
                         transporter.sendMail(mailOptions, (error) => {
@@ -1919,13 +1922,9 @@ const controller = {
                               error
                             );
 
-                            response.status(500).send({
-                              status: 500,
-                              message:
-                                'Kami mengetahui bahwa email ini di sistem tidak ada!',
-                              validate_id: employee_id,
-                              data: '',
-                            });
+                            console.log(
+                              'email tidak ada atau tidak dapat mengirim ke email terdaftar'
+                            );
                           }
 
                           // const data_no_hp_supervisor = data;
@@ -1943,7 +1942,7 @@ const controller = {
                               'Demikian pengajuan yang disampaikan \n' +
                               '\n' +
                               'Salam Hormat \n' +
-                              'kengkeng',
+                              `${data_nama_atasan}`,
                           };
 
                           const options = {
@@ -1964,13 +1963,9 @@ const controller = {
                                 err
                               );
 
-                              response.status(500).send({
-                                status: 500,
-                                message:
-                                  'Kami mengetahui bahwa nomor telepon ini di sistem tidak ada!',
-                                validate_id: employee_id,
-                                data: '',
-                              });
+                              console.log(
+                                'Kami mengetahui bahwa nomor telepon ini di sistem tidak ada!'
+                              );
                             });
                           // insert wa message -- end
 
