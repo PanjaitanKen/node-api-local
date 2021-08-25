@@ -40,7 +40,7 @@ const controller = {
         when current_date-d.status_date=6 then '6 Hari yang lalu'  
         when current_date-d.status_date=7 then '7 Hari yang lalu'  
         when current_date-d.status_date>7 then to_char(d.status_date,'DD Mon YYYY') end Durasi_Waktu , 
-        a.golid,'Pengajuan Ijin' Keterangan2 , d.status_date  tanggal 
+        a.golid,'Pengajuan Ijin' Keterangan2 , d.status_date  tanggal ,a.employee_id as nokar_pengaju
         from employee_work_off_tbl a  
         left join employee_tbl  b on a.employee_id = b.employee_id  
         left join person_tbl c on b.person_id =c.person_id  
@@ -58,7 +58,7 @@ const controller = {
         when current_date-request_date=6 then '6 Hari yang lalu' 
         when current_date-request_date=7 then '7 Hari yang lalu' 
         when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end Durasi_Waktu ,
-        a.golid,'Pengajuan Cuti' Keterangan2, request_date tanggal from leave_request_tbl  a 
+        a.golid,'Pengajuan Cuti' Keterangan2, request_date tanggal, a.employee_id as nokar_pengaju from leave_request_tbl  a 
         left join employee_tbl  b on a.employee_id = b.employee_id  
         left join person_tbl c on b.person_id =c.person_id 
         left join (select * from approval_structure_tbl where  template_name='APPROVAL LEAVE') d on a.golid = d.ref_id 
@@ -74,7 +74,7 @@ const controller = {
         when current_date-d.status_date=6 then '6 Hari yang lalu'  
         when current_date-d.status_date=7 then '7 Hari yang lalu'  
         when current_date-d.status_date>7 then to_char(d.status_date,'DD Mon YYYY') end Durasi_Waktu , 
-        a.golid,'Pengajuan Dinas' Keterangan2, d.status_date tanggal from travel_request_tbl  a  
+        a.golid,'Pengajuan Dinas' Keterangan2, d.status_date tanggal,a.employee_id as nokar_pengaju from travel_request_tbl  a  
         left join employee_tbl  b on a.employee_id = b.employee_id  
         left join person_tbl c on b.person_id =c.person_id 
         left join (select request_no, min(status_date) status_date from  
@@ -115,11 +115,11 @@ const controller = {
         when current_date-request_date=6 then '6 Hari yang lalu'  
         when current_date-request_date=7 then '7 Hari yang lalu'  
         when current_date-request_date>7 then to_char(request_date,'DD Mon YYYY') end durasi_Waktu, a.cor_absence_id as golid,
-        'Pengajuan Perbaikan Absen' as keterangan2,request_date as tanggal
+        'Pengajuan Perbaikan Absen' as keterangan2,request_date as tanggal, a.employee_id as nokar_pengaju
         from correction_absence_hcm_h a
         where a.state_approval='Submitted'  and a.approved_by= $1
          )  
-         select keterangan, nama, durasi_waktu,golid,keterangan2 
+         select keterangan, nama, durasi_waktu,golid,keterangan2 ,nokar_pengaju
         from x 
         order by tanggal desc `;
       await pool.db_MMFPROD

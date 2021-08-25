@@ -8,7 +8,7 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { golid } = request.body;
+    const { employee_id, golid, nokar_pengaju } = request.body;
 
     Helpers.logger(
       'SUCCESS',
@@ -51,23 +51,23 @@ const controller = {
        left join correction_absence_hcm_d  b on a.cor_absence_id = b.cor_absence_id  
        left join 
          (select employee_id, clocking_date, absence_wage from  
-            emp_clocking_detail_tbl where absence_wage like 'CT_%'
-           ) c on c.employee_id= a.employee_id  and to_char(b.clocking_date ,'YYYY-MM-DD') = to_char(c.clocking_date,'YYYY-MM-DD')
+            emp_clocking_detail_tbl where absence_wage like 'CT_%' and employee_id = $2
+           ) c on c.employee_id = $2  and to_char(b.clocking_date ,'YYYY-MM-DD') = to_char(c.clocking_date,'YYYY-MM-DD')
        left join 
            (select employee_id,clocking_date, state  
-            from employee_work_off_tbl  
-            order by clocking_date desc) d on d.employee_id= a.employee_id  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(d.clocking_date,'YYYY-MM-DD') and d.state='Approved'
+            from employee_work_off_tbl where employee_id = $2
+            order by clocking_date desc) d on d.employee_id = $2  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(d.clocking_date,'YYYY-MM-DD') and d.state='Approved'
        left join 
                (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd
                from travel_request_tbl a 
                left join travel_request_destination_tbl b on a.request_no =b.request_no 
-               and state in ('Approved','Partially Approved')) e on e.employee_id= a.employee_id   and to_char(b.clocking_date,'YYYY-MM-DD') = e.tgl_pd
-       left join emp_clocking_tbl f on f.employee_id= a.employee_id  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(f.clocking_date,'YYYY-MM-DD')
-       where a.cor_absence_id = $1
+               and state in ('Approved','Partially Approved') and a.employee_id = $2 ) e on e.employee_id = $2  and to_char(b.clocking_date,'YYYY-MM-DD') = e.tgl_pd
+       left join emp_clocking_tbl f on f.employee_id= $2  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(f.clocking_date,'YYYY-MM-DD')
+       where a.cor_absence_id = $1 and a.employee_id = $2
            order by b.clocking_date asc`;
 
       await pool.db_MMFPROD
-        .query(query, [golid])
+        .query(query, [golid,nokar_pengaju])
         .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
@@ -88,21 +88,21 @@ const controller = {
                left join correction_absence_hcm_d  b on a.cor_absence_id = b.cor_absence_id  
                left join 
                  (select employee_id, clocking_date, absence_wage from  
-                    emp_clocking_detail_tbl where absence_wage like 'CT_%'
-                   ) c on c.employee_id= a.employee_id  and to_char(b.clocking_date ,'YYYY-MM-DD') = to_char(c.clocking_date,'YYYY-MM-DD')
+                    emp_clocking_detail_tbl where absence_wage like 'CT_%' and employee_id = $2
+                   ) c on c.employee_id = $2  and to_char(b.clocking_date ,'YYYY-MM-DD') = to_char(c.clocking_date,'YYYY-MM-DD')
                left join 
                    (select employee_id,clocking_date, state  
-                    from employee_work_off_tbl  
-                    order by clocking_date desc) d on d.employee_id= a.employee_id  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(d.clocking_date,'YYYY-MM-DD') and d.state='Approved'
+                    from employee_work_off_tbl   where employee_id = $2
+                    order by clocking_date desc) d on d.employee_id = $2  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(d.clocking_date,'YYYY-MM-DD') and d.state='Approved'
                left join 
                        (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd
                        from travel_request_tbl a 
                        left join travel_request_destination_tbl b on a.request_no =b.request_no 
-                       and state in ('Approved','Partially Approved')) e on e.employee_id= a.employee_id   and to_char(b.clocking_date,'YYYY-MM-DD') = e.tgl_pd
-               left join emp_clocking_tbl f on f.employee_id= a.employee_id  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(f.clocking_date,'YYYY-MM-DD')
-               where a.cor_absence_id = $1
+                       and state in ('Approved','Partially Approved') and a.employee_id = $2 ) e on e.employee_id = $2   and to_char(b.clocking_date,'YYYY-MM-DD') = e.tgl_pd
+               left join emp_clocking_tbl f on f.employee_id = $2  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(f.clocking_date,'YYYY-MM-DD')
+               where a.cor_absence_id = $1 and a.employee_id = $2
                    order by b.clocking_date asc`,
-              [golid],
+              [golid, nokar_pengaju],
               (error, results) => {
                 if (error) {
                   throw error;
@@ -114,14 +114,14 @@ const controller = {
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
-                    validate_id: golid,
+                    validate_id: employee_id,
                     data: data1,
                   });
                 } else {
                   response.status(200).send({
                     status: 200,
                     message: 'Data already Exist',
-                    validate_id: golid,
+                    validate_id: employee_id,
                     data: '',
                   });
                 }
@@ -131,7 +131,7 @@ const controller = {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
-              validate_id: golid,
+              validate_id: employee_id,
               data: '',
             });
           }
