@@ -58,7 +58,12 @@ const controller = {
                    when j.state='Approved' then '2'
                    when j.state='Rejected' then '3'
                    when j.state='Cancelled' then '4'
-      else '0' end as status_verifikasi_perbaikan
+      else '0' end as status_verifikasi_perbaikan,
+      case when j.state='Submitted' then 'Perbaikan absen menunggu persetujuan '||initcap(q.display_name)
+      when j.state='Approved' then 'Perbaikan absen telah disetujui '||initcap(q.display_name)
+      when j.state='Rejected' then 'Perbaikan absen telah ditolak '||initcap(q.display_name)
+      when j.state='Cancelled' then 'Perbaikan absen telah dibatalkan '||initcap(q.display_name) 
+      else ' ' end as status_message_perbaikan
       from 	
       (select * from 
         generate_series(date_trunc('month',CURRENT_DATE - interval '1 months'),
@@ -120,6 +125,9 @@ const controller = {
       left join emp_work_schedule_tbl l on l.employee_id = $1 and current_date between l.valid_from and l.valid_to
       left join work_schedule_cycle_tbl m on l.schedule_type = m.schedule_type   and m.day_sequence='1'
       left join day_type_tbl n on m.day_type = n.day_type 
+      left join employee_supervisor_tbl o on o.employee_id = $1 and current_date between o.valid_from and o.valid_to 
+      left join employee_tbl p on o.supervisor_id = p.employee_id 
+      left join person_tbl q on p.person_id = q.person_id 
       where tgl_bulan_ini  between (current_date -interval '1 days' * 30) and now()
       order by tgl_bulan_ini desc`;
 

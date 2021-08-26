@@ -3,6 +3,7 @@ const pool = require('../../db');
 const Helpers = require('../../helpers');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const dateFormat = require('dateformat');
 const _ = require('lodash');
 
 // Tabel : person_tbl, employee_tbl
@@ -1906,37 +1907,38 @@ const controller = {
                   }
                   //end of for
                   // insert notification perubahan absen -- start
-                  const data = {
-                    employee_id,
-                    data_nama_pengaju,
-                    submission_id: '2',
-                  };
+                  // const data = {
+                  //   employee_id,
+                  //   data_nama_pengaju,
+                  //   submission_id: '2',
+                  // };
 
-                  const options = {
-                    headers: {
-                      'Content-Type': 'application/json',
-                      API_KEY: process.env.API_KEY,
-                    },
-                  };
+                  // const options = {
+                  //   headers: {
+                  //     'Content-Type': 'application/json',
+                  //     API_KEY: process.env.API_KEY,
+                  //   },
+                  // };
 
-                  axios
-                    .post(
-                      `${process.env.URL}/hcm/api/pNRevAbsen`,
-                      data,
-                      options
-                    )
-                    .then((res) => {
-                      console.log('RESPONSE ==== : ', res.data);
-                    })
-                    .catch((err) => {
-                      console.log('ERROR: ====', err);
-                      throw err;
-                    });
+                  // axios
+                  //   .post(
+                  //     `${process.env.URL}/hcm/api/pNRevAbsen`,
+                  //     data,
+                  //     options
+                  //   )
+                  //   .then((res) => {
+                  //     console.log('RESPONSE ==== : ', res.data);
+                  //   })
+                  //   .catch((err) => {
+                  //     console.log('ERROR: ====', err);
+                  //     throw err;
+                  //   });
                   // insert notification perubahan absen -- end
 
                   //email + wa feature
                   const subject_email = `Pengajuan Perbaikan Absen 'Approved/Rejected'`;
-                  const email_to = data_email_pengaju;
+                  // const email_to = data_email_pengaju;
+                  const email_to = 'panjaitankengkeng2@gmail.com';
                   pool.db_HCM.query(
                     'select * from param_hcm ',
                     (error, results) => {
@@ -1969,6 +1971,8 @@ const controller = {
 
                         const passwordMail = passwordMailValue[0].setting_value;
 
+                        const day = dateFormat(new Date(), 'yyyy-mm-dd');
+
                         const transporter = nodemailer.createTransport({
                           host: hostMail,
                           port: 587,
@@ -1982,6 +1986,14 @@ const controller = {
                           },
                         });
 
+                        let detail_pengajuan = [];
+                        for (let i = 0; i < data_perbaikan.length; i++) {
+                          detail_pengajuan[i] =
+                            data_perbaikan[i].date +
+                            ' - ' +
+                            data_perbaikan[i].status +
+                            '\n';
+                        }
                         const mailOptions = {
                           from: userMail,
                           to: email_to,
@@ -1990,8 +2002,10 @@ const controller = {
                             `Dear ${data_nama_pengaju} \n` +
                             '\n' +
                             `No.Karyawan : ${employee_id} \n` +
-                            `Tanggal pengajuan perbaikan : ${data_perbaikan[0].date} sudah dilakukan proses approval/tolak \n` +
+                            `Tanggal pengajuan perbaikan : ${day} sudah dilakukan proses approval/tolak \n` +
                             'mohon cek kembali di riwayat absen mu  \n' +
+                            '\n' +
+                            `${detail_pengajuan}` +
                             '\n' +
                             'Demikian pengajuan yang disampaikan \n' +
                             '\n' +
@@ -2014,14 +2028,17 @@ const controller = {
                           // const data_no_hp_supervisor = data;
                           // insert wa message -- start
                           const data = {
-                            to: data_no_hp_pengaju,
+                            // to: data_no_hp_pengaju,
+                            to: '085156249767',
                             header: 'Pengajuan Perbaikan Absen',
                             text:
                               `Dear ${data_nama_pengaju} \n` +
                               '\n' +
                               `No.Karyawan : ${employee_id} \n` +
-                              `Tanggal pengajuan perbaikan : ${data_perbaikan[0].date} sudah dilakukan proses approval/tolak \n` +
+                              `Tanggal pengajuan perbaikan : ${day} sudah dilakukan proses approval/tolak \n` +
                               'mohon cek kembali di riwayat absen mu  \n' +
+                              '\n' +
+                              `${detail_pengajuan}` +
                               '\n' +
                               'Demikian pengajuan yang disampaikan \n' +
                               '\n' +
