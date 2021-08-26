@@ -1270,7 +1270,13 @@ module.exports = (app) => {
     .route('/mmf/api/AppCorrectAbsence')
     .all(authenticateApiKey)
     .post(
-      [check('employee_id').notEmpty().withMessage('employee_id REQUIRED!')],
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('golid').notEmpty().withMessage('golid REQUIRED!'),
+        check('data_perbaikan')
+          .notEmpty()
+          .withMessage('data_perbaikan REQUIRED!'),
+      ],
       AppCorrectAbsenceCtrl.AppCorrectAbsence
     );
 };

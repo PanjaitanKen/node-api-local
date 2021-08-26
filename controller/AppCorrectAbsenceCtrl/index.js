@@ -695,7 +695,7 @@ const controller = {
                                                                                               0
                                                                                             ) {
                                                                                               console.log(
-                                                                                                'data berhasil di update'
+                                                                                                'data berhasil di update 3'
                                                                                               );
                                                                                             } else {
                                                                                               console.log(
@@ -996,7 +996,7 @@ const controller = {
                                                                                   0
                                                                                 ) {
                                                                                   console.log(
-                                                                                    'data berhasil di update'
+                                                                                    'data berhasil di update 4'
                                                                                   );
                                                                                 } else {
                                                                                   console.log(
@@ -1463,8 +1463,92 @@ const controller = {
                                                             }
                                                           );
                                                         } else {
-                                                          console.log(
-                                                            'data tidak ditemukan 14'
+                                                          pool.db_MMFPROD.query(
+                                                            `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                values ('MMF',$1, $2::timestamp , 0, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                            [
+                                                              employee_id,
+                                                              data_correction_time_in,
+                                                            ],
+                                                            (
+                                                              error,
+                                                              results
+                                                            ) => {
+                                                              if (error) {
+                                                                // Helpers.logger(
+                                                                //   'ERROR',
+                                                                //   {
+                                                                //     employee_id,
+                                                                //     date_filter,
+                                                                //     rev_id,
+                                                                //     status,
+                                                                //   },
+                                                                //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                //   error
+                                                                // );
+
+                                                                throw error;
+                                                              }
+
+                                                              // eslint-disable-next-line eqeqeq
+                                                              if (
+                                                                results.rowCount !=
+                                                                0
+                                                              ) {
+                                                                pool.db_MMFPROD.query(
+                                                                  `insert into emp_clocking_temp_tbl (company_id ,employee_id ,clocking_date ,in_out ,terminal_id ,
+                                                                    off_site ,note , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,
+                                                                    url_photo ,url_remove ,file_name ,location_method , golid,golversion ) 
+                                                                    values ('MMF',$1, $2::timestamp , 1, null, null, 'Perbaikan Absen by HCM, Pengajuan tanggal '||to_char($2::timestamp,'DD/MM/YYY') , null , 'Prepared',null, null, null, null, null, null, 
+                                                                    null, null, null,nextval('emp_clocking_temp_tbl_golid_seq'),1)`,
+                                                                  [
+                                                                    employee_id,
+                                                                    data_correction_time_out,
+                                                                  ],
+                                                                  (
+                                                                    error,
+                                                                    results
+                                                                  ) => {
+                                                                    if (error) {
+                                                                      // Helpers.logger(
+                                                                      //   'ERROR',
+                                                                      //   {
+                                                                      //     employee_id,
+                                                                      //     date_filter,
+                                                                      //     rev_id,
+                                                                      //     status,
+                                                                      //   },
+                                                                      //   'RejectCancelRevAbsenceCtrl.RejectCancelRevAbsence',
+                                                                      //   error
+                                                                      // );
+
+                                                                      throw error;
+                                                                    }
+
+                                                                    // eslint-disable-next-line eqeqeq
+                                                                    if (
+                                                                      results.rowCount !=
+                                                                      0
+                                                                    ) {
+                                                                      console.log(
+                                                                        'data berhasil di update'
+                                                                      );
+                                                                    } else {
+                                                                      console.log(
+                                                                        'data tidak ditemukan 11'
+                                                                      );
+                                                                    }
+                                                                  }
+                                                                );
+                                                              } else {
+                                                                console.log(
+                                                                  'tidak berhasil bosku'
+                                                                );
+                                                              }
+                                                            }
                                                           );
                                                         }
                                                       }
@@ -1696,7 +1780,7 @@ const controller = {
                                                                       0
                                                                     ) {
                                                                       console.log(
-                                                                        'data berhasil diupdate '
+                                                                        'data berhasil diupdate 1 '
                                                                       );
                                                                     } else {
                                                                       console.log(
@@ -1788,7 +1872,7 @@ const controller = {
                                                           results.rowCount != 0
                                                         ) {
                                                           console.log(
-                                                            'data berhasil di update'
+                                                            'data berhasil di update 2'
                                                           );
                                                         } else {
                                                           console.log(
