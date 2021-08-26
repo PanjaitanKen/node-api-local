@@ -1907,32 +1907,32 @@ const controller = {
                   }
                   //end of for
                   // insert notification perubahan absen -- start
-                  // const data = {
-                  //   employee_id,
-                  //   data_nama_pengaju,
-                  //   submission_id: '2',
-                  // };
+                  const data = {
+                    employee_id,
+                    data_nama_pengaju,
+                    submission_id: '2',
+                  };
 
-                  // const options = {
-                  //   headers: {
-                  //     'Content-Type': 'application/json',
-                  //     API_KEY: process.env.API_KEY,
-                  //   },
-                  // };
+                  const options = {
+                    headers: {
+                      'Content-Type': 'application/json',
+                      API_KEY: process.env.API_KEY,
+                    },
+                  };
 
-                  // axios
-                  //   .post(
-                  //     `${process.env.URL}/hcm/api/pNRevAbsen`,
-                  //     data,
-                  //     options
-                  //   )
-                  //   .then((res) => {
-                  //     console.log('RESPONSE ==== : ', res.data);
-                  //   })
-                  //   .catch((err) => {
-                  //     console.log('ERROR: ====', err);
-                  //     throw err;
-                  //   });
+                  axios
+                    .post(
+                      `${process.env.URL}/hcm/api/pNRevAbsen`,
+                      data,
+                      options
+                    )
+                    .then((res) => {
+                      console.log('RESPONSE ==== : ', res.data);
+                    })
+                    .catch((err) => {
+                      console.log('ERROR: ====', err);
+                      throw err;
+                    });
                   // insert notification perubahan absen -- end
 
                   //email + wa feature
