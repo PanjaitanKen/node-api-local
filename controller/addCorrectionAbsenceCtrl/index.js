@@ -150,7 +150,7 @@ const controller = {
                           const data = {
                             employee_id,
                             data_display_name,
-                            submission_id: '1',
+                            submission_id: '5',
                           };
 
                           const options = {
@@ -246,13 +246,9 @@ const controller = {
                                       error
                                     );
 
-                                    response.status(500).send({
-                                      status: 500,
-                                      message:
-                                        'Kami mengetahui bahwa email ini di sistem tidak ada!',
-                                      validate_id: employee_id,
-                                      data: '',
-                                    });
+                                    console.log(
+                                      'email tidak ada atau tidak dapat mengirim ke email terdaftar'
+                                    );
                                   }
 
                                   // insert wa message -- start
@@ -289,13 +285,9 @@ const controller = {
                                         err
                                       );
 
-                                      response.status(500).send({
-                                        status: 500,
-                                        message:
-                                          'Kami mengetahui bahwa nomor telepon ini di sistem tidak ada!',
-                                        validate_id: employee_id,
-                                        data: '',
-                                      });
+                                      console.log(
+                                        'kami mengetahui bahwa nomor telepon ini di sistem tidak ada'
+                                      );
                                     });
                                   // insert wa message -- end
 

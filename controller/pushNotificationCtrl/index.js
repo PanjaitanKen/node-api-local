@@ -390,13 +390,25 @@ const controller = {
 
       let msg_body = '';
       if (submission_id == '1') {
-        msg_body = 'telah mengajukan Perbaikan Absen';
+        msg_body = `${_.startCase(
+          employee_name
+        )} telah mengajukan Perbaikan Absen`;
       } else if (submission_id == '2') {
-        msg_body = "pengajuan Perbaikan Absen kamu telah di 'Approved'";
+        msg_body = `${_.startCase(
+          employee_name
+        )} pengajuan Perbaikan Absen kamu telah di 'Approved'`;
       } else if (submission_id == '3') {
-        msg_body = "pengajuan Perbaikan Absen kamu telah di 'Reject'";
+        msg_body = `${_.startCase(
+          employee_name
+        )}pengajuan Perbaikan Absen kamu telah di 'Reject'`;
       } else if (submission_id == '4') {
-        msg_body = "Pengajuan Perbaikan Absen 'Approved/Rejected'";
+        msg_body = `${_.startCase(
+          employee_name
+        )} Pengajuan Perbaikan Absen 'Approved/Rejected'`;
+      } else if (submission_id == '5') {
+        msg_body = `Pengajuan Perbaikan Absen atas nama ${_.startCase(
+          employee_name
+        )} `;
       }
 
       pool.db_MMFPROD.query(
@@ -408,7 +420,7 @@ const controller = {
           }
           if (results.rowCount > 0) {
             const employee_token =
-              submission_id == '1'
+              submission_id == '1' || submission_id == '5'
                 ? results.rows[0].supervisor_id
                 : employee_id;
             pool.db_HCM.query(
@@ -424,11 +436,11 @@ const controller = {
                     data: {
                       // This is only optional, you can send any data
                       title: 'Pengajuan Perbaikan Absen',
-                      body: `${_.startCase(employee_name)} ${msg_body} `,
+                      body: `${msg_body} `,
                     },
                     notification: {
                       title: 'Pengajuan Perbaikan Absen',
-                      body: `${_.startCase(employee_name)} ${msg_body} `,
+                      body: `${msg_body} `,
                     },
                     token,
                   };

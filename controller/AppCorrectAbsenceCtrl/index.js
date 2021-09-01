@@ -2001,7 +2001,7 @@ const controller = {
                             `Dear ${data_nama_pengaju} \n` +
                             '\n' +
                             `No.Karyawan : ${employee_id} \n` +
-                            `Tanggal pengajuan perbaikan : ${day} sudah dilakukan proses approval/tolak \n` +
+                            `Pengajuan Perbaikan Absen tgl ${day} anda sudah di proses 'Approved/Rejected' \n` +
                             'mohon cek kembali di riwayat absen mu  \n' +
                             '\n' +
                             `${detail_pengajuan}` +
@@ -2033,7 +2033,7 @@ const controller = {
                               `Dear ${data_nama_pengaju} \n` +
                               '\n' +
                               `No.Karyawan : ${employee_id} \n` +
-                              `Tanggal pengajuan perbaikan : ${day} sudah dilakukan proses approval/tolak \n` +
+                              `Pengajuan Perbaikan Absen tgl ${day} anda sudah di proses 'Approved/Rejected' \n` +
                               'mohon cek kembali di riwayat absen mu  \n' +
                               '\n' +
                               `${detail_pengajuan}` +
