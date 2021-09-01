@@ -386,27 +386,31 @@ const controller = {
   },
   pNRevAbsen(request, response) {
     try {
-      const { employee_id, employee_name, submission_id } = request.body;
+      const {
+        employee_id,
+        employee_name,
+        submission_id,
+        dateofday,
+      } = request.body;
+      console.log(dateofday);
 
       let msg_body = '';
       if (submission_id == '1') {
-        msg_body = `${_.startCase(
+        msg_body = `${_.capitalize(
           employee_name
         )} telah mengajukan Perbaikan Absen`;
       } else if (submission_id == '2') {
-        msg_body = `${_.startCase(
+        msg_body = `${_.capitalize(
           employee_name
         )} pengajuan Perbaikan Absen kamu telah di 'Approved'`;
       } else if (submission_id == '3') {
-        msg_body = `${_.startCase(
+        msg_body = `${_.capitalize(
           employee_name
         )}pengajuan Perbaikan Absen kamu telah di 'Reject'`;
       } else if (submission_id == '4') {
-        msg_body = `${_.startCase(
-          employee_name
-        )} Pengajuan Perbaikan Absen 'Approved/Rejected'`;
+        msg_body = `Pengajuan Perbaikan Absen tgl ${dateofday} anda sudah di proses 'Approved/Rejected'`;
       } else if (submission_id == '5') {
-        msg_body = `Pengajuan Perbaikan Absen atas nama ${_.startCase(
+        msg_body = `Pengajuan Perbaikan Absen atas nama ${_.capitalize(
           employee_name
         )} `;
       }

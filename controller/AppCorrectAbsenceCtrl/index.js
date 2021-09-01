@@ -3,7 +3,6 @@ const pool = require('../../db');
 const Helpers = require('../../helpers');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
-const dateFormat = require('dateformat');
 const _ = require('lodash');
 
 // Tabel : person_tbl, employee_tbl
@@ -12,12 +11,12 @@ const controller = {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
-    const { employee_id, golid, data_perbaikan } = request.body;
+    const { employee_id, golid, tgl_pengajuan, data_perbaikan } = request.body;
 
     Helpers.logger(
       'SUCCESS',
       { employee_id },
-      'getHistAbsenceNewCtrl.getHistAbsenceNew'
+      'AppCorrectAbsenceCtrl.AppCorrectAbsence'
     );
 
     try {
@@ -1911,6 +1910,7 @@ const controller = {
                     employee_id,
                     data_nama_pengaju,
                     submission_id: '4',
+                    tgl_pengajuan,
                   };
 
                   const options = {
@@ -1970,8 +1970,6 @@ const controller = {
 
                         const passwordMail = passwordMailValue[0].setting_value;
 
-                        const day = dateFormat(new Date(), 'yyyy-mm-dd');
-
                         const transporter = nodemailer.createTransport({
                           host: hostMail,
                           port: 587,
@@ -1998,10 +1996,10 @@ const controller = {
                           to: email_to,
                           subject: subject_email,
                           text:
-                            `Dear ${data_nama_pengaju} \n` +
+                            `Dear ${_.capitalize(data_nama_pengaju)} \n` +
                             '\n' +
                             `No.Karyawan : ${employee_id} \n` +
-                            `Pengajuan Perbaikan Absen tgl ${day} anda sudah di proses 'Approved/Rejected' \n` +
+                            `Tanggal pengajuan perbaikan : ${tgl_pengajuan} sudah dilakukan proses approval/tolak \n` +
                             'mohon cek kembali di riwayat absen mu  \n' +
                             '\n' +
                             `${detail_pengajuan}` +
@@ -2009,7 +2007,7 @@ const controller = {
                             'Demikian pengajuan yang disampaikan \n' +
                             '\n' +
                             'Salam Hormat \n' +
-                            `${data_nama_atasan}`,
+                            `${_.capitalize(data_nama_atasan)}`,
                         };
 
                         transporter.sendMail(mailOptions, (error) => {
@@ -2030,10 +2028,10 @@ const controller = {
                             to: data_no_hp_pengaju,
                             header: 'Pengajuan Perbaikan Absen',
                             text:
-                              `Dear ${data_nama_pengaju} \n` +
+                              `Dear ${_.capitalize(data_nama_pengaju)} \n` +
                               '\n' +
                               `No.Karyawan : ${employee_id} \n` +
-                              `Pengajuan Perbaikan Absen tgl ${day} anda sudah di proses 'Approved/Rejected' \n` +
+                              `Tanggal pengajuan perbaikan : ${tgl_pengajuan} sudah dilakukan proses approval/tolak \n` +
                               'mohon cek kembali di riwayat absen mu  \n' +
                               '\n' +
                               `${detail_pengajuan}` +
@@ -2041,7 +2039,7 @@ const controller = {
                               'Demikian pengajuan yang disampaikan \n' +
                               '\n' +
                               'Salam Hormat \n' +
-                              `${data_nama_atasan}`,
+                              `${_.capitalize(data_nama_atasan)}`,
                           };
 
                           const options = {

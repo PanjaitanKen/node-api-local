@@ -1273,6 +1273,9 @@ module.exports = (app) => {
       [
         check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
         check('golid').notEmpty().withMessage('golid REQUIRED!'),
+        check('tgl_pengajuan')
+          .notEmpty()
+          .withMessage('tgl_pengajuan REQUIRED!'),
         check('data_perbaikan')
           .notEmpty()
           .withMessage('data_perbaikan REQUIRED!'),
