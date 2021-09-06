@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 const { validationResult } = require('express-validator');
 const pool = require('../../db');
 const Helpers = require('../../helpers');
@@ -231,12 +232,14 @@ const controller = {
                                     `Dear ${data_approved_name} \n` +
                                     '\n' +
                                     `No.Karyawan : ${employee_id} \n` +
-                                    `melakukan pengajuan perbaikan absen, mohon untuk dapat melakukan  proses Approval  \n` +
+                                    `Nama Karyawan : ${data_display_name} \n` +
+                                    `melakukan Pengajuan Perbaikan Absen. \n` +
                                     '\n' +
-                                    'Demikian pengajuan yang disampaikan \n' +
+                                    `mohon untuk melakukan proses 'Approved/Rejected' atas pengajuan karyawan. \n` +
                                     '\n' +
-                                    'Salam Hormat \n' +
-                                    `${data_display_name}`,
+                                    'Terima Kasih \n' +
+                                    '\n' +
+                                    'Salam Hormat \n',
                                 };
 
                                 transporter.sendMail(mailOptions, (error) => {
@@ -259,12 +262,14 @@ const controller = {
                                       `Dear ${data_approved_name} \n` +
                                       '\n' +
                                       `No.Karyawan : ${employee_id} \n` +
-                                      `melakukan pengajuan perbaikan absen, mohon untuk dapat melakukan  proses Approval  \n` +
+                                      `Nama Karyawan : ${data_display_name} \n` +
+                                      `melakukan Pengajuan Perbaikan Absen. \n` +
                                       '\n' +
-                                      'Demikian pengajuan yang disampaikan \n' +
+                                      `Mohon untuk melakukan proses 'Approved/Rejected' atas pengajuan karyawan. \n` +
                                       '\n' +
-                                      'Salam Hormat \n' +
-                                      `${data_display_name}`,
+                                      'Terima Kasih \n' +
+                                      '\n' +
+                                      'Salam Hormat \n',
                                   };
 
                                   const options = {

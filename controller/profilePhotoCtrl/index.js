@@ -12,12 +12,16 @@ const controller = {
       // get image from base64
       const base64Data = photo.replace(/^data:image\/png;base64,/, '');
 
-      const dir = `./uploads/profile/${employee_id}/`;
+      const dir = './uploads/profile';
       if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+      const dir2 = `./uploads/profile/${employee_id}/`;
+      if (!fs.existsSync(dir2)) fs.mkdirSync(dir2);
+
       const fileName = `mportal-mandala-profile.jpg`;
 
       // eslint-disable-next-line global-require
-      require('fs').writeFile(dir + fileName, base64Data, 'base64', () => {});
+      require('fs').writeFile(dir2 + fileName, base64Data, 'base64', () => {});
       const url_path = `${serve}/uploads/profile/${employee_id}/${fileName}`;
 
       pool.db_HCM.query(

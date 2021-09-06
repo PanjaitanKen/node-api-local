@@ -388,31 +388,32 @@ const controller = {
     try {
       const {
         employee_id,
-        employee_name,
+        data_display_name,
         submission_id,
-        dateofday,
+        tgl_pengajuan,
       } = request.body;
-      console.log(dateofday);
+      console.log(tgl_pengajuan);
+      console.log(data_display_name);
 
       let msg_body = '';
       if (submission_id == '1') {
         msg_body = `${_.capitalize(
-          employee_name
+          data_display_name
         )} telah mengajukan Perbaikan Absen`;
       } else if (submission_id == '2') {
         msg_body = `${_.capitalize(
-          employee_name
+          data_display_name
         )} pengajuan Perbaikan Absen kamu telah di 'Approved'`;
       } else if (submission_id == '3') {
         msg_body = `${_.capitalize(
-          employee_name
+          data_display_name
         )}pengajuan Perbaikan Absen kamu telah di 'Reject'`;
       } else if (submission_id == '4') {
-        msg_body = `Pengajuan Perbaikan Absen tgl ${dateofday} anda sudah di proses 'Approved/Rejected'`;
+        msg_body = `Proses 'Approved/Rejected' Pengajuan Perbaikan Absen tgl ${tgl_pengajuan} sudah di lakukan, mohon cek ke menu Riwayat Absenmu`;
       } else if (submission_id == '5') {
-        msg_body = `Pengajuan Perbaikan Absen atas nama ${_.capitalize(
-          employee_name
-        )} `;
+        msg_body = `Mohon untuk melakukan proses 'Approved/Rejected' untuk Pengajuan Perbaikan Absen atas nama ${_.capitalize(
+          data_display_name
+        )} di menu 'Manage' `;
       }
 
       pool.db_MMFPROD.query(

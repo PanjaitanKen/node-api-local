@@ -1,9 +1,14 @@
+/* eslint-disable no-console */
+/* eslint-disable no-plusplus */
+/* eslint-disable eqeqeq */
+/* eslint-disable max-len */
+/* eslint-disable object-curly-newline */
 const { validationResult } = require('express-validator');
-const pool = require('../../db');
-const Helpers = require('../../helpers');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const _ = require('lodash');
+const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 // Tabel : person_tbl, employee_tbl
 const controller = {
@@ -65,21 +70,15 @@ const controller = {
                 if (results.rowCount != 0) {
                   // eslint-disable-next-line no-plusplus
                   for (let i = 0; i < data_perbaikan.length; i++) {
-                    let data_correction_time_in =
+                    const data_correction_time_in =
                       data_perbaikan[i].time_in == null
                         ? null
-                        : data_perbaikan[i].date +
-                          ' ' +
-                          data_perbaikan[i].time_in +
-                          ':' +
+                        : `${data_perbaikan[i].date} ${data_perbaikan[i].time_in}:` +
                           '00';
-                    let data_correction_time_out =
+                    const data_correction_time_out =
                       data_perbaikan[i].time_out == null
                         ? null
-                        : data_perbaikan[i].date +
-                          ' ' +
-                          data_perbaikan[i].time_out +
-                          ':' +
+                        : `${data_perbaikan[i].date} ${data_perbaikan[i].time_out}:` +
                           '00';
 
                     pool.db_MMFPROD.query(
@@ -227,7 +226,7 @@ const controller = {
                                       // eslint-disable-next-line eqeqeq
                                       if (results.rowCount != 0) {
                                         pool.db_MMFPROD.query(
-                                          `delete from emp_clocking_tbl where employee_id =$1 and clocking_date = $2 `,
+                                          'delete from emp_clocking_tbl where employee_id =$1 and clocking_date = $2 ',
 
                                           [employee_id, data_perbaikan[i].date],
                                           (error, results) => {
@@ -372,7 +371,7 @@ const controller = {
                                                           results.rowCount != 0
                                                         ) {
                                                           pool.db_MMFPROD.query(
-                                                            `delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 `,
+                                                            'delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 ',
                                                             [
                                                               employee_id,
                                                               data_perbaikan[i]
@@ -1152,7 +1151,7 @@ const controller = {
                                             );
                                             if (results.rowCount != 0) {
                                               pool.db_MMFPROD.query(
-                                                `delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 `,
+                                                'delete from emp_clocking_detail_tbl where employee_id =$1 and clocking_date = $2 ',
                                                 [
                                                   employee_id,
                                                   data_perbaikan[i].date,
@@ -1904,7 +1903,7 @@ const controller = {
                       }
                     );
                   }
-                  //end of for
+                  // end of for
                   // insert notification perubahan absen -- start
                   const data = {
                     employee_id,
@@ -1935,8 +1934,9 @@ const controller = {
                     });
                   // insert notification perubahan absen -- end
 
-                  //email + wa feature
-                  const subject_email = `Pengajuan Perbaikan Absen 'Approved/Rejected'`;
+                  // email + wa feature
+                  const subject_email =
+                    "Pengajuan Perbaikan Absen 'Approved/Rejected'";
                   const email_to = data_email_pengaju;
                   pool.db_HCM.query(
                     'select * from param_hcm ',
@@ -1983,13 +1983,11 @@ const controller = {
                           },
                         });
 
-                        let detail_pengajuan = [];
+                        const detail_pengajuan = [];
                         for (let i = 0; i < data_perbaikan.length; i++) {
-                          detail_pengajuan[i] =
-                            data_perbaikan[i].date +
-                            ' - ' +
-                            data_perbaikan[i].status +
-                            '\n';
+                          detail_pengajuan[
+                            i
+                          ] = `${data_perbaikan[i].date} - ${data_perbaikan[i].status}\n`;
                         }
                         const mailOptions = {
                           from: userMail,

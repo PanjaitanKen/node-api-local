@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-tabs */
 const { validationResult } = require('express-validator');
 const pool = require('../../db');
 const Helpers = require('../../helpers');
@@ -9,6 +11,7 @@ const controller = {
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
     const { employee_id, filter_date } = request.body;
+
     // const data_filter_date = filter_date === 0 ? 30 : 30;
 
     Helpers.logger(
@@ -39,8 +42,21 @@ const controller = {
               when to_char(a.tgl_bulan_ini,'MM')='10' then 'Oktober'
               when to_char(a.tgl_bulan_ini,'MM')='11' then 'November'
               when to_char(a.tgl_bulan_ini,'MM')='12' then 'Desember' end as Bulan,
-       $1::text employee_id , tgl_jam_masuk, tgl_jam_pulang, 
-      b.jam_masuk, c.jam_pulang, d.state,
+       $1::text employee_id , 
+       case when j.state in ('Approved','Submitted') then  j.correction_time_in 
+       when s.clocking_Date is not null then  s.time_in else tgl_jam_masuk end as tgl_jam_masuk, 
+  case when j.state in ('Approved','Submitted') then  j.correction_time_out 
+       when s.clocking_Date is not null then  s.time_out else tgl_jam_pulang  end as tgl_jam_pulang,
+  
+  case when j.state in ('Approved','Submitted') then to_char(j.correction_time_in,'HH24:MI') 
+       when j.state is null and d.status_error_masuk='1' then null 
+       when s.clocking_Date is not null then to_char(s.time_in,'HH24:MI') else b.jam_masuk end as jam_masuk,
+  
+  case when j.state in ('Approved','Submitted') then to_char(j.correction_time_out,'HH24:MI')  
+       when j.state is null and e.status_error_pulang='1' then null 
+       when s.clocking_Date is not null then to_char(s.time_out,'HH24:MI') else c.jam_pulang end as jam_pulang,
+
+      d.state,
       case when d.status_error_masuk is null then '0'
            when d.status_error_masuk='0' then '0'
        else '1' end as status_error_masuk, e.state,
@@ -52,18 +68,19 @@ const controller = {
       case when f.absence_wage is not null then '1' else '0' end as status_cuti,
       case when g.employee_id is not null then '1' else '0' end as status_izin,
       case when h.employee_id is not null then '1' else '0' end as status_PD,
-      case when (i.state in ('Approved','Transfered') or i.result_revised = 'N') or j.state in ('Approved','Submitted') or a.tgl_bulan_ini<k.first_join_date 
+      case when (i.state in ('Approved','Transfered') or i.result_revised = 'N') or j.state in ('Approved','Submitted','Rejected') or a.tgl_bulan_ini<k.first_join_date 
           or to_char(a.tgl_bulan_ini,'YYYY-MM')<to_char(CURRENT_DATE,'YYYY-MM') or to_char(a.tgl_bulan_ini,'YYYY-MM-DD')=to_char(CURRENT_DATE,'YYYY-MM-DD') then '1' else '0' end as status_perbaikan,
       case when j.state='Submitted' then '1'
                    when j.state='Approved' then '2'
                    when j.state='Rejected' then '3'
                    when j.state='Cancelled' then '4'
       else '0' end as status_verifikasi_perbaikan,
-      case when j.state='Submitted' then 'Perbaikan absen menunggu persetujuan '||initcap(q.display_name)
+      case when j.state='Submitted' then 'Menunggu persetujuan '||initcap(q.display_name)
       when j.state='Approved' then 'Perbaikan absen telah disetujui '||initcap(q.display_name)
       when j.state='Rejected' then 'Perbaikan absen telah ditolak '||initcap(q.display_name)
       when j.state='Cancelled' then 'Perbaikan absen telah dibatalkan '||initcap(q.display_name) 
-      else ' ' end as status_message_perbaikan
+      else ' ' end as status_message_perbaikan,
+      case when r.status_libur=true then 1 else 0 end as hari_libur
       from 	
       (select * from 
         generate_series(date_trunc('month',CURRENT_DATE - interval '1 months'),
@@ -84,17 +101,22 @@ const controller = {
          group by a.employee_id, a.in_out, to_Char(a.clocking_date,'YYYY-MM-DD')
         ) c on to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = c.tanggal_absen
       left join 
-        (select employee_id ,to_char(clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(clocking_date ,'HH24:MI') jam_masuk,state,
-        case when state in ('Error') then '1' else '0' end status_error_masuk,
+        (select a.employee_id ,to_char(a.clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(a.clocking_date ,'HH24:MI') jam_masuk,state,
+        case when a.state in ('Error') and b.time_in is null then '1' else '0' end status_error_masuk,
            transfer_message  as transfer_message_masuk 
-           from emp_clocking_temp_tbl where in_out='0' 
-           and employee_id= $1 ) d on b.tanggal_absen = d.tanggal_absen and b.jam_masuk= d.jam_masuk
+           from emp_clocking_temp_tbl a
+           left join emp_clocking_detail_tbl b on a.employee_id =b.employee_id and to_char(a.clocking_date,'YYYY-MM-DD') =to_char(b.clocking_date,'YYYY-MM-DD') 
+           where in_out='0' and a.state ='Error'
+           and a.employee_id= $1 ) d on b.tanggal_absen = d.tanggal_absen and b.jam_masuk= d.jam_masuk
       left join 
-        (select employee_id ,to_char(clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(clocking_date ,'HH24:MI') jam_pulang,state,
-         case when state in ('Error') then '1' else '0' end status_error_pulang,
-           transfer_message  as transfer_message_masuk 
-           from emp_clocking_temp_tbl where in_out='1' 
-           and employee_id= $1 ) e on c.tanggal_absen = e.tanggal_absen and c.jam_pulang= e.jam_pulang 
+        (select a.employee_id ,to_char(a.clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(a.clocking_date ,'HH24:MI') jam_pulang,state,
+         case when a.state in ('Error') and b.time_out is null then '1' else '0' end status_error_pulang,
+           transfer_message  as transfer_message_masuk ,b.employee_id ,b.time_out 
+           from emp_clocking_temp_tbl a
+           left join emp_clocking_detail_tbl b on a.employee_id =b.employee_id and to_char(a.clocking_date,'YYYY-MM-DD') =to_char(b.clocking_date,'YYYY-MM-DD') 
+           where in_out='1' and a.state ='Error'
+           and a.employee_id= $1 
+           order by a.clocking_date desc) e on c.tanggal_absen = e.tanggal_absen and c.jam_pulang= e.jam_pulang 
       left join 
         (select employee_id, clocking_date, absence_wage from  
            emp_clocking_detail_tbl where absence_wage like 'CT_%'
@@ -128,18 +150,40 @@ const controller = {
       left join employee_supervisor_tbl o on o.employee_id = $1 and current_date between o.valid_from and o.valid_to 
       left join employee_tbl p on o.supervisor_id = p.employee_id 
       left join person_tbl q on p.person_id = q.person_id 
+      left join 
+          (select substitute_date as tgl_libur, 
+          true as status_libur 
+          from day_sub_detail_tbl where company_id='MMF' and substitute_type like 'LIBUR NASIONAL%'
+          union all 
+          SELECT  mydate as sunday, true as status_libur FROM 
+          generate_series(to_date((select min(to_char(substitute_date,'YYYY')) min_thn from day_sub_detail_tbl) ||'-01-01','YYYY-MM-DD'),  
+          to_date((select max(to_char(substitute_date,'YYYY')) max_thn from day_sub_detail_tbl)||'-12-31','YYYY-MM-DD'), '1 day') AS g(mydate) 
+          WHERE EXTRACT(DOW FROM mydate) = 0 
+          
+          ) r on a.tgl_bulan_ini = r.tgl_libur
+      left join     
+          (
+            select * from emp_clocking_detail_tbl  ect where off_site ='N' and 
+            absence_wage is null order by clocking_date desc
+          ) s on s.employee_id = $1 and a.tgl_bulan_ini = s.clocking_date
       where tgl_bulan_ini  between (current_date -interval '1 days' * 30) and now()
       order by tgl_bulan_ini desc`;
 
       await pool.db_MMFPROD
         .query(query, [employee_id])
         .then(({ rows }) => {
+          const jam_absen_cutoff = 11;
+          const minute_absen_cutoff = 0;
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data Berhasil',
               validate_id: employee_id,
+              cutoff_absence: {
+                hour: jam_absen_cutoff,
+                minute: minute_absen_cutoff,
+              },
               data: rows,
             });
           } else {
