@@ -3,39 +3,39 @@ const { validationResult } = require('express-validator');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  getCountCK(request, response) {
+  async getCountCK(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id } = request.body;
 
-      pool.db_HCM.query(
-        `select count(*) jumlah_calon_karyawan
+      const query = `select count(*) jumlah_calon_karyawan
         from trx_calon_karyawan a  
         where nokar_atasan =$1 and 
-        tgl_scan_qr is null`,
-        [employee_id],
-        (error, results) => {
-          if (error) throw error;
-
+        tgl_scan_qr is null`;
+      await pool.db_HCM
+        .query(query, [employee_id])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows[0],
+              data: rows[0],
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

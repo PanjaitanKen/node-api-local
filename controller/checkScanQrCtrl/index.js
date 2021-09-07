@@ -9,7 +9,7 @@ const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  checkScanQr(request, response) {
+  async checkScanQr(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -19,24 +19,24 @@ const controller = {
 
     try {
       // A
-      pool.db_HCM.query(
-        `select case when tgl_scan_qr is not null then 1 else 0 end as sudah_scan
+      await pool.db_HCM
+        .query(
+          `select case when tgl_scan_qr is not null then 1 else 0 end as sudah_scan
         from trx_calon_karyawan tck where userid_ck=$1`,
-        [userid_ck],
-        (error, results) => {
-          if (error) throw error;
-
-          if (results.rowCount > 0) {
-            if (results.rows[0].sudah_scan != 1) {
+          [userid_ck]
+        )
+        .then(async ({ rowCount, rows }) => {
+          if (rowCount > 0) {
+            if (rows[0].sudah_scan != 1) {
               // B
-              pool.db_HCM.query(
-                'select employee_id from trx_calon_karyawan where userid_ck=$1',
-                [userid_ck],
-                (error, results) => {
-                  if (error) throw error;
-
-                  if (results.rowCount > 0) {
-                    const { employee_id } = results.rows[0];
+              await pool.db_HCM
+                .query(
+                  'select employee_id from trx_calon_karyawan where userid_ck=$1',
+                  [userid_ck]
+                )
+                .then(async ({ rowCount, rows }) => {
+                  if (rowCount > 0) {
+                    const { employee_id } = rows[0];
 
                     // insert log activity user -- start
                     const data = {
@@ -67,15 +67,16 @@ const controller = {
                     // insert log activity user -- end
 
                     // D
-                    pool.db_HCM.query(
-                      'update trx_calon_karyawan set tgl_expired = current_date, tgl_scan_qr = current_date where userid_ck = $1',
-                      [userid_ck],
-                      (error) => {
-                        if (error) throw error;
-
+                    await pool.db_HCM
+                      .query(
+                        'update trx_calon_karyawan set tgl_expired = current_date, tgl_scan_qr = current_date where userid_ck = $1',
+                        [userid_ck]
+                      )
+                      .then(async () => {
                         // C
-                        pool.db_MMFPROD.query(
-                          `select a.employee_id, b.display_name as nama, 
+                        await pool.db_MMFPROD
+                          .query(
+                            `select a.employee_id, b.display_name as nama, 
                           case when gender='1' then 'Laki-laki' when gender='2' then 'Wanita' end as gender ,
                           coalesce(c.contact_value,cc.contact_value) as no_hp, coalesce(d.contact_value,dd.contact_value) as email, e.company_office 
                           from employee_tbl a
@@ -87,21 +88,20 @@ const controller = {
                           left join person_contact_method_tbl d on b.person_id = d.person_id and d.default_address ='Y' and d.contact_type='4'
                           left join emp_company_office_tbl e on a.employee_id = e.employee_id 
                           where a.employee_id =$1`,
-                          [employee_id],
-                          (error, results) => {
-                            if (error) throw error;
-
-                            if (results.rowCount > 0) {
-                              const email_to = results.rows[0].email;
+                            [employee_id]
+                          )
+                          .then(async ({ rowCount, rows }) => {
+                            if (rowCount > 0) {
+                              const email_to = rows[0].email;
 
                               const subject_email =
                                 'Informasi Karyawan Baru di PT Mandala Finance';
 
-                              const emp_nokar = results.rows[0].employee_id;
+                              const emp_nokar = rows[0].employee_id;
                               const emp_password = emp_nokar;
                               const lms_password = 'Mandala-123';
-                              const emp_name = results.rows[0].nama;
-                              const emp_ph = results.rows[0].no_hp;
+                              const emp_name = rows[0].nama;
+                              const emp_ph = rows[0].no_hp;
 
                               pool.db_HCM.query(
                                 'select * from param_hcm ',
@@ -266,10 +266,8 @@ const controller = {
                                 data: '',
                               });
                             }
-                          }
-                        );
-                      }
-                    );
+                          });
+                      });
                   } else {
                     response.status(200).send({
                       status: 200,
@@ -278,14 +276,13 @@ const controller = {
                       data: '',
                     });
                   }
-                }
-              );
+                });
             } else {
               response.status(200).send({
                 status: 200,
                 message: 'already scanned',
                 validate_id: userid_ck,
-                data: results.rows[0],
+                data: rows[0],
               });
             }
           } else {
@@ -296,8 +293,10 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }
