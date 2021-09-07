@@ -1,16 +1,15 @@
-const pool = require('../../db');
 const { validationResult } = require('express-validator');
+const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  getFirstDayGuideData(request, response) {
+  async getFirstDayGuideData(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id } = request.body;
 
-      pool.db_HCM.query(
-        `select to_char(tgl_kerja,'MM/DD/YYYY') tgl_kerja,
+      const query = `select to_char(tgl_kerja,'MM/DD/YYYY') tgl_kerja,
         to_char(tgl_kerja,'DD')||' '||
                   case when to_char(tgl_kerja ,'MM')='01' then 'Januari'
                     when to_char(tgl_kerja,'MM')='02' then 'Febuari'
@@ -26,15 +25,15 @@ const controller = {
                     when to_char(tgl_kerja,'MM')='12' then 'Desember' end ||' '||to_char(tgl_kerja,'YYYY') tgl_kerja2,
         company_office, nama_atasan
         from trx_calon_karyawan
-        where userid_ck=$1`,
-        [employee_id],
-        (error, results) => {
-          if (error) throw error;
+        where userid_ck=$1`;
 
+      await pool.db_HCM
+        .query(query, [employee_id])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             // eslint-disable-next-line prefer-const
-            let rawData = results.rows[0];
+            let rawData = rows[0];
             pool.db_MMFPROD.query(
               `select  initcap(address) alamat 
               from work_location_tbl where work_location =$1`,
@@ -66,11 +65,13 @@ const controller = {
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

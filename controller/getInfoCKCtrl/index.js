@@ -1,10 +1,10 @@
-const pool = require('../../db');
 const { validationResult } = require('express-validator');
 const axios = require('axios');
+const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  getInfoCK(request, response) {
+  async getInfoCK(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
@@ -34,20 +34,18 @@ const controller = {
         });
       // insert log activity user -- end
 
-      pool.db_MMFPROD.query(
-        `select count(*) flag from candidate_appointment_tbl
+      const query = `select count(*) flag from candidate_appointment_tbl
         where (new_assign_employee is not null and new_assign_employee <>'')
-        and candidate_id = $1`,
-        [userid_ck],
-        (error, results) => {
-          if (error) throw error;
-
+        and candidate_id = $1`;
+      await pool.db_MMFPROD
+        .query(query, [userid_ck])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
-            console.log(results.rows[0].flag);
-            if (results.rows[0].flag >= 1) {
-              pool.db_MMFPROD.query(
-                `select a.applicant_id,   a.state ,coalesce(a.first_name,' ') as nama_depan,coalesce(a.last_name,' ') as nama_belakang,
+          if (rows != '') {
+            if (rows[0].flag >= 1) {
+              await pool.db_MMFPROD
+                .query(
+                  `select a.applicant_id,   a.state ,coalesce(a.first_name,' ') as nama_depan,coalesce(a.last_name,' ') as nama_belakang,
                 date_applied as tgl_input, b.appointment_date tgl_penunjukan, b.starting_date tgl_kerja,
                 point_of_hire tempat_rekrut,  
                 a.place_of_birth as tempat_lahir, a.date_of_birth as tgl_lahir, have_child punya_anak, 
@@ -114,31 +112,30 @@ const controller = {
                   group by applicant_id) v on a.applicant_id = v.applicant_id 
 
                 where b.candidate_id =$1 and (new_assign_employee is not null and new_assign_employee <>'') `,
-                [userid_ck],
-                (error, results) => {
-                  if (error) throw error;
-
+                  [userid_ck]
+                )
+                .then(async ({ rows }) => {
                   // eslint-disable-next-line eqeqeq
-                  if (results.rows != '') {
+                  if (rows != '') {
                     response.status(200).send({
                       status: 200,
                       message: 'Load Data berhasil',
                       validate_id: employee_id,
-                      data: results.rows[0],
+                      data: rows[0],
                     });
                   } else {
                     response.status(200).send({
                       status: 200,
                       message: 'Data Tidak Ditemukan',
                       validate_id: employee_id,
-                      data: results.rows,
+                      data: '',
                     });
                   }
-                }
-              );
+                });
             } else {
-              pool.db_MMFPROD.query(
-                `select b.employee_id as applicant_id, 'Employed' as state, coalesce(a.first_name,' ') as nama_depan, coalesce(a.last_name,' ') as nama_belakang, 
+              await pool.db_MMFPROD
+                .query(
+                  `select b.employee_id as applicant_id, 'Employed' as state, coalesce(a.first_name,' ') as nama_depan, coalesce(a.last_name,' ') as nama_belakang, 
                 b.entry_date as tgl_input,b.entry_date as tgl_penunjukan, b.first_join_date as tgl_kerja,
                 c.company_office as tempat_rekrut, a.place_birth as tempat_lahir,a.birth_date  as tgl_lahir,
                 ' ' punya_anak,d.address as alamat, d.state prop_alamat,d.postal_code kodepos_alamat,
@@ -215,39 +212,39 @@ const controller = {
                     group by person_id) zz on a.person_id = zz.person_id 
 
                 where b.employee_id =$1 and c.company_office is not null`,
-                [employee_id],
-                (error, results) => {
-                  if (error) throw error;
-
+                  [employee_id]
+                )
+                .then(async ({ rows }) => {
                   // eslint-disable-next-line eqeqeq
-                  if (results.rows != '') {
+                  if (rows != '') {
                     response.status(200).send({
                       status: 200,
                       message: 'Load Data berhasil',
                       validate_id: employee_id,
-                      data: results.rows[0],
+                      data: rows[0],
                     });
                   } else {
                     response.status(200).send({
                       status: 200,
                       message: 'Data Tidak Ditemukan',
                       validate_id: employee_id,
-                      data: results.rows,
+                      data: '',
                     });
                   }
-                }
-              );
+                });
             }
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

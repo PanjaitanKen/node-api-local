@@ -1133,7 +1133,18 @@ module.exports = (app) => {
   app
     .route('/mmf/api/addClockInWithoutPhoto')
     .all(authenticateApiKey)
-    .post(addClockInWithoutPhotoCtrl.addClockInWithoutPhoto);
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('latitude').notEmpty().withMessage('latitude REQUIRED!'),
+        check('altitude').notEmpty().withMessage('altitude REQUIRED!'),
+        check('longitude').notEmpty().withMessage('longitude REQUIRED!'),
+        check('accuracy').notEmpty().withMessage('accuracy REQUIRED!'),
+        check('location_no').notEmpty().withMessage('location_no REQUIRED!'),
+        check('timeZoneAsia').notEmpty().withMessage('timeZoneAsia REQUIRED!'),
+      ],
+      addClockInWithoutPhotoCtrl.addClockInWithoutPhoto
+    );
 
   app
     .route('/mmf/api/addClockOutWithoutPhoto')
