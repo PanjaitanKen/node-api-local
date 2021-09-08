@@ -4,7 +4,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  getDescAbsence(request, response) {
+  async getDescAbsence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -20,8 +20,7 @@ const controller = {
     );
 
     try {
-      pool.db_MMFPROD.query(
-        ` select a.employee_id, $2::text as tanggal, a.schedule_type,
+      const query = ` select a.employee_id, $2::text as tanggal, a.schedule_type,
         extract(isodow from $2::date) as  hari_ke, b.day_type, 
         c.time_in as default_time_in,c.time_out as default_time_out, 
         --to_char(c.time_in,'HH24:MI') as jam_masuk_default,
@@ -45,30 +44,17 @@ const controller = {
         left join person_contact_method_tbl i on g.person_id = i.person_id and i.default_address ='Y' and i.contact_type='3' 
         left join person_contact_method_tbl j on g.person_id = j.person_id and j.default_address ='Y' and j.contact_type='4'        
         where a.employee_id = $1
-        and $2 between a.valid_from and a.valid_to`,
-        [employee_id, date_filter],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                employee_id,
-                date_filter,
-              },
-              'getDescAbsenceCtrl.getDescAbsence',
-              error
-            );
-
-            throw error;
-          }
-
+        and $2 between a.valid_from and a.valid_to`;
+      await pool.db_MMFPROD
+        .query(query, [employee_id, date_filter])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows,
+              data: rows,
             });
           } else {
             response.status(200).send({
@@ -78,8 +64,20 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          Helpers.logger(
+            'ERROR',
+            {
+              employee_id,
+              date_filter,
+            },
+            'getDescAbsenceCtrl.getDescAbsence',
+            error
+          );
+
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',

@@ -105,146 +105,58 @@ const controller = {
           timeZoneAsia,
           time_stamp_convert,
         ])
-        .then(({ rowCount }) => {
-          pool.db_HCM.query(
-            "insert into emp_clocking_hcm (company_id ,employee_id ,clocking_date ,in_out , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method) values ('MMF',$1, ((to_char(CURRENT_TIMESTAMP AT TIME ZONE $11,'YYYY-MM-DD')||' '||to_Char(CURRENT_TIMESTAMP AT TIME ZONE $11,'HH24:MI:SS'))::timestamp) , 1, 'Transfer data by HCM to Clocking Date: '|| to_char(current_date,'DD Mon YYYY') ||' - '||to_char((CURRENT_TIMESTAMP AT TIME ZONE $11),'HH24:MI:SS')||' '||$10, 'Prepared',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMISS')||'-'||$9||'-'||$8||'-out'||'.jpg', 1)",
-            [
-              employee_id,
-              latitude,
-              altitude,
-              longitude,
-              accuracy,
-              location_no,
-              url_path,
-              randomNumber,
-              employee_id2,
-              timeZoneAsia,
-              time_stamp_convert,
-            ],
-            (error) => {
-              if (error) {
-                Helpers.logger(
-                  'ERROR',
-                  {
-                    employee_id,
-                    latitude,
-                    altitude,
-                    longitude,
-                    accuracy,
-                    location_no,
-                    timeZoneAsia,
-                  },
-                  'AddClockOutCtrl.AddClock_Out',
-                  error
-                );
-
-                throw error;
-              }
-              pool.db_MMFPROD.query(
-                'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
-                [employee_id],
-                (error, results) => {
-                  if (error) {
-                    Helpers.logger(
-                      'ERROR',
-                      {
-                        employee_id,
-                        latitude,
-                        altitude,
-                        longitude,
-                        accuracy,
-                        location_no,
-                        timeZoneAsia,
-                      },
-                      'AddClockOutCtrl.AddClock_Out',
-                      error
-                    );
-
-                    throw error;
-                  }
-
+        .then(async () => {
+          await pool.db_HCM
+            .query(
+              "insert into emp_clocking_hcm (company_id ,employee_id ,clocking_date ,in_out , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name ,location_method) values ('MMF',$1, ((to_char(CURRENT_TIMESTAMP AT TIME ZONE $11,'YYYY-MM-DD')||' '||to_Char(CURRENT_TIMESTAMP AT TIME ZONE $11,'HH24:MI:SS'))::timestamp) , 1, 'Transfer data by HCM to Clocking Date: '|| to_char(current_date,'DD Mon YYYY') ||' - '||to_char((CURRENT_TIMESTAMP AT TIME ZONE $11),'HH24:MI:SS')||' '||$10, 'Prepared',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMISS')||'-'||$9||'-'||$8||'-out'||'.jpg', 1)",
+              [
+                employee_id,
+                latitude,
+                altitude,
+                longitude,
+                accuracy,
+                location_no,
+                url_path,
+                randomNumber,
+                employee_id2,
+                timeZoneAsia,
+                time_stamp_convert,
+              ]
+            )
+            .then(async () => {
+              await pool.db_MMFPROD
+                .query(
+                  'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
+                  [employee_id]
+                )
+                .then(async ({ rows }) => {
                   // eslint-disable-next-line eqeqeq
-                  if (results.rows[0].count == 0) {
+                  if (rows[0].count == 0) {
                     response.status(201).send({
                       status: 201,
                       message: 'Absen Pulang Berhasil',
                       data: 3,
                     });
-
-                    // pool.db_MMFPROD.query(
-                    // eslint-disable-next-line max-len
-                    //   "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
-                    //   [employee_id, location_no, time_stamp_convert],
-                    //   (error) => {
-                    //     if (error) throw error;
-
-                    //     pool.db_MMFPROD.query(
-                    // eslint-disable-next-line max-len
-                    //       "insert into emp_clocking_tbl (company_id ,employee_id ,clocking_date ,result_revised ,presence ,normal_hour ,overtime_hour , absence_hour ,late_hour ,early_hour ,overtime_paid ,temp_day_type ,revised_company ,revised_by ,calc_day_type ,normal_hour_off , late_in_wage ,early_out_wage ,early_break_hour ,late_break_hour ,state ,golid ,golversion ) values ('MMF',$1,current_date,null,0,0,0,0,0,0,0,null,null,null,null,0,null,null,0,0, 'Prepared',nextval('emp_clocking_tbl_golid_seq'),1);",
-                    //       [employee_id],
-                    //       (error) => {
-                    //         if (error) throw error;
-
-                    //         response.status(201).send({
-                    //           status: 201,
-                    //           message: 'Absen Pulang Berhasil',
-                    //           data: 3,
-                    //         });
-                    //       }
-                    //     );
-                    //   }
-                    // );
                   } else {
-                    pool.db_MMFPROD.query(
-                      'SELECT time_out FROM emp_clocking_detail_tbl where clocking_date =current_date and employee_id = $1',
-                      [employee_id],
-                      (error, results) => {
-                        if (error) {
-                          Helpers.logger(
-                            'ERROR',
-                            {
-                              employee_id,
-                              latitude,
-                              altitude,
-                              longitude,
-                              accuracy,
-                              location_no,
-                              timeZoneAsia,
-                            },
-                            'AddClockOutCtrl.AddClock_Out',
-                            error
-                          );
-
-                          throw error;
-                        }
+                    await pool.db_MMFPROD
+                      .query(
+                        'SELECT time_out FROM emp_clocking_detail_tbl where clocking_date =current_date and employee_id = $1',
+                        [employee_id]
+                      )
+                      .then(async ({ rows }) => {
                         // eslint-disable-next-line eqeqeq
-                        if (results.rows != '') {
+                        if (rows != '') {
                           if (
                             // eslint-disable-next-line operator-linebreak
                             // eslint-disable-next-line eqeqeq
-                            results.rows[0].time_out == '' ||
-                            results.rows[0].time_out == null
+                            rows[0].time_out == '' ||
+                            rows[0].time_out == null
                           ) {
                             response.status(201).send({
                               status: 201,
                               message: 'Absen Pulang Berhasil',
                               data: 2,
                             });
-
-                            // pool.db_MMFPROD.query(
-                            // eslint-disable-next-line max-len
-                            //   "update emp_clocking_detail_tbl set time_out = (CURRENT_TIMESTAMP AT TIME ZONE $3), out_reg_type ='2' , out_location =$2 where employee_id= $1 and clocking_date =current_date",
-                            //   [employee_id, location_no, time_stamp_convert],
-                            //   (error) => {
-                            //     if (error) throw error;
-
-                            //     response.status(201).send({
-                            //       status: 201,
-                            //       message: 'Absen Pulang Berhasil',
-                            //       data: 2,
-                            //     });
-                            //   }
-                            // );
                           } else {
                             response.status(201).send({
                               status: 201,
@@ -259,13 +171,16 @@ const controller = {
                             data: 1,
                           });
                         }
-                      }
-                    );
+                      });
                   }
-                }
-              );
-            }
-          );
+                })
+                .catch((error) => {
+                  throw error;
+                });
+            })
+            .catch((error) => {
+              throw error;
+            });
         })
         .catch((error) => {
           Helpers.logger(

@@ -78,33 +78,33 @@ const controller = {
           timeZoneAsia,
           time_stamp_convert,
         ])
-        .then(({ rowCount }) => {
-          pool.db_HCM.query(
-            "insert into emp_clocking_hcm (company_id ,employee_id ,clocking_date ,in_out , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name, location_method) values ('MMF',$1, ((to_char(CURRENT_TIMESTAMP AT TIME ZONE $11,'YYYY-MM-DD')||' '||to_Char(CURRENT_TIMESTAMP AT TIME ZONE $11,'HH24:MI:SS'))::timestamp) , 0, 'Transfer data by HCM to Clocking Date: '|| to_char(current_date,'DD Mon YYYY') ||' - '||to_char((CURRENT_TIMESTAMP AT TIME ZONE $11),'HH24:MI:SS')||' '||$10, 'Prepared',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMISS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1)",
-            [
-              employee_id,
-              latitude,
-              altitude,
-              longitude,
-              accuracy,
-              location_no,
-              url_path,
-              randomNumber,
-              employee_id2,
-              timeZoneAsia,
-              time_stamp_convert,
-            ],
-            (error) => {
-              if (error) throw error;
-
-              pool.db_MMFPROD.query(
-                'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
-                [employee_id],
-                (error, results) => {
-                  if (error) throw error;
-
+        .then(async () => {
+          await pool.db_HCM
+            .query(
+              "insert into emp_clocking_hcm (company_id ,employee_id ,clocking_date ,in_out , transfer_message ,state ,latitude ,altitude ,longitude ,accuracy ,location_no ,url_photo ,url_remove ,file_name, location_method) values ('MMF',$1, ((to_char(CURRENT_TIMESTAMP AT TIME ZONE $11,'YYYY-MM-DD')||' '||to_Char(CURRENT_TIMESTAMP AT TIME ZONE $11,'HH24:MI:SS'))::timestamp) , 0, 'Transfer data by HCM to Clocking Date: '|| to_char(current_date,'DD Mon YYYY') ||' - '||to_char((CURRENT_TIMESTAMP AT TIME ZONE $11),'HH24:MI:SS')||' '||$10, 'Prepared',$2, $3 , $4, $5, $6, $7, null, 'mfinhr19-'||to_char(current_date,'YYYYMMDD')||'-'||TO_CHAR(current_date,'HHMISS')||'-'||$9||'-'||$8||'-in'||'.jpg', 1)",
+              [
+                employee_id,
+                latitude,
+                altitude,
+                longitude,
+                accuracy,
+                location_no,
+                url_path,
+                randomNumber,
+                employee_id2,
+                timeZoneAsia,
+                time_stamp_convert,
+              ]
+            )
+            .then(async () => {
+              await pool.db_MMFPROD
+                .query(
+                  'SELECT COUNT(*) FROM emp_clocking_tbl where clocking_date =current_date and employee_id =$1',
+                  [employee_id]
+                )
+                .then(async ({ rows }) => {
                   // eslint-disable-next-line eqeqeq
-                  if (results.rows[0].count == 0) {
+                  if (rows[0].count == 0) {
                     response.status(201).send({
                       status: 201,
                       message: 'Absen Masuk Berhasil',
@@ -117,10 +117,14 @@ const controller = {
                       data: 1,
                     });
                   }
-                }
-              );
-            }
-          );
+                })
+                .catch((error) => {
+                  throw error;
+                });
+            })
+            .catch((error) => {
+              throw error;
+            });
         })
         .catch((error) => {
           throw error;

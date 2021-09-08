@@ -4,7 +4,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  checkValidationRevAbsence(request, response) {
+  async checkValidationRevAbsence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -20,8 +20,7 @@ const controller = {
     );
 
     try {
-      pool.db_MMFPROD.query(
-        `select count(*) validasi from (
+      const query = `select count(*) validasi from (
 	        select employee_id
 	        from employee_work_off_tbl where  
 	          employee_id =  $1 and clocking_date = $2
@@ -37,30 +36,17 @@ const controller = {
 	        select employee_id from rev_absence_hcm 
 	         where employee_id =$1 and clocking_date = $2
 	          and state in ('Approved')
-	        ) a`,
-        [employee_id, date_filter],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                employee_id,
-                date_filter,
-              },
-              'getDescAbsenceCtrl.getDescAbsence',
-              error
-            );
-
-            throw error;
-          }
-
+	        ) a`;
+      await pool.db_MMFPROD
+        .query(query, [employee_id, date_filter])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: employee_id,
-              data: results.rows[0],
+              data: rows[0],
             });
           } else {
             response.status(200).send({
@@ -70,8 +56,19 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          Helpers.logger(
+            'ERROR',
+            {
+              employee_id,
+              date_filter,
+            },
+            'getDescAbsenceCtrl.getDescAbsence',
+            error
+          );
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',

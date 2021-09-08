@@ -5,7 +5,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  AppRevAbsence(request, response) {
+  async AppRevAbsence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -22,34 +22,21 @@ const controller = {
     );
 
     try {
-      pool.db_MMFPROD.query(
-        `select rev_absence_id ,request_date ,clocking_date ,category_rev_id,reg_time_in ,reg_time_out ,rev_time_in ,rev_time_out 
+      await pool.db_MMFPROD
+        .query(
+          `select rev_absence_id ,request_date ,clocking_date ,category_rev_id,reg_time_in ,reg_time_out ,rev_time_in ,rev_time_out 
         from rev_absence_hcm
         where employee_id= $1 and rev_absence_id = $2 and state= 'Submitted' `,
-        [employee_id, rev_id],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                employee_id,
-                date_filter,
-                rev_id,
-              },
-              'AppRevAbsenceCtrl.AppRevAbsence',
-              error
-            );
-
-            throw error;
-          }
-
+          [employee_id, rev_id]
+        )
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != 0) {
-            const rev_time_in_data = results.rows[0].rev_time_in;
-            const rev_time_out_data = results.rows[0].rev_time_out;
-            const reg_time_in_data = results.rows[0].reg_time_in;
-            const reg_time_out_data = results.rows[0].reg_time_out;
-            const category_rev_id_data = results.rows[0].category_rev_id;
+          if (rows != 0) {
+            const rev_time_in_data = rows[0].rev_time_in;
+            const rev_time_out_data = rows[0].rev_time_out;
+            const reg_time_in_data = rows[0].reg_time_in;
+            const reg_time_out_data = rows[0].reg_time_out;
+            const category_rev_id_data = rows[0].category_rev_id;
             pool.db_MMFPROD.query(
               ` update rev_absence_hcm set state = 'Approved' where 
               employee_id= $1 and to_char(clocking_date,'YYYY-MM-DD') = to_char($2::date,'YYYY-MM-DD')  and rev_absence_id = $3`,
@@ -4795,8 +4782,7 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        });
     } catch (err) {
       // Helpers.logger(
       //   'ERROR',

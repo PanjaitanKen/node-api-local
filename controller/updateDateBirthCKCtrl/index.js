@@ -2,37 +2,37 @@ const pool = require('../../db');
 
 // Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
 const controller = {
-  updateDateBirthCK(request, response) {
+  async updateDateBirthCK(request, response) {
     try {
       const { useridCK, date_birth } = request.body;
 
-      pool.db_MMFPROD.query(
-        `select Count(*) ada_data from applicant_tbl
+      await pool.db_MMFPROD
+        .query(
+          `select Count(*) ada_data from applicant_tbl
         where applicant_id = $1`,
-        [useridCK],
-        (error, results) => {
-          if (error) throw error;
-
+          [useridCK]
+        )
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows[0].ada_data != 0) {
-            pool.db_MMFPROD.query(
-              `update applicant_tbl set date_of_birth =$2
+          if (rows[0].ada_data != 0) {
+            await pool.db_MMFPROD
+              .query(
+                `update applicant_tbl set date_of_birth =$2
               where applicant_id = $1`,
-              [useridCK, date_birth],
-              (error, results) => {
-                if (error) throw error;
-
+                [useridCK, date_birth]
+              )
+              .then(async ({ rowCount }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rowCount != 0) {
-                  pool.db_MMFPROD.query(
-                    ` update person_tbl set birth_date =$2
+                if (rowCount != 0) {
+                  await pool.db_MMFPROD
+                    .query(
+                      ` update person_tbl set birth_date =$2
                     where person_id = (select person_id from candidate_appointment_tbl where candidate_id = $1)`,
-                    [useridCK, date_birth],
-                    (error, results) => {
-                      if (error) throw error;
-
+                      [useridCK, date_birth]
+                    )
+                    .then(async ({ rowCount }) => {
                       // eslint-disable-next-line eqeqeq
-                      if (results.rowCount != 0) {
+                      if (rowCount != 0) {
                         response.status(201).send({
                           status: 202,
                           message: 'update Success',
@@ -47,8 +47,10 @@ const controller = {
                           data: '',
                         });
                       }
-                    }
-                  );
+                    })
+                    .catch((error) => {
+                      throw error;
+                    });
                 } else {
                   response.status(201).send({
                     status: 200,
@@ -57,8 +59,10 @@ const controller = {
                     data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                throw error;
+              });
           } else {
             response.status(201).send({
               status: 200,
@@ -67,8 +71,10 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (error) {
       response.status(500).send(error);
     }

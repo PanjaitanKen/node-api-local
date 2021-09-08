@@ -4,7 +4,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  getParamHCM(request, response) {
+  async getParamHCM(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -19,32 +19,19 @@ const controller = {
     );
 
     try {
-      pool.db_HCM.query(
-        `select 
+      const query = `select 
         (select coalesce(setting_value,' ') as value_status_vaksin  from param_hcm where setting_name = 'MENU STATUS VAKSIN') as value_status_vaksin,
-        (select count(*) input_status_vaksin from mas_data_vaksin where employee_id= $1) as input_status_vaksin `,
-        [employee_id],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                employee_id,
-              },
-              'getParamHCMCtrl.getParamHCM',
-              error
-            );
-
-            throw error;
-          }
-
+        (select count(*) input_status_vaksin from mas_data_vaksin where employee_id= $1) as input_status_vaksin `;
+      await pool.db_HCM
+        .query(query, [employee_id])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != 0) {
+          if (rows != 0) {
             response.status(200).send({
               status: 200,
               message: 'Load Data Success',
               validate_id: employee_id,
-              data: results.rows[0],
+              data: rows[0],
             });
           } else {
             response.status(200).send({
@@ -57,8 +44,18 @@ const controller = {
               },
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          Helpers.logger(
+            'ERROR',
+            {
+              employee_id,
+            },
+            'getParamHCMCtrl.getParamHCM',
+            error
+          );
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',

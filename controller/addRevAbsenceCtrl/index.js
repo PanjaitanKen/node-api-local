@@ -1,13 +1,13 @@
 const { validationResult } = require('express-validator');
-const pool = require('../../db');
-const Helpers = require('../../helpers');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const _ = require('lodash');
+const pool = require('../../db');
+const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  addRevAbsence(request, response) {
+  async addRevAbsence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -63,78 +63,42 @@ const controller = {
     const rev_time_out = clocking_date + ' ' + renew_time_out + ':' + '00';
 
     try {
-      pool.db_MMFPROD.query(
-        ` select count(*) ada_data from rev_absence_hcm
+      await pool.db_MMFPROD
+        .query(
+          ` select count(*) ada_data from rev_absence_hcm
         where employee_id = $1 and clocking_date =$2::date 
         and state in ('Submitted','Approval')`,
-        [employee_id, clocking_date],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                employee_id,
-                clocking_date,
-              },
-              'addRevAbsenceCtrl.addRevAbsence',
-              error
-            );
-
-            throw error;
-          }
-
+          [employee_id, clocking_date]
+        )
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
-            if (results.rows[0].ada_data != '1') {
-              pool.db_MMFPROD.query(
-                ` insert into rev_absence_hcm (employee_id, display_name,category_rev_id, clocking_date, 
+          if (rows != '') {
+            if (rows[0].ada_data != '1') {
+              await pool.db_MMFPROD
+                .query(
+                  ` insert into rev_absence_hcm (employee_id, display_name,category_rev_id, clocking_date, 
                   request_date,state,schedule_type,days_to,day_type,def_time_in,def_time_out, reg_time_in, reg_time_out, 
                   rev_time_in,rev_time_out,reason, note) 
                   values ($1,$2,$3,$4,current_date,'Submitted',$5,$6,$7,
                   $8,$9,$10,$11,$12,$13,$14,' ')`,
-                [
-                  employee_id,
-                  employee_name,
-                  id_category,
-                  clocking_date,
-                  schedule_type,
-                  days_to,
-                  day_type,
-                  default_clockin,
-                  default_clockout,
-                  register_time_in,
-                  register_time_out,
-                  rev_time_in,
-                  rev_time_out,
-                  reason,
-                ],
-                (error, results) => {
-                  if (error) {
-                    Helpers.logger(
-                      'ERROR',
-                      {
-                        employee_id,
-                        clocking_date,
-                        employee_name,
-                        id_category,
-                        schedule_type,
-                        days_to,
-                        day_type,
-                        default_clockin,
-                        default_clockout,
-                        register_time_in,
-                        register_time_out,
-                        rev_time_in,
-                        rev_time_out,
-                        reason,
-                      },
-                      'addRevAbsenceCtrl.addRevAbsence',
-                      error
-                    );
-
-                    throw error;
-                  }
-
+                  [
+                    employee_id,
+                    employee_name,
+                    id_category,
+                    clocking_date,
+                    schedule_type,
+                    days_to,
+                    day_type,
+                    default_clockin,
+                    default_clockout,
+                    register_time_in,
+                    register_time_out,
+                    rev_time_in,
+                    rev_time_out,
+                    reason,
+                  ]
+                )
+                .then(async () => {
                   // eslint-disable-next-line eqeqeq
                   pool.db_MMFPROD.query(
                     `select rev_absence_id from rev_absence_hcm where employee_id = $1 and 
@@ -387,8 +351,7 @@ const controller = {
                       }
                     }
                   );
-                }
-              );
+                });
             } else {
               response.status(200).send({
                 status: 200,
@@ -405,8 +368,10 @@ const controller = {
               data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',

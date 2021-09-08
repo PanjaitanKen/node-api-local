@@ -5,7 +5,7 @@ const serve = process.env.URL;
 
 // Tabel : emp_clocking_tbl, emp_clocking_detail_tbl, emp_clocking_temp_tbl
 const controller = {
-  profilePhoto(request, response) {
+  async profilePhoto(request, response) {
     try {
       const { employee_id, photo } = request.body;
 
@@ -18,28 +18,27 @@ const controller = {
       const dir2 = `./uploads/profile/${employee_id}/`;
       if (!fs.existsSync(dir2)) fs.mkdirSync(dir2);
 
-      const fileName = `mportal-mandala-profile.jpg`;
+      const fileName = 'mportal-mandala-profile.jpg';
 
       // eslint-disable-next-line global-require
       require('fs').writeFile(dir2 + fileName, base64Data, 'base64', () => {});
       const url_path = `${serve}/uploads/profile/${employee_id}/${fileName}`;
 
-      pool.db_HCM.query(
-        'select * from mas_photo_profile mpp where employee_id =$1 ',
-        [employee_id],
-        (error, results) => {
-          if (error) throw error;
-
+      await pool.db_HCM
+        .query('select * from mas_photo_profile mpp where employee_id =$1 ', [
+          employee_id,
+        ])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
-            pool.db_HCM.query(
-              'update mas_photo_profile set url_photo =$2 WHERE employee_id = $1',
-              [employee_id, url_path],
-              (error, results) => {
-                if (error) throw error;
-
+          if (rows != '') {
+            await pool.db_HCM
+              .query(
+                'update mas_photo_profile set url_photo =$2 WHERE employee_id = $1',
+                [employee_id, url_path]
+              )
+              .then(async ({ rowCount }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rowCount != 0) {
+                if (rowCount != 0) {
                   response.status(201).send({
                     status: 202,
                     message: 'Update Success',
@@ -54,17 +53,19 @@ const controller = {
                     data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                throw error;
+              });
           } else {
-            pool.db_HCM.query(
-              'insert into mas_photo_profile (employee_id, url_photo) values ($1, $2)',
-              [employee_id, url_path],
-              (error, results) => {
-                if (error) throw error;
-
+            await pool.db_HCM
+              .query(
+                'insert into mas_photo_profile (employee_id, url_photo) values ($1, $2)',
+                [employee_id, url_path]
+              )
+              .then(async ({ rowCount }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rowCount != 0) {
+                if (rowCount != 0) {
                   response.status(201).send({
                     status: 201,
                     message: 'insert Success',
@@ -79,11 +80,15 @@ const controller = {
                     data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                throw error;
+              });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (error) {
       response.status(500).send(error);
     }
