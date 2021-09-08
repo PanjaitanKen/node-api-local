@@ -33,7 +33,7 @@ const controller = {
                     )
                     .then(async ({ rowCount }) => {
                       // eslint-disable-next-line eqeqeq
-                      if (results.rowCount != 0) {
+                      if (trowCount != 0) {
                         response.status(201).send({
                           status: 202,
                           message: 'update Success',
