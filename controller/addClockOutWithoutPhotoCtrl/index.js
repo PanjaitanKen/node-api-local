@@ -30,7 +30,7 @@ const controller = {
         location_no,
         timeZoneAsia,
       },
-      'AddClockOutCtrl.AddClock_Out'
+      'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto'
     );
 
     try {
@@ -154,7 +154,7 @@ const controller = {
                                   location_no,
                                   timeZoneAsia,
                                 },
-                                'AddClockOutCtrl.AddClock_Out',
+                                'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto',
                                 error
                               );
 
@@ -174,7 +174,7 @@ const controller = {
                             location_no,
                             timeZoneAsia,
                           },
-                          'AddClockOutCtrl.AddClock_Out',
+                          'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto',
                           error
                         );
 
@@ -193,7 +193,7 @@ const controller = {
                         location_no,
                         timeZoneAsia,
                       },
-                      'AddClockOutCtrl.AddClock_Out',
+                      'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto',
                       error
                     );
 
@@ -212,7 +212,7 @@ const controller = {
                     location_no,
                     timeZoneAsia,
                   },
-                  'AddClockOutCtrl.AddClock_Out',
+                  'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto',
                   error
                 );
 
@@ -232,7 +232,7 @@ const controller = {
               location_no,
               timeZoneAsia,
             },
-            'AddClockOutCtrl.AddClock_Out',
+            'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto',
             error
           );
 
@@ -250,7 +250,7 @@ const controller = {
           location_no,
           timeZoneAsia,
         },
-        'AddClockOutCtrl.AddClock_Out',
+        'addClockOutWithoutPhotoCtrl.addClockOutWithoutPhoto',
         error
       );
 

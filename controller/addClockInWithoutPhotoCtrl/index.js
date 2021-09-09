@@ -30,7 +30,7 @@ const controller = {
           location_no,
           timeZoneAsia,
         },
-        'AddClockInCtrl.AddClock_In'
+        'addClockInWithoutPhotoCtrl.addClockInWithoutPhoto'
       );
 
       const employee_id2 = employee_id;
@@ -125,7 +125,7 @@ const controller = {
                             location_no,
                             timeZoneAsia,
                           },
-                          'AddClockInCtrl.AddClock_In',
+                          'addClockInWithoutPhotoCtrl.addClockInWithoutPhoto',
                           error
                         );
 
@@ -144,7 +144,7 @@ const controller = {
                         location_no,
                         timeZoneAsia,
                       },
-                      'AddClockInCtrl.AddClock_In',
+                      'addClockInWithoutPhotoCtrl.addClockInWithoutPhoto',
                       error
                     );
 
@@ -163,7 +163,7 @@ const controller = {
                     location_no,
                     timeZoneAsia,
                   },
-                  'AddClockInCtrl.AddClock_In',
+                  'addClockInWithoutPhotoCtrl.addClockInWithoutPhoto',
                   error
                 );
 

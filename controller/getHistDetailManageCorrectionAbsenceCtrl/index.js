@@ -67,7 +67,7 @@ const controller = {
            order by b.clocking_date asc`;
 
       await pool.db_MMFPROD
-        .query(query, [golid,nokar_pengaju])
+        .query(query, [golid, nokar_pengaju])
         .then(({ rows }) => {
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
