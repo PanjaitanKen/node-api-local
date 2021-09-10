@@ -38,7 +38,7 @@ const controller = {
                 "select count(*) from emp_work_schedule_tbl a left join emp_work_location_tbl b on a.employee_id =b.employee_id and current_date between b.valid_from and b.valid_to  where clocking_all ='Y' and current_date between a.valid_from and a.valid_to and a.employee_id= $1 ",
                 [employee_id]
               )
-              .then(async () => {
+              .then(async ({ rows }) => {
                 // eslint-disable-next-line eqeqeq
                 if (rows[0].count == 1) {
                   await pool.db_MMFPROD
@@ -46,7 +46,7 @@ const controller = {
                       'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $1) as radius_tolerance from mark_location_tbl order by location_no asc',
                       [radius_tolerance]
                     )
-                    .then(async () => {
+                    .then(async ({ rows }) => {
                       // eslint-disable-next-line eqeqeq
                       if (rows != '') {
                         response.status(200).send({
@@ -83,7 +83,7 @@ const controller = {
                         ' where a.employee_id= $1 and  current_date between a.valid_from and a.valid_to ',
                       [employee_id]
                     )
-                    .then(async () => {
+                    .then(async ({ rows }) => {
                       // eslint-disable-next-line eqeqeq
                       if (rows != '') {
                         const location_name = rows[0].work_location;
@@ -94,7 +94,7 @@ const controller = {
                             'select location_name,location_no, latitude,altitude, longitude, accuracy, COALESCE(radius_tolerance + $3) as radius_tolerance from mark_location_tbl where  trim(location_name)= $1 or trim(company_office) = $2 order by location_no asc',
                             [location_name, company_office, radius_tolerance]
                           )
-                          .then(async () => {
+                          .then(async ({ rows }) => {
                             response.status(200).send({
                               status: 200,
                               message: 'Load Data berhasil',
