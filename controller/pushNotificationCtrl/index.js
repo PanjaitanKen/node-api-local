@@ -36,19 +36,18 @@ const controller = {
 
       await pool.db_MMFPROD
         .query(query, [employee_id])
-        .then(({ rowCount, rows }) => {
+        .then(async ({ rowCount, rows }) => {
           if (rowCount > 0) {
             const employee_token =
               submission_id == '1' ? rows[0].supervisor_id : employee_id;
-            pool.db_HCM.query(
-              'SELECT token_notification FROM trx_notification WHERE employee_id = $1 AND token_notification IS NOT NULL',
-              [employee_token],
-              (error, results) => {
-                if (error) {
-                  throw error;
-                }
-                if (results.rowCount > 0) {
-                  const token = results.rows[0].token_notification;
+            await pool.db_HCM
+              .query(
+                'SELECT token_notification FROM trx_notification WHERE employee_id = $1 AND token_notification IS NOT NULL',
+                [employee_token]
+              )
+              .then(async ({ rowCount, rows }) => {
+                if (rowCount > 0) {
+                  const token = rows[0].token_notification;
                   const message = {
                     data: {
                       // This is only optional, you can send any data
@@ -123,8 +122,10 @@ const controller = {
                     data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                throw error;
+              });
           } else {
             response.status(200).send({
               status: 200,

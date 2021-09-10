@@ -68,12 +68,13 @@ const controller = {
 
       await pool.db_MMFPROD
         .query(query, [golid, nokar_pengaju])
-        .then(({ rows }) => {
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
             const data1 = rows[0];
-            pool.db_MMFPROD.query(
-              `select b.cor_id_Detail as id_detail,
+            await pool.db_MMFPROD
+              .query(
+                `select b.cor_id_Detail as id_detail,
                      b.correction_time_in as jam_masuk_diperbaiki , b.correction_time_in as jam_keluar_diperbaiki,
                      to_char(b.correction_time_in,'HH24:MI') jam_masuk_diperbaiki_string,
                      to_char(b.correction_time_out,'HH24:MI') jam_keluar_diperbaiki_string,
@@ -102,14 +103,12 @@ const controller = {
                left join emp_clocking_tbl f on f.employee_id = $2  and to_char(b.clocking_date,'YYYY-MM-DD')=to_char(f.clocking_date,'YYYY-MM-DD')
                where a.cor_absence_id = $1 and a.employee_id = $2
                    order by b.clocking_date asc`,
-              [golid, nokar_pengaju],
-              (error, results) => {
-                if (error) {
-                  throw error;
-                }
+                [golid, nokar_pengaju]
+              )
+              .then(async ({ rows }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rows != 0) {
-                  const data2 = results.rows;
+                if (rows != 0) {
+                  const data2 = rows;
                   data1.data_detail = data2;
                   response.status(200).send({
                     status: 200,
@@ -125,8 +124,16 @@ const controller = {
                     data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                Helpers.logger(
+                  'ERROR',
+                  { golid },
+                  'getHistDetailManageCorrectionAbsenceCtrl.getHistDetailManageCorrectionAbsence',
+                  error
+                );
+                throw error;
+              });
           } else {
             response.status(200).send({
               status: 200,

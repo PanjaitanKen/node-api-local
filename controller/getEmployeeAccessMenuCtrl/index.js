@@ -1,24 +1,23 @@
-const pool = require('../../db');
 const { validationResult } = require('express-validator');
+const pool = require('../../db');
 
 // Tabel : person_tbl, faskes_tbl, employee_tbl
 const controller = {
-  getEmployeeAccessMenu(request, response) {
+  async getEmployeeAccessMenu(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
     try {
       const { employee_id } = request.body;
 
-      pool.db_HCM.query(
-        `select case when tgl_akses is null then 0 else 1 end as akses from trx_akses_menu_ck where userid_ck =$1`,
-        [employee_id],
-        (error, results) => {
-          if (error) throw error;
-
+      const query =
+        'select case when tgl_akses is null then 0 else 1 end as akses from trx_akses_menu_ck where userid_ck =$1';
+      await pool.db_HCM
+        .query(query, [employee_id])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             let employee_akses = [];
-            employee_akses = results.rows.map(function (a) {
+            employee_akses = rows.map(function (a) {
               const bb = a.akses;
               return bb;
             });
@@ -33,11 +32,13 @@ const controller = {
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          throw error;
+        });
     } catch (err) {
       response.status(500).send(err);
     }

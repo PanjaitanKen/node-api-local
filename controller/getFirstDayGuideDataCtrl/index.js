@@ -34,16 +34,16 @@ const controller = {
           if (rows != '') {
             // eslint-disable-next-line prefer-const
             let rawData = rows[0];
-            pool.db_MMFPROD.query(
-              `select  initcap(address) alamat 
+            await pool.db_MMFPROD
+              .query(
+                `select  initcap(address) alamat 
               from work_location_tbl where work_location =$1`,
-              [rawData.company_office],
-              (error, results) => {
-                if (error) throw error;
-
+                [rawData.company_office]
+              )
+              .then(async ({ rows }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rows != '') {
-                  rawData.company_office = results.rows[0].alamat;
+                if (rows != '') {
+                  rawData.company_office = rows[0].alamat;
                   response.status(200).send({
                     status: 200,
                     message: 'Load Data berhasil',
@@ -55,11 +55,13 @@ const controller = {
                     status: 200,
                     message: 'Data Tidak Ditemukan',
                     validate_id: employee_id,
-                    data: results.rows,
+                    data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                throw error;
+              });
           } else {
             response.status(200).send({
               status: 200,

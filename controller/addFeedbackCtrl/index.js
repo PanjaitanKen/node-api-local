@@ -66,205 +66,199 @@ const controller = {
 
         await pool.db_MMFPROD
           .query(query, [employee_id])
-          .then(({ rows }) => {
+          .then(async ({ rows }) => {
             // eslint-disable-next-line eqeqeq
             if (rows != '') {
               const emp_cabang = rows[0].cabang;
               const emp_displayName = rows[0].display_name;
               const emp_email = rows[0].email ? rows[0].email : '-';
-              pool.db_HCM.query(
-                'select * from mas_kategori_komplain where id_kategori_komplain =$1 ',
-                [id_kategori_komplain],
-                (error, results) => {
-                  if (error) {
-                    throw error;
-                  }
+              await pool.db_HCM
+                .query(
+                  'select * from mas_kategori_komplain where id_kategori_komplain =$1 ',
+                  [id_kategori_komplain]
+                )
+                .then(async ({ rows }) => {
                   // eslint-disable-next-line eqeqeq
-                  if (results.rows != '') {
-                    const { email_to, cc_to, subject_email } = results.rows[0];
+                  if (rows != '') {
+                    const { email_to, cc_to, subject_email } = rows[0];
                     const cc_receipt = cc_to + ', ' + emp_email;
-                    pool.db_MMFPROD.query(
-                      'select a.position_id , b.internal_title ' +
-                        'from employee_position_tbl a ' +
-                        'left join position_tbl b on a.position_id = b.position_id ' +
-                        'where employee_id =$1 and current_date between a.valid_from and a.valid_to ',
-                      [employee_id],
-                      (error, results) => {
-                        if (error) {
-                          throw error;
-                        }
+                    await pool.db_MMFPROD
+                      .query(
+                        'select a.position_id , b.internal_title ' +
+                          'from employee_position_tbl a ' +
+                          'left join position_tbl b on a.position_id = b.position_id ' +
+                          'where employee_id =$1 and current_date between a.valid_from and a.valid_to ',
+                        [employee_id]
+                      )
+                      .then(async ({ rows }) => {
                         // eslint-disable-next-line eqeqeq
-                        if (results.rows != '') {
-                          const positionId = results.rows[0].position_id;
-                          const internalTitle = results.rows[0].internal_title;
+                        if (rows != '') {
+                          const positionId = rows[0].position_id;
+                          const internalTitle = rows[0].internal_title;
                           const day = dateFormat(
                             new Date(),
                             'yyyy-mm-dd hh:MM:ss'
                           );
-                          pool.db_HCM.query(
-                            'insert into trx_komplain (cabang,employee_id , email ,id_kategori_komplain ,keterangan, tgl_komplain , id_session ,transfer_message,position_id, internal_title, nama_karyawan) ' +
-                              'values ($1, $2 , $3, $4, $5, $6, $7, $8, $9, $10, $11)',
-                            [
-                              emp_cabang,
-                              employee_id,
-                              emp_email,
-                              id_kategori_komplain,
-                              information_data,
-                              day,
-                              id_session,
-                              '0',
-                              positionId,
-                              internalTitle,
-                              emp_displayName,
-                            ],
-                            (error) => {
-                              if (error) {
-                                throw error;
-                              } else {
-                                pool.db_HCM.query(
+                          await pool.db_HCM
+                            .query(
+                              'insert into trx_komplain (cabang,employee_id , email ,id_kategori_komplain ,keterangan, tgl_komplain , id_session ,transfer_message,position_id, internal_title, nama_karyawan) ' +
+                                'values ($1, $2 , $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+                              [
+                                emp_cabang,
+                                employee_id,
+                                emp_email,
+                                id_kategori_komplain,
+                                information_data,
+                                day,
+                                id_session,
+                                '0',
+                                positionId,
+                                internalTitle,
+                                emp_displayName,
+                              ]
+                            )
+                            .then(async () => {
+                              await pool.db_HCM
+                                .query(
                                   'select id_komplain from trx_komplain where tgl_komplain =$1',
-                                  [day],
-                                  (error, results) => {
-                                    if (error) {
-                                      throw error;
-                                    }
-                                    // eslint-disable-next-line eqeqeq
-                                    if (results.rows != '') {
-                                      const { id_komplain } = results.rows[0];
+                                  [day]
+                                )
+                                .then(async ({ rows }) => {
+                                  // eslint-disable-next-line eqeqeq
+                                  if (rows != '') {
+                                    const { id_komplain } = rows[0];
 
-                                      pool.db_HCM.query(
-                                        'select * from param_hcm ',
-                                        (error, results) => {
-                                          if (error) {
-                                            throw error;
-                                          }
-                                          // eslint-disable-next-line eqeqeq
-                                          if (results.rows != '') {
-                                            //map hostmail
-                                            const hostMailValue = _.filter(
-                                              results.rows,
-                                              function (o) {
-                                                return (
-                                                  o.setting_name ==
-                                                  'Host Feedback'
-                                                );
-                                              }
-                                            );
-                                            //map userMailValue
-                                            const userMailValue = _.filter(
-                                              results.rows,
-                                              function (o) {
-                                                return (
-                                                  o.setting_name ==
-                                                  'Email Feedback'
-                                                );
-                                              }
-                                            );
-                                            //map passwordMailValue
-                                            const passwordMailValue = _.filter(
-                                              results.rows,
-                                              function (o) {
-                                                return (
-                                                  o.setting_name ==
-                                                  'Password Feedback'
-                                                );
-                                              }
-                                            );
+                                    await pool.db_HCM
+                                      .query('select * from param_hcm ')
+                                      .then(async ({ rows }) => {
+                                        // eslint-disable-next-line eqeqeq
+                                        if (rows != '') {
+                                          // map hostmail
+                                          const hostMailValue = _.filter(
+                                            rows,
+                                            function (o) {
+                                              return (
+                                                o.setting_name ==
+                                                'Host Feedback'
+                                              );
+                                            }
+                                          );
+                                          // map userMailValue
+                                          const userMailValue = _.filter(
+                                            rows,
+                                            function (o) {
+                                              return (
+                                                o.setting_name ==
+                                                'Email Feedback'
+                                              );
+                                            }
+                                          );
+                                          // map passwordMailValue
+                                          const passwordMailValue = _.filter(
+                                            rows,
+                                            function (o) {
+                                              return (
+                                                o.setting_name ==
+                                                'Password Feedback'
+                                              );
+                                            }
+                                          );
 
-                                            const hostMail =
-                                              hostMailValue[0].setting_value;
-                                            const userMail =
-                                              userMailValue[0].setting_value;
-                                            const passwordMail =
-                                              passwordMailValue[0]
-                                                .setting_value;
-                                            const transporter = nodemailer.createTransport(
-                                              {
-                                                // service: 'gmail',
-                                                host: hostMail,
-                                                port: 587,
-                                                secure: false, // use SSL
-                                                auth: {
-                                                  user: userMail,
-                                                  pass: passwordMail,
-                                                },
-                                                tls: {
-                                                  rejectUnauthorized: false,
-                                                },
+                                          const hostMail =
+                                            hostMailValue[0].setting_value;
+                                          const userMail =
+                                            userMailValue[0].setting_value;
+                                          const passwordMail =
+                                            passwordMailValue[0].setting_value;
+                                          const transporter = nodemailer.createTransport(
+                                            {
+                                              // service: 'gmail',
+                                              host: hostMail,
+                                              port: 587,
+                                              secure: false, // use SSL
+                                              auth: {
+                                                user: userMail,
+                                                pass: passwordMail,
+                                              },
+                                              tls: {
+                                                rejectUnauthorized: false,
+                                              },
+                                            }
+                                          );
+
+                                          const mailOptions = {
+                                            from: userMail,
+                                            to: email_to,
+                                            cc: cc_receipt,
+                                            subject: subject_email,
+                                            text:
+                                              `No Feedback: ${id_komplain}\n` +
+                                              `Cabang: ${emp_cabang}\n` +
+                                              `Employee Id: ${employee_id} ` +
+                                              '-' +
+                                              ` ${emp_displayName}\n` +
+                                              `Email: ${emp_email}\n` +
+                                              `Jabatan: ${positionId}-${internalTitle}\n` +
+                                              `Tanggal: ${day}\n` +
+                                              '\n' +
+                                              `Feedback: ${information_data}\n`,
+                                          };
+
+                                          transporter.sendMail(
+                                            mailOptions,
+                                            (error, info) => {
+                                              if (error) {
+                                                response.status(200).send({
+                                                  status: 200,
+                                                  message:
+                                                    'Belum terkoneksi dengan email',
+                                                  data: '',
+                                                });
                                               }
-                                            );
-
-                                            const mailOptions = {
-                                              from: userMail,
-                                              to: email_to,
-                                              cc: cc_receipt,
-                                              subject: subject_email,
-                                              text:
-                                                `No Feedback: ${id_komplain}\n` +
-                                                `Cabang: ${emp_cabang}\n` +
-                                                `Employee Id: ${employee_id} ` +
-                                                '-' +
-                                                ` ${emp_displayName}\n` +
-                                                `Email: ${emp_email}\n` +
-                                                `Jabatan: ${positionId}-${internalTitle}\n` +
-                                                `Tanggal: ${day}\n` +
-                                                '\n' +
-                                                `Feedback: ${information_data}\n`,
-                                            };
-
-                                            transporter.sendMail(
-                                              mailOptions,
-                                              (error, info) => {
-                                                if (error) {
+                                              const resp_api_email =
+                                                info.response;
+                                              pool.db_HCM.query(
+                                                'UPDATE trx_komplain ' +
+                                                  'SET transfer_message = $1' +
+                                                  'WHERE tgl_komplain = $2',
+                                                [resp_api_email, day],
+                                                (error) => {
+                                                  if (error) {
+                                                    throw error;
+                                                  }
                                                   response.status(200).send({
                                                     status: 200,
                                                     message:
-                                                      'Belum terkoneksi dengan email',
+                                                      'Berhasil mengirim email dan masuk kedalam tabel',
                                                     data: '',
                                                   });
                                                 }
-                                                const resp_api_email =
-                                                  info.response;
-                                                pool.db_HCM.query(
-                                                  'UPDATE trx_komplain ' +
-                                                    'SET transfer_message = $1' +
-                                                    'WHERE tgl_komplain = $2',
-                                                  [resp_api_email, day],
-                                                  (error) => {
-                                                    if (error) {
-                                                      throw error;
-                                                    }
-                                                    response.status(200).send({
-                                                      status: 200,
-                                                      message:
-                                                        'Berhasil mengirim email dan masuk kedalam tabel',
-                                                      data: '',
-                                                    });
-                                                  }
-                                                );
-                                              }
-                                            );
-                                          } else {
-                                            response.status(200).send({
-                                              status: 200,
-                                              message: 'Data Tidak Ditemukan',
-                                              data: '',
-                                            });
-                                          }
+                                              );
+                                            }
+                                          );
+                                        } else {
+                                          response.status(200).send({
+                                            status: 200,
+                                            message: 'Data Tidak Ditemukan',
+                                            data: '',
+                                          });
                                         }
-                                      );
-                                    } else {
-                                      response.status(200).send({
-                                        status: 200,
-                                        message: 'Data Tidak Ditemukan',
-                                        data: '',
+                                      })
+                                      .catch((error) => {
+                                        throw error;
                                       });
-                                    }
+                                  } else {
+                                    response.status(200).send({
+                                      status: 200,
+                                      message: 'Data Tidak Ditemukan',
+                                      data: '',
+                                    });
                                   }
-                                );
-                              }
-                            }
-                          );
+                                });
+                            })
+                            .catch((error) => {
+                              throw error;
+                            });
                         } else {
                           response.status(200).send({
                             status: 200,
@@ -272,8 +266,7 @@ const controller = {
                             data: '',
                           });
                         }
-                      }
-                    );
+                      });
                   } else {
                     response.status(200).send({
                       status: 200,
@@ -281,8 +274,7 @@ const controller = {
                       data: '',
                     });
                   }
-                }
-              );
+                });
             } else {
               response.status(200).send({
                 status: 200,

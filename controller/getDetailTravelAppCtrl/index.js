@@ -86,12 +86,13 @@ const controller = {
 
       await pool.db_MMFPROD
         .query(query, [golid])
-        .then(({ rows }) => {
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
             const respData = rows[0];
-            pool.db_MMFPROD.query(
-              `select  coalesce(b.pcx_purpose,' - ') as keperluan, 
+            await pool.db_MMFPROD
+              .query(
+                `select  coalesce(b.pcx_purpose,' - ') as keperluan, 
               to_char(b.start_date,'DD')||' '||  
               case when to_char(b.start_date,'MM')='01' then 'Jan' 
               when to_char(b.start_date,'MM')='02' then 'Feb'  
@@ -125,13 +126,12 @@ const controller = {
               left join person_tbl d on c.person_id =d.person_id 
               where a.golid = $1
                 `,
-              [golid],
-              (error, results) => {
-                if (error) throw error;
-
+                [golid]
+              )
+              .then(async ({ rows }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rows != '') {
-                  const respData2 = results.rows;
+                if (rows != '') {
+                  const respData2 = rows;
                   respData.data_detail = respData2;
                   response.status(200).send({
                     status: 200,
@@ -144,11 +144,13 @@ const controller = {
                     status: 200,
                     message: 'Data Tidak Ditemukan',
                     validate_id: golid,
-                    data: results.rows,
+                    data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                throw error;
+              });
           } else {
             response.status(200).send({
               status: 200,

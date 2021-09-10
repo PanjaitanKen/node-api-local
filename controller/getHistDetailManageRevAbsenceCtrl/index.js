@@ -4,7 +4,7 @@ const Helpers = require('../../helpers');
 
 // Tabel : emp_clocking_temp_tbl
 const controller = {
-  getHistDetailManageRevAbsence(request, response) {
+  async getHistDetailManageRevAbsence(request, response) {
     const errors = validationResult(request);
     if (!errors.isEmpty()) return response.status(422).send(errors);
 
@@ -19,8 +19,7 @@ const controller = {
     );
 
     try {
-      pool.db_MMFPROD.query(
-        `select a.employee_id, a.employee_id||'/'||to_char(a.request_date,'YYYYMMDD')||'/'||trim(to_char(b.sequence_no,'9999999999999999')) as no_pengajuan,
+      const query = `select a.employee_id, a.employee_id||'/'||to_char(a.request_date,'YYYYMMDD')||'/'||trim(to_char(b.sequence_no,'9999999999999999')) as no_pengajuan,
         trim(to_char(b.sequence_no,'9999999999999999')) as no_urut, initcap(a.display_name) nama,
          to_char(a.request_date ,'DD') ||' '||
          case when to_char(a.request_date  ,'MM')='01' then 'Jan'
@@ -73,40 +72,38 @@ const controller = {
                
          from rev_absence_hcm a
      left join approval_rev_absence_hcm  b on a.rev_absence_id=b.rev_absence_id  and a.employee_id = b.employee_id 
-         where a.rev_absence_id = $1`,
-        [rev_id],
-        (error, results) => {
-          if (error) {
-            Helpers.logger(
-              'ERROR',
-              {
-                rev_id,
-              },
-              'getHistDetailManageRevAbsenceCtrl.getHistDetailManageRevAbsence',
-              error
-            );
-
-            throw error;
-          }
-
+         where a.rev_absence_id = $1`;
+      await pool.db_MMFPROD
+        .query(query, [rev_id])
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
-          if (results.rows != '') {
+          if (rows != '') {
             response.status(200).send({
               status: 200,
               message: 'Load Data berhasil',
               validate_id: rev_id,
-              data: results.rows[0],
+              data: rows[0],
             });
           } else {
             response.status(200).send({
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: rev_id,
-              data: results.rows,
+              data: '',
             });
           }
-        }
-      );
+        })
+        .catch((error) => {
+          Helpers.logger(
+            'ERROR',
+            {
+              rev_id,
+            },
+            'getHistDetailManageRevAbsenceCtrl.getHistDetailManageRevAbsence',
+            error
+          );
+          throw error;
+        });
     } catch (err) {
       Helpers.logger(
         'ERROR',

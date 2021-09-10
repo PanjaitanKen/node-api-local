@@ -103,26 +103,24 @@ const controller = {
                               const emp_name = rows[0].nama;
                               const emp_ph = rows[0].no_hp;
 
-                              pool.db_HCM.query(
-                                'select * from param_hcm ',
-                                (error, results) => {
-                                  if (error) throw error;
-
-                                  if (results.rowCount > 0) {
+                              await pool.db_HCM
+                                .query('select * from param_hcm ')
+                                .then(async ({ rowCount, rows }) => {
+                                  if (rowCount > 0) {
                                     // map hostmail
                                     const hostMailValue = _.filter(
-                                      results.rows,
+                                      rows,
                                       (o) => o.setting_name == 'Host Feedback'
                                     );
 
                                     // map userMailValue
                                     const userMailValue = _.filter(
-                                      results.rows,
+                                      rows,
                                       (o) => o.setting_name == 'Email Feedback'
                                     );
 
                                     const passwordMailValue = _.filter(
-                                      results.rows,
+                                      rows,
                                       (o) =>
                                         o.setting_name == 'Password Feedback'
                                     );
@@ -256,8 +254,7 @@ const controller = {
                                       data: '',
                                     });
                                   }
-                                }
-                              );
+                                });
                             } else {
                               response.status(200).send({
                                 status: 200,
