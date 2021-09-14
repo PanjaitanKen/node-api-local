@@ -39,7 +39,7 @@ const controller = {
 
       await pool.db_MMFPROD
         .query(query, [employee_id])
-        .then(({ rows }) => {
+        .then(async ({ rows }) => {
           // eslint-disable-next-line eqeqeq
           if (rows != '') {
             const data_display_name = rows[0].display_name;
@@ -54,33 +54,29 @@ const controller = {
             const data_no_hp_supervisor = rows[0].no_hp_supervisor;
             const data_email_supervisor = rows[0].email_supervisor;
 
-            pool.db_MMFPROD.query(
-              `insert into correction_absence_hcm_h (employee_id,display_name,request_date,note,approved_by, approved_name,
+            await pool.db_MMFPROD
+              .query(
+                `insert into correction_absence_hcm_h (employee_id,display_name,request_date,note,approved_by, approved_name,
                 state_approval, approval_Date)
                 values ($1, $2, current_Date , ' Perbaikan Absen Pengajuan Tanggal '||to_char(current_date,'YYYY-MM-DD') , $3, $4,
                 'Submitted', null)`,
-              [
-                employee_id,
-                data_display_name,
-                data_approved_by,
-                data_approved_name,
-              ],
-              (error, results) => {
-                if (error) {
-                  throw error;
-                }
+                [
+                  employee_id,
+                  data_display_name,
+                  data_approved_by,
+                  data_approved_name,
+                ]
+              )
+              .then(async ({ rowCount }) => {
                 // eslint-disable-next-line eqeqeq
-                if (results.rowCount != 0) {
-                  pool.db_MMFPROD.query(
-                    `select (currval('cor_absence_hcm_id_seq'))`,
-                    (error, results) => {
-                      if (error) {
-                        throw error;
-                      }
+                if (rowCount != 0) {
+                  await pool.db_MMFPROD
+                    .query(`select (currval('cor_absence_hcm_id_seq'))`)
+                    .then(async ({ rows }) => {
                       // eslint-disable-next-line eqeqeq
-                      if (results.rows != 0) {
-                        const curr_cor_absence_hcm_id_seq =
-                          results.rows[0].currval;
+                      if (rows != 0) {
+                        const curr_cor_absence_hcm_id_seq = rows[0].currval;
+                        // eslint-disable-next-line no-plusplus
                         for (let i = 0; i < data_perbaikan.length; i++) {
                           let counter = i + 1;
                           let data_register_time_in =
@@ -145,7 +141,7 @@ const controller = {
                           );
                         }
                         // eslint-disable-next-line eqeqeq
-                        if (results.rowCount != 0) {
+                        if (rowCount != 0) {
                           // eslint-disable-next-line eqeqeq
                           // insert notification perubahan absen -- start
                           const data = {
@@ -328,8 +324,16 @@ const controller = {
                           data: '',
                         });
                       }
-                    }
-                  );
+                    })
+                    .catch((error) => {
+                      Helpers.logger(
+                        'ERROR',
+                        { employee_id },
+                        'addCorrectionAbsenceCtrl.addCorrectionAbsence',
+                        error
+                      );
+                      throw error;
+                    });
                 } else {
                   response.status(200).send({
                     status: 200,
@@ -338,8 +342,16 @@ const controller = {
                     data: '',
                   });
                 }
-              }
-            );
+              })
+              .catch((error) => {
+                Helpers.logger(
+                  'ERROR',
+                  { employee_id },
+                  'addCorrectionAbsenceCtrl.addCorrectionAbsence',
+                  error
+                );
+                throw error;
+              });
           } else {
             response.status(200).send({
               status: 200,
