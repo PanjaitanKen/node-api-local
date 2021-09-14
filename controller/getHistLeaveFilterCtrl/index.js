@@ -121,7 +121,7 @@ const controller = {
               status: 200,
               message: 'Data Tidak Ditemukan',
               validate_id: employee_id,
-              data: '',
+              data: [],
             });
           }
         })
