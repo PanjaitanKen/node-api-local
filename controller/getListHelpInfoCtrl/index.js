@@ -1,6 +1,6 @@
 const pool = require('../../db');
 
-// Tabel : person_tbl, faskes_tbl, employee_tbl
+// Tabel : mas_info_bantuan
 const controller = {
   async getListHelpInfo(request, response) {
     try {

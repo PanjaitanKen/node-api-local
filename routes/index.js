@@ -1296,7 +1296,7 @@ module.exports = (app) => {
     );
 
   app
-    .route('/mmf/api/getListHelpInfo')
+    .route('/hcm/api/getListHelpInfo')
     .all(authenticateApiKey)
     .post(getListHelpInfoCtrl.getListHelpInfo);
 };
