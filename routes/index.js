@@ -93,6 +93,7 @@ const getCalendarCorrectionAbsenceCtrl = require('../controller/getCalendarCorre
 const addCorrectionAbsenceCtrl = require('../controller/addCorrectionAbsenceCtrl');
 const getHistDetailManageCorrectionAbsenceCtrl = require('../controller/getHistDetailManageCorrectionAbsenceCtrl');
 const AppCorrectAbsenceCtrl = require('../controller/AppCorrectAbsenceCtrl');
+const getListHelpInfoCtrl = require('../controller/getListHelpInfoCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1293,4 +1294,9 @@ module.exports = (app) => {
       ],
       AppCorrectAbsenceCtrl.AppCorrectAbsence
     );
+
+  app
+    .route('/mmf/api/getListHelpInfo')
+    .all(authenticateApiKey)
+    .post(getListHelpInfoCtrl.getListHelpInfo);
 };
