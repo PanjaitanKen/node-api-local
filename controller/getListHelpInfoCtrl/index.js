@@ -16,7 +16,7 @@ const controller = {
             for (let i = 0; i < data1.length; i++) {
               pool.db_HCM
                 .query(
-                  `select url_assets ,width,height
+                  `select url_assets ,width::double precision ,height::double precision
                 from mas_info_bantuan 
                 where title = $1`,
                   [data1[i].title]
