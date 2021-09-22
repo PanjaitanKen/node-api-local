@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-underscore-dangle */
 const nodemailer = require('nodemailer');
 const CryptoJS = require('crypto-js');
 
@@ -53,16 +55,54 @@ class Helpers {
 
     switch (status) {
       case 'SUCCESS':
-        // eslint-disable-next-line no-console
         console.log(response);
         break;
       case 'ERROR':
-        // eslint-disable-next-line no-console
         console.error(response);
         break;
       default:
         break;
     }
+  }
+
+  static dataResponse(status = Number, data, validate_id) {
+    if (status && data) {
+      let message = '';
+
+      switch (status) {
+        case 200:
+          message = 'SUCCESSFUL_REQUEST';
+          break;
+        case 201:
+          message = 'SUCCESSFUL_CREATED';
+          break;
+        case 422:
+          message = 'INVALID_REQUEST';
+          break;
+        case 404:
+          message = 'NOT_FOUND';
+          break;
+        case 400:
+          message = 'BAD_REQUEST';
+          break;
+        case 500:
+          message = 'INTERNAL_SERVER_ERROR';
+          break;
+        default:
+          return false;
+      }
+
+      const response = {
+        status,
+        message,
+      };
+
+      if (validate_id) response.validate_id = validate_id;
+      response.data = data;
+      return response;
+    }
+
+    return false;
   }
 }
 

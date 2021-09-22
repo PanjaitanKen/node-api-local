@@ -130,6 +130,12 @@ block content
 
 block scripts
   script.
+    //- BEGIN DOM CSS
+    const modalImageClose = document.querySelector('.modal-image-close');
+    if (screen.width <= 768) modalImageClose.style.display = 'none';
+    //-/ END DOM CSS //
+
+    //- BEGIN RENDER PDF
     const url = !{JSON.stringify(data.deskripsi_pdf)};
     let thePdf = null;
 
@@ -147,12 +153,17 @@ block scripts
 
     function renderPage(pageNumber, canvas) {
       thePdf.getPage(pageNumber).then(function (page) {
-        const container = document.getElementById('pdf-viewer-container');
         let viewport = page.getViewport(1);
+        const container = document.getElementById('pdf-viewer-container');
         const scale = container.clientWidth / viewport.width;
+        const outputScale = window.devicePixelRatio || 1;
+        const transform = (outputScale !== 1) ? [outputScale, 0, 0, outputScale, 0, 0] : null;
         viewport = page.getViewport(scale);
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;          
-        page.render({canvasContext: canvas.getContext('2d'), viewport: viewport});
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.style.height =  Math.floor(viewport.height) + "px";          
+        canvas.style.width = Math.floor(viewport.width) + "px";
+        page.render({ canvasContext: canvas.getContext('2d'), transform: transform, viewport: viewport });
       });
     }
+    //-/ END RENDER PDF //
