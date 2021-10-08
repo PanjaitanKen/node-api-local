@@ -24,7 +24,11 @@ const controller = {
         ' where supervisor_id = $1  and current_date between valid_from  and valid_to) atasan,  ' +
         ' (select ' +
         "  case when current_date between first_join_date and first_join_date +INTERVAL '3 month' then 1 else 0 end masa_karyawan_baru " +
-        '  from employee_tbl et where employee_id = $1) as masa_karyawan_baru ' +
+        '  from employee_tbl et where employee_id = $1) as masa_karyawan_baru, ' +
+        '  (select count(*) akses_payslip ' +
+        '  from user_role_tbl urt ' +
+        "  where role_id ='ESS_SLIPGAJI'  " +
+        ' and user_id = $1 ) as akses_payslip ' +
         ' from   ' +
         ' (select count(*) jumlahJobTask from  ' +
         ' employee_work_off_tbl a  ' +

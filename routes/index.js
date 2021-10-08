@@ -94,6 +94,7 @@ const addCorrectionAbsenceCtrl = require('../controller/addCorrectionAbsenceCtrl
 const getHistDetailManageCorrectionAbsenceCtrl = require('../controller/getHistDetailManageCorrectionAbsenceCtrl');
 const AppCorrectAbsenceCtrl = require('../controller/AppCorrectAbsenceCtrl');
 const getListHelpInfoCtrl = require('../controller/getListHelpInfoCtrl');
+const PaySlipCtrl = require('../controller/PaySlipCtrl');
 
 const authenticateApiKey = (req, res, next) => {
   const authHeader = req.headers.api_key;
@@ -1299,4 +1300,19 @@ module.exports = (app) => {
     .route('/hcm/api/getListHelpInfo')
     .all(authenticateApiKey)
     .post(getListHelpInfoCtrl.getListHelpInfo);
+
+  app
+    .route('/hcm/api/createPayslip')
+    .all(authenticateApiKey)
+    .post(
+      [
+        check('employee_id').notEmpty().withMessage('employee_id REQUIRED!'),
+        check('name').notEmpty().withMessage('name REQUIRED!'),
+        check('month').notEmpty().withMessage('month REQUIRED!'),
+        check('year').notEmpty().withMessage('year REQUIRED!'),
+        check('password').notEmpty().withMessage('password REQUIRED!'),
+        check('token').notEmpty().withMessage('token REQUIRED!'),
+      ],
+      PaySlipCtrl.createPayslip
+    );
 };

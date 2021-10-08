@@ -6,6 +6,7 @@ const db_MMFPROD = new Pool({
   database: process.env.DATABASE_MMFPROD || 'MMFPROD',
   password: process.env.PASSWORD_MMFPROD || 'Kutubuku123',
   port: process.env.PORT_MMFPROD || 5433,
+  max: 30,
 });
 
 const db_HCM = new Pool({
@@ -14,6 +15,7 @@ const db_HCM = new Pool({
   database: process.env.DATABASE_HCM || 'HCM',
   password: process.env.PASSWORD_HCM || 'Kutubuku123',
   port: process.env.PORT_HCM || 5433,
+  max: 30,
 });
 
 module.exports = {

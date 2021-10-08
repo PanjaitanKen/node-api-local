@@ -92,14 +92,14 @@ const controller = {
          from emp_clocking_temp_tbl a
          where in_out ='0' and employee_id = $1  
          group by a.employee_id, a.in_out, to_Char(a.clocking_date,'YYYY-MM-DD')
-        ) b on to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = b.tanggal_absen
+        ) b on b.employee_id = $1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = b.tanggal_absen
       left join 
         (select a.employee_id,to_Char(a.clocking_date,'YYYY-MM-DD') as tanggal_absen, 
          max(a.clocking_date) as tgl_jam_pulang ,max(to_char(a.clocking_date ,'HH24:MI')) jam_pulang
          from emp_clocking_temp_tbl a
          where in_out ='1' and employee_id = $1
          group by a.employee_id, a.in_out, to_Char(a.clocking_date,'YYYY-MM-DD')
-        ) c on to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = c.tanggal_absen
+        ) c on c.employee_id = $1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = c.tanggal_absen
       left join 
         (select a.employee_id ,to_char(a.clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(a.clocking_date ,'HH24:MI') jam_masuk,state,
         case when a.state in ('Error') and b.time_in is null then '1' else '0' end status_error_masuk,
@@ -107,31 +107,32 @@ const controller = {
            from emp_clocking_temp_tbl a
            left join emp_clocking_detail_tbl b on a.employee_id =b.employee_id and to_char(a.clocking_date,'YYYY-MM-DD') =to_char(b.clocking_date,'YYYY-MM-DD') 
            where in_out='0' and a.state ='Error'
-           and a.employee_id= $1 ) d on b.tanggal_absen = d.tanggal_absen and b.jam_masuk= d.jam_masuk
+           and a.employee_id = $1 ) d on d.employee_id = $1 and b.tanggal_absen = d.tanggal_absen and b.jam_masuk= d.jam_masuk
       left join 
         (select a.employee_id ,to_char(a.clocking_date ,'YYYY-MM-DD') tanggal_absen,to_char(a.clocking_date ,'HH24:MI') jam_pulang,state,
          case when a.state in ('Error') and b.time_out is null then '1' else '0' end status_error_pulang,
-           transfer_message  as transfer_message_masuk ,b.employee_id ,b.time_out 
+           transfer_message  as transfer_message_masuk ,b.time_out 
            from emp_clocking_temp_tbl a
            left join emp_clocking_detail_tbl b on a.employee_id =b.employee_id and to_char(a.clocking_date,'YYYY-MM-DD') =to_char(b.clocking_date,'YYYY-MM-DD') 
            where in_out='1' and a.state ='Error'
-           and a.employee_id= $1 
-           order by a.clocking_date desc) e on c.tanggal_absen = e.tanggal_absen and c.jam_pulang= e.jam_pulang 
+           and a.employee_id = $1 
+           order by a.clocking_date desc) e on e.employee_id = $1 and c.tanggal_absen = e.tanggal_absen and c.jam_pulang= e.jam_pulang 
       left join 
         (select employee_id, clocking_date, absence_wage from  
            emp_clocking_detail_tbl where absence_wage like 'CT_%'
-          ) f on f.employee_id= $1  and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = to_char(f.clocking_date,'YYYY-MM-DD')
+          ) f on f.employee_id = $1  and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = to_char(f.clocking_date,'YYYY-MM-DD')
       left join 
           (select employee_id,clocking_date, state  
            from employee_work_off_tbl where  
            employee_id = $1
-           order by clocking_date desc) g on g.employee_id=$1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD')=to_char(g.clocking_date,'YYYY-MM-DD') and g.state='Approved'
+           order by clocking_date desc) g on g.employee_id = $1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD')=to_char(g.clocking_date,'YYYY-MM-DD') and g.state='Approved'
       left join 
-              (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd
+              (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd,
+              to_char(b.end_date,'YYYY-MM-DD') tgl_pd_sd, b.start_date, b.end_date
               from travel_request_tbl a 
               left join travel_request_destination_tbl b on a.request_no =b.request_no 
               where a.employee_id = $1 
-              and state in ('Approved','Partially Approved')) h on h.employee_id= $1  and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = h.tgl_pd
+              and state in ('Approved','Partially Approved')) h on h.employee_id = $1  and  to_char(a.tgl_bulan_ini,'YYYY-MM-DD') between h.tgl_pd and h.tgl_pd_sd
       left join emp_clocking_tbl i on i.employee_id = $1 and a.tgl_bulan_ini = i.clocking_date
       left join 
           (

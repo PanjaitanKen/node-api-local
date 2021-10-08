@@ -18,7 +18,7 @@ const controller = {
                 .query(
                   `select url_assets ,width::double precision ,height::double precision
                 from mas_info_bantuan 
-                where title = $1`,
+                where title = $1 order by nourut, id_info_bantuan `,
                   [data1[i].title]
                 )
 

@@ -44,7 +44,20 @@ const controller = {
              when to_char(b.clocking_date ,'MM')='09' then 'Sep'
              when to_char(b.clocking_date ,'MM')='10' then 'Okt'
              when to_char(b.clocking_date ,'MM')='11' then 'Nov'
-             when to_char(b.clocking_date ,'MM')='12' then 'Des' end ||' '||to_char(b.clocking_date ,'YYYY') tgl_absen_diperbaiki,  
+             when to_char(b.clocking_date ,'MM')='12' then 'Des' end ||' '||to_char(b.clocking_date ,'YYYY') tgl_absen_diperbaiki,
+           to_char(a.approval_date ,'DD')||' '||
+           case when to_char(a.approval_date ,'MM')='01' then 'Jan'
+             when to_char(a.approval_date ,'MM')='02' then 'Feb'
+             when to_char(a.approval_date ,'MM')='03' then 'Mar'
+             when to_char(a.approval_date ,'MM')='04' then 'Apr'
+             when to_char(a.approval_date ,'MM')='05' then 'Mei'
+             when to_char(a.approval_date ,'MM')='06' then 'Jun'
+             when to_char(a.approval_date ,'MM')='07' then 'Jul'
+             when to_char(a.approval_date ,'MM')='08' then 'Ags'
+             when to_char(a.approval_date ,'MM')='09' then 'Sep'
+             when to_char(a.approval_date ,'MM')='10' then 'Okt'
+             when to_char(a.approval_date ,'MM')='11' then 'Nov'
+             when to_char(a.approval_date ,'MM')='12' then 'Des' end ||' '||to_char(a.approval_date ,'YYYY') tgl_status,  
        a.cor_absence_id  as golid,
        case when a.state_approval ='Approved' then 'Sudah Proses Persetujuan' else 'Menunggu Persetujuan' end as Status
        from correction_absence_hcm_h a
@@ -84,7 +97,9 @@ const controller = {
                      case when c.absence_wage is not null then '1' else '0' end as status_cuti,
                case when d.employee_id is not null then '1' else '0' end as status_izin,
                case when e.employee_id is not null then '1' else '0' end as status_PD,
-               case when (f.state in ('Approved','Transfered') or f.result_revised = 'N')   then '1' else '0' end as status_perbaikan
+               case when (f.state in ('Approved','Transfered') or f.result_revised = 'N')   then '1' 
+               when DATE_PART('month', current_Date) - DATE_PART('month', a.request_date)>1 then '2' 
+               else '0' end as status_perbaikan
                from correction_absence_hcm_h a
                left join correction_absence_hcm_d  b on a.cor_absence_id = b.cor_absence_id  
                left join 

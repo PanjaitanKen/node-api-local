@@ -11,7 +11,7 @@ const controller = {
 
     const { employee_id } = request.body;
     // const data_filter_date = filter_date === 0 ? 30 : 30;
-    const openNextPrev = false;
+    const openNextPrev = true;
 
     Helpers.logger(
       'SUCCESS',
@@ -95,11 +95,12 @@ const controller = {
            employee_id = $1
            order by clocking_date desc) g on g.employee_id = $1 and to_char(a.tgl_bulan_ini,'YYYY-MM-DD')=to_char(g.clocking_date,'YYYY-MM-DD') and g.state='Approved'
       left join 
-              (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd
+              (select a.employee_id ,a.request_no ,to_char(b.start_date,'YYYY-MM-DD') tgl_pd,
+              to_char(b.end_date,'YYYY-MM-DD') tgl_pd_sd
               from travel_request_tbl a 
               left join travel_request_destination_tbl b on a.request_no =b.request_no 
               where a.employee_id = $1 
-              and state in ('Approved','Partially Approved')) h on h.employee_id= $1and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') = h.tgl_pd
+              and state in ('Approved','Partially Approved')) h on h.employee_id= $1and to_char(a.tgl_bulan_ini,'YYYY-MM-DD') between h.tgl_pd and h.tgl_pd_sd
       left join emp_clocking_tbl i on i.employee_id = $1 and a.tgl_bulan_ini = i.clocking_date
       left join 
           (
